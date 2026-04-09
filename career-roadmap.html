@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Career Roadmap · Becca Isherwood</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0812;
+  --violet: #7c3aed;
+  --violet-glow: #a855f7;
+  --teal: #14b8a6;
+  --mint: #6ee7b7;
+  --gold: #f59e0b;
+  --rose: #f43f5e;
+  --orange: #fb923c;
+  --white: #f1eeff;
+  --muted: #6b5f8a;
+  --border: rgba(124,58,237,0.25);
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { height:100%; }
+body {
+  background: var(--bg);
+  color: var(--white);
+  font-family: 'DM Mono', monospace;
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+body::before {
+  content:''; position:fixed; inset:0; z-index:0; pointer-events:none;
+  background:
+    radial-gradient(ellipse 60% 40% at 15% 20%, rgba(124,58,237,0.16) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 60% at 85% 70%, rgba(20,184,166,0.11) 0%, transparent 70%),
+    radial-gradient(ellipse 50% 30% at 50% 90%, rgba(168,85,247,0.09) 0%, transparent 60%);
+}
+#stars { position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden; }
+.star { position:absolute; background:white; border-radius:50%; animation:twinkle var(--d,3s) ease-in-out infinite; opacity:0; }
+@keyframes twinkle { 0%,100%{opacity:0} 50%{opacity:var(--o,0.4)} }
+
+/* ── VIEWS ── */
+.view { display:none; position:relative; z-index:1; }
+.view.active { display:block; }
+
+/* ── TAG ── */
+.tag {
+  display:inline-block; font-size:9px; letter-spacing:0.12em; text-transform:uppercase;
+  padding:2px 8px; border-radius:20px; border:1px solid currentColor;
+  font-family:'DM Mono',monospace; white-space:nowrap; line-height:1.6;
+}
+.tag-cert       { color:#c084fc; }   /* soft violet */
+.tag-procert    { color:#2dd4bf; }   /* teal */
+.tag-work       { color:#60a5fa; }   /* blue */
+.tag-edu        { color:#c084fc; }   /* soft violet */
+.tag-diploma    { color:#c084fc; }   /* soft violet */
+.tag-hackathon  { color:#f472b6; }   /* pink */
+.tag-community  { color:#818cf8; }   /* indigo */
+.tag-upskilling { color:#34d399; }   /* turquoise-mint */
+.tag-speaker    { color:#67e8f9; }   /* cyan */
+.tag-volunteer  { color:#34d399; }   /* turquoise-mint */
+.tag-org        { color:#818cf8; }   /* indigo */
+.tag-project    { color:#e879f9; }   /* fuchsia */
+
+/* ════════════════════════════
+   ROADMAP VIEW
+════════════════════════════ */
+#view-roadmap { max-width:720px; margin:0 auto; padding:48px 20px 80px; }
+
+.header { text-align:center; margin-bottom:56px; }
+.header-eyebrow { font-size:10px; letter-spacing:0.35em; color:var(--teal); text-transform:uppercase; margin-bottom:12px; opacity:0.8; }
+.header-title {
+  font-family:'Syne',sans-serif; font-size:clamp(32px,8vw,58px); font-weight:800; line-height:1;
+  background:linear-gradient(135deg,var(--white) 0%,var(--violet-glow) 50%,var(--teal) 100%);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+  letter-spacing:-0.02em; margin-bottom:8px;
+}
+.header-sub { font-size:11px; color:var(--muted); letter-spacing:0.1em; }
+
+.timeline { position:relative; }
+.timeline::before {
+  content:''; position:absolute; left:68px; top:0; bottom:0; width:2px;
+  background:linear-gradient(to bottom,transparent 0%,var(--violet) 5%,var(--violet-glow) 30%,var(--teal) 60%,var(--mint) 85%,transparent 100%);
+  opacity:0.35;
+}
+
+.year-group { margin-bottom:8px; animation:fadeUp 0.45s ease both; }
+.year-header { display:flex; align-items:center; margin-bottom:6px; }
+.year-label {
+  font-family:'Syne',sans-serif; font-size:18px; font-weight:800;
+  width:68px; flex-shrink:0; text-align:right; padding-right:20px; line-height:1;
+}
+.year-node {
+  width:12px; height:12px; border-radius:50%; border:2px solid;
+  flex-shrink:0; z-index:2; margin-left:-6px; position:relative;
+}
+.year-node::after { content:''; position:absolute; inset:-4px; border-radius:50%; opacity:0.25; border:1px solid currentColor; }
+
+.items { padding-left:80px; display:flex; flex-direction:column; gap:4px; }
+
+.item {
+  display:flex; align-items:flex-start; gap:10px;
+  padding:10px 12px; border-radius:10px;
+  border:1px solid transparent; cursor:pointer;
+  transition:border-color 0.2s, background 0.2s, transform 0.15s;
+  position:relative; background:none;
+  -webkit-tap-highlight-color:transparent; text-align:left; width:100%;
+}
+.item:hover { background:rgba(124,58,237,0.1); border-color:var(--border); transform:translateX(2px); }
+.item::before {
+  content:''; position:absolute; left:-20px; top:50%;
+  transform:translateY(-50%); width:5px; height:5px;
+  border-radius:50%; background:currentColor; opacity:0.4;
+}
+.item-tag-wrap { flex-shrink:0; padding-top:1px; }
+.item-content { flex:1; min-width:0; }
+.item-date { font-size:9px; opacity:0.4; margin-bottom:2px; letter-spacing:0.05em; }
+.item-title { font-size:12px; line-height:1.45; font-weight:400; color:var(--white); }
+.item-org { font-size:10px; opacity:0.45; font-style:italic; margin-top:1px; color:var(--white); }
+.item-arrow { font-size:12px; opacity:0.25; flex-shrink:0; align-self:center; margin-left:4px; transition:opacity 0.2s; }
+.item:hover .item-arrow { opacity:0.7; }
+
+.yr-2026 .year-label{color:#a855f7} .yr-2026 .year-node{color:#a855f7;border-color:#a855f7;box-shadow:0 0 10px #a855f7}
+.yr-2025 .year-label{color:#c4b5fd} .yr-2025 .year-node{color:#c4b5fd;border-color:#c4b5fd}
+.yr-2024 .year-label{color:#14b8a6} .yr-2024 .year-node{color:#14b8a6;border-color:#14b8a6}
+.yr-2023 .year-label{color:#34d399} .yr-2023 .year-node{color:#34d399;border-color:#34d399}
+.yr-2022 .year-label{color:#f59e0b} .yr-2022 .year-node{color:#f59e0b;border-color:#f59e0b}
+.yr-2021 .year-label{color:#fb923c} .yr-2021 .year-node{color:#fb923c;border-color:#fb923c}
+.yr-2020 .year-label{color:#f87171} .yr-2020 .year-node{color:#f87171;border-color:#f87171}
+.yr-2017 .year-label{color:#fca5a5} .yr-2017 .year-node{color:#fca5a5;border-color:#fca5a5}
+
+.legend { display:flex; flex-wrap:wrap; gap:10px 20px; margin-top:52px; padding-top:24px; border-top:1px solid rgba(124,58,237,0.12); justify-content:center; }
+.legend-item { display:flex; align-items:center; gap:6px; font-size:9px; opacity:0.6; letter-spacing:0.1em; text-transform:uppercase; }
+.legend-dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
+
+/* ════════════════════════════
+   ARTICLE VIEW
+════════════════════════════ */
+#view-article { max-width:720px; margin:0 auto; padding:0 0 80px; }
+
+.back-nav { padding:20px 20px 0; }
+.back-btn {
+  display:inline-flex; align-items:center; gap:6px;
+  font-size:11px; letter-spacing:0.1em; color:var(--muted);
+  text-transform:uppercase; border:none; background:none; cursor:pointer;
+  font-family:'DM Mono',monospace; transition:color 0.2s; padding:0;
+}
+.back-btn:hover { color:var(--white); }
+
+.banner {
+  margin:16px 20px 0; border-radius:16px; overflow:hidden; position:relative;
+  height:200px; display:flex; align-items:center; justify-content:center;
+}
+.banner-inner { width:100%; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; }
+.banner-icon { font-size:40px; opacity:0.55; }
+.banner-hint { font-size:9px; letter-spacing:0.15em; text-transform:uppercase; opacity:0.25; }
+.banner-overlay { position:absolute; inset:0; background:linear-gradient(to top,rgba(10,8,18,0.8) 0%,transparent 60%); z-index:2; pointer-events:none; }
+
+.article-body { padding:24px 20px 0; }
+.article-meta { display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:14px; }
+.article-date { font-size:11px; color:var(--muted); letter-spacing:0.06em; }
+.article-title { font-family:'Syne',sans-serif; font-size:clamp(20px,5vw,28px); font-weight:800; line-height:1.15; color:var(--white); margin-bottom:6px; }
+.article-org { font-size:12px; color:var(--muted); font-style:italic; margin-bottom:24px; }
+
+.image-slot {
+  width:100%; border-radius:12px; overflow:hidden;
+  background:rgba(255,255,255,0.03); border:1px dashed rgba(255,255,255,0.09);
+  min-height:160px; display:flex; align-items:center; justify-content:center; margin-bottom:28px;
+}
+.image-slot-hint { text-align:center; padding:36px 20px; font-size:9px; letter-spacing:0.15em; text-transform:uppercase; color:var(--muted); opacity:0.45; line-height:1.9; }
+
+.divider { width:40px; height:2px; border-radius:2px; margin:0 0 24px; opacity:0.7; }
+
+.article-content { font-size:13px; line-height:1.9; color:rgba(241,238,255,0.72); }
+.article-content p { margin-bottom:16px; }
+.article-content ul li { font-size:13px; line-height:1.7; color:rgba(241,238,255,0.72); }
+
+.placeholder-block { background:rgba(255,255,255,0.03); border:1px dashed rgba(255,255,255,0.08); border-radius:8px; padding:16px; margin-bottom:14px; }
+.placeholder-label { font-size:9px; letter-spacing:0.18em; text-transform:uppercase; opacity:0.55; margin-bottom:10px; }
+.placeholder-lines span { display:block; height:9px; border-radius:4px; background:rgba(255,255,255,0.06); margin-bottom:7px; }
+.placeholder-lines span:nth-child(1){width:100%}
+.placeholder-lines span:nth-child(2){width:85%}
+.placeholder-lines span:nth-child(3){width:92%}
+.placeholder-lines span:nth-child(4){width:68%}
+
+.article-footer { margin-top:36px; padding-top:20px; border-top:1px solid rgba(255,255,255,0.06); display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; }
+.footer-tag-row { display:flex; gap:8px; flex-wrap:wrap; }
+.footer-back-btn { font-size:10px; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); border:none; background:none; cursor:pointer; font-family:'DM Mono',monospace; transition:color 0.2s; padding:0; }
+.footer-back-btn:hover { color:var(--white); }
+
+@keyframes fadeUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
+.year-group:nth-child(1){animation-delay:0.05s}
+.year-group:nth-child(2){animation-delay:0.10s}
+.year-group:nth-child(3){animation-delay:0.15s}
+.year-group:nth-child(4){animation-delay:0.20s}
+.year-group:nth-child(5){animation-delay:0.25s}
+.year-group:nth-child(6){animation-delay:0.30s}
+.year-group:nth-child(7){animation-delay:0.35s}
+.year-group:nth-child(8){animation-delay:0.40s}
+
+@media(min-width:600px){
+  .banner{height:260px;}
+  .article-title{font-size:28px;}
+}
+
+.slide-in { animation: slideIn 0.3s ease both; }
+@keyframes slideIn { from{opacity:0;transform:translateX(18px)} to{opacity:1;transform:translateX(0)} }
+</style>
+</head>
+<body>
+<div id="stars"></div>
+
+<!-- ROADMAP VIEW -->
+<div id="view-roadmap" class="view active">
+<div style="max-width:720px;margin:0 auto;padding:48px 20px 80px;">
+  <div class="header">
+    <div class="header-eyebrow">Career &amp; Learning Journey</div>
+    <div class="header-title">Roadmap</div>
+    <div class="header-sub">2017 → 2026 · Becca Isherwood</div>
+  </div>
+
+  <div class="timeline">
+
+    <!-- 2026 -->
+    <div class="year-group yr-2026">
+      <div class="year-header"><span class="year-label">2026</span><span class="year-node"></span></div>
+      <div class="items">
+        <button class="item tag-cert" onclick="openArticle('copilot-command-specialist')"><span class="item-tag-wrap"><span class="tag tag-cert">Cert</span></span><div class="item-content"><div class="item-date">Mar 2026</div><div class="item-title">Copilot Studio Agent Command Specialist</div><div class="item-org">Global AI Community</div></div><span class="item-arrow">→</span></button>
+        <button class="item tag-cert" onclick="openArticle('ai-fluency-anthropic')"><span class="item-tag-wrap"><span class="tag tag-cert">Cert</span></span><div class="item-content"><div class="item-date">Mar 2026</div><div class="item-title">AI Fluency Framework &amp; Foundations</div><div class="item-org">Anthropic</div></div><span class="item-arrow">→</span></button>
+        <button class="item tag-cert" onclick="openArticle('ethics-of-ai-helsinki')"><span class="item-tag-wrap"><span class="tag tag-cert">Cert</span></span><div class="item-content"><div class="item-date">Feb 2026</div><div class="item-title">Ethics of AI</div><div class="item-org">University of Helsinki</div></div><span class="item-arrow">→</span></button>
+        <button class="item tag-cert" onclick="openArticle('copilot-operative')"><span class="item-tag-wrap"><span class="tag tag-cert">Cert</span></span><div class="item-content"><div class="item-date">Jan 2026</div><div class="item-title">Copilot Studio Agent Operative</div><div class="item-org">Global AI Community</div></div><span class="item-arrow">→</span></button>
+        <button class="item tag-cert" onclick="openArticle('copilot-recruit')"><span class="item-tag-wrap"><span class="tag tag-cert">Cert</span></span><div class="item-content"><div class="item-date">Jan 2026</div><div class="item-title">Copilot Studio Agent Recruit</div><div class="item-org">Global AI Community</div></div><span class="item-arrow">→</span></button>
+        <button class="item tag-project" onclick="openArticle('project-2026')"><span class="item-tag-wrap"><span class="tag tag-project">Project</span></span><div class="item-content"><div class="item-date">2026</div><div class="item-title">Your Project Here</div><div class="item-org">Add your 2026 project</div></div><span class="item-arrow">→</span></button>
+      </div>
+    </div>
+
+    <!-- 2025 -->
+    <div class="year-group yr-2025">
+      <div class="year-header"><span class="year-label">2025</span><span class="year-node"></span></div>
+      <div class="items">
+        <button class="item tag-procert" onclick="openArticle('pp-functional-consultant')"><span class="item-tag-wrap"><span class="tag tag-procert">Pro Cert</span></span><div class="item-content"><div class="item-date">Jul 2025</div><div class="item-title">Microsoft Certified: Power Platform Functional Consultant Associate</div><div class="item-org">Microsoft</div></div><span class="item-arrow">→</span></button>
+        <button class="item tag-work" onclick="openArticle('cogent-special-projects')"><span class="item-tag-wrap"><span class="tag tag-work">Work</span></span><div class="item-content"><div class="item-date">Feb 2025 – Present</div><div class="item-title">Power Platform Special Projects</div><div class="item-org">Cogent</div></div><span class="item-arrow">→</span></button>
+        <button class="item tag-project" onclick="openArticle('project-2025')"><span class="item-tag-wrap"><span class="tag tag-project">Project</span></span><div class="item-content"><div class="item-date">2025</div><div class="item-title">Your Project Here</div><div class="item-org">Add your 2025 project</div></div><span class="item-arrow">→</span></button>
+      </div>
+    </div>
+
+    <!-- 2024 -->
+    <div class="year-group yr-2024">
+      <div class="year-header"><span class="year-label">2024</span><span class="year-node"></span></div>
+      <div class="items">
+        <button class="item tag-community" onclick="openArticle('upskilling-host')"><span class="item-tag-wrap"><span class="tag tag-community">Community</span></span><div class="item-content"><div class="item-date">ca. 2024</div><div class="item-title">Community Upskilling Host</div><div class="item-org">Online &amp; In-Person</div></div><span class="item-arrow">→</span></button>
+        <button class="item tag-community" onclick="openArticle('esports-streaming')"><span class="item-tag-wrap"><span class="tag tag-community">Community</span></span><div class="item-content"><div class="item-date">ca. 2024</div><div class="item-title">Esports Streaming – Minecraft &amp; Call of Duty Mobile</div></div><span class="item-arrow">→</span></button>
+        <button class="item tag-cert" onclick="openArticle('sdg-johannesburg')"><span class="item-tag-wrap"><span class="tag tag-cert">Cert</span></span><div class="item-content"><div class="item-date">May 2024</div><div class="item-title">Introduction to Sustainability Development Goals</div><div class="item-org">University of Johannesburg</div></div><span class="item-arrow">→</span></button>
+        <button class="item tag-project" onclick="openArticle('project-2024')"><span class="item-tag-wrap"><span class="tag tag-project">Project</span></span><div class="item-content"><div class="item-date">2024</div><div class="item-title">Your Project Here</div><div class="item-org">Add your 2024 project</div></div><span class="item-arrow">→</span></button>
+      </div>
+    </div>
+
+    <!-- 2023 -->
+    <div class="year-group yr-2023">
+      <div class="year-header"><span class="year-label">2023</span><span class="year-node"></span></div>
+      <div class="items">
+        <button class="item tag-community" onclick="openArticle('esports-lead-eduvos')"><span class="item-tag-wrap"><span class="tag tag-community">Community</span></span><div class="item-content"><div class="item-date">ca. 2023</div><div class="item-title">Esports Community Lead / Organizer – Eduvos</div><div class="item-org">Game Jams, Hackathons &amp; Events</div></div><span class="item-arrow">→</span></button>
+        <button class="item tag-community" onclick="openArticle('wigi-mentee')"><span class="item-tag-wrap"><span class="tag tag-community">Community</span></span><div class="item-content"><div class="item-date">ca. 2023</div><div class="item-title">Mentee – Women in Gaming International (WIGI)</div><div class="item-org">with Riot Games</div></div><span class="item-arrow">→</span></button>
+        <button class="item tag-hackathon" onclick="openArticle('eco-city-hackathon')"><span class="item-tag-wrap"><span class="tag tag-hackathon">Hackathon</span></span><div class="item-content"><div class="item-date">ca. 2023</div><div class="item-title">Top 10 – Eco City Game Hackathon</div><div class="item-org">Ayoba</div></div><span class="item-arrow">→</span></button>
+        <button class="item tag-project" onclick="openArticle('project-2023')"><span class="item-tag-wrap"><span class="tag tag-project">Project</span></span><div class="item-content"><div class="item-date">2023</div><div class="item-title">Your Project Here</div><div class="item-org">Add your 2023 project</div></div><span class="item-arrow">→</span></button>
+      </div>
+    </div>
+
+    <!-- 2022 -->
+    <div class="year-group yr-2022">
+      <div class="year-header"><span class="year-label">2022</span><span class="year-node"></span></div>
+      <div class="items">
+        <button class="item tag-work" onclick="openArticle('eduvos-developer')"><span class="item-tag-wrap"><span class="tag tag-work">Work</span></span><div class="item-content"><div class="item-date">Sep 2022 – Jan 2025</div><div class="item-title">Microsoft Dynamics and Power Platform Developer</div><div class="item-org">Eduvos</div></div><span class="item-arrow">→</span></button>
+        <button class="item tag-community" onclick="openArticle('teens-in-ai')"><span class="item-tag-wrap"><span class="tag tag-community">Community</span></span><div class="item-content"><div class="item-date">ca. 2022</div><div class="item-title">Mentor – Teens in AI</div><div class="item-org">Team placed 3rd internationally for AI solution</div></div><span class="item-arrow">→</span></button>
+        <button class="item tag-community" onclick="openArticle('osint-judge')"><span class="item-tag-wrap"><span class="tag tag-community">Community</span></span><div class="item-content"><div class="item-date">Aug 2022</div><div class="item-title">Judge – Global OSINT Search Party CTF</div><div class="item-org">Canvas Credentials</div></div><span class="item-arrow">→</span></button>
+        <button class="item tag-cert" onclick="openArticle('ui-ux-codecademy')"><span class="item-tag-wrap"><span class="tag tag-cert">Cert</span></span><div class="item-content"><div class="item-date">Jul 2022</div><div class="item-title">Introduction to UI and UX Design</div><div class="item-org">Codecademy</div></div><span class="item-arrow">→</span></button>
+        <button class="item tag-diploma" onclick="openArticle('hnd-ux-upskillist')"><span class="item-tag-wrap"><span class="tag tag-diploma">Diploma</span></span><div class="item-content"><div class="item-date">Jan – Dec 2022</div><div class="item-title">Higher National Diploma, UX Design</div><div class="item-org">Upskillist</div></div><span class="item-arrow">→</span></button>
+        <button class="item tag-edu" onclick="openArticle('frontend-engineer-codecademy')"><span class="item-tag-wrap"><span class="tag tag-edu">Edu</span></span><div class="item-content"><div class="item-date">Jan – Sep 2022</div><div class="item-title">Front-End Engineer Certification</div><div class="item-org">Codecademy</div></div><span class="item-arrow">→</span></button>
+        <button class="item tag-edu" onclick="openArticle('ux-austin-peay')"><span class="item-tag-wrap"><span class="tag tag-edu">Edu</span></span><div class="item-content"><div class="item-date">Jan – Aug 2022</div><div class="item-title">UX Design</div><div class="item-org">Austin Peay State University</div></div><span class="item-arrow">→</span></button>
+        <button class="item tag-edu" onclick="openArticle('react-native-designcode')"><span class="item-tag-wrap"><span class="tag tag-edu">Edu</span></span><div class="item-content"><div class="item-date">Jan – Jul 2022</div><div class="item-title">React Native for Designers Certificate</div><div class="item-org">Designcode.io</div></div><span class="item-arrow">→</span></button>
+        <button class="item tag-edu" onclick="openArticle('design-thinking-regent')"><span class="item-tag-wrap"><span class="tag tag-edu">Edu</span></span><div class="item-content"><div class="item-date">Jan – May 2022</div><div class="item-title">Certificate, Design Thinking</div><div class="item-org">Regent Business School</div></div><span class="item-arrow">→</span></button>
+        <button class="item tag-cert" onclick="openArticle('ai-intro-ibm')"><span class="item-tag-wrap"><span class="tag tag-cert">Cert</span></span><div class="item-content"><div class="item-date">Feb 2022</div><div class="item-title">Artificial Intelligence Intro</div><div class="item-org">IBM</div></div><span class="item-arrow">→</span></button>
+        <button class="item tag-project" onclick="openArticle('project-2022')"><span class="item-tag-wrap"><span class="tag tag-project">Project</span></span><div class="item-content"><div class="item-date">2022</div><div class="item-title">Your Project Here</div><div class="item-org">Add your 2022 project</div></div><span class="item-arrow">→</span></button>
+      </div>
+    </div>
+
+    <!-- 2021 -->
+    <div class="year-group yr-2021">
+      <div class="year-header"><span class="year-label">2021</span><span class="year-node"></span></div>
+      <div class="items">
+        <button class="item tag-speaker" onclick="openArticle('digital-overdose-con')"><span class="item-tag-wrap"><span class="tag tag-speaker">Speaker</span></span><div class="item-content"><div class="item-date">2021</div><div class="item-title">International Speaker – Digital Overdose Con</div></div><span class="item-arrow">→</span></button>
+        <button class="item tag-volunteer" onclick="openArticle('hack-south-moderator')"><span class="item-tag-wrap"><span class="tag tag-volunteer">Volunteer</span></span><div class="item-content"><div class="item-date">2021</div><div class="item-title">Discord Server Moderator</div><div class="item-org">Hack South Community</div></div><span class="item-arrow">→</span></button>
+        <button class="item tag-edu" onclick="openArticle('ethical-hacking-tcm')"><span class="item-tag-wrap"><span class="tag tag-edu">Edu</span></span><div class="item-content"><div class="item-date">Nov 2021 – Apr 2022</div><div class="item-title">Practical Ethical Hacking Certificate</div><div class="item-org">TCM Security</div></div><span class="item-arrow">→</span></button>
+        <button class="item tag-work" onclick="openArticle('dot-development-africa')"><span class="item-tag-wrap"><span class="tag tag-work">Work</span></span><div class="item-content"><div class="item-date">May 2021 – Aug 2022</div><div class="item-title">Power Platform Consultant / BSA</div><div class="item-org">Dot Development Africa</div></div><span class="item-arrow">→</span></button>
+        <button class="item tag-hackathon" onclick="openArticle('govx-winner')"><span class="item-tag-wrap"><span class="tag tag-hackathon">Hackathon</span></span><div class="item-content"><div class="item-date">May 2021</div><div class="item-title">GovX Innovation Challenge Winner</div><div class="item-org">Dept. of Telecommunications</div></div><span class="item-arrow">→</span></button>
+        <button class="item tag-upskilling" onclick="openArticle('bi-consultants-linkedin')"><span class="item-tag-wrap"><span class="tag tag-upskilling">Upskilling</span></span><div class="item-content"><div class="item-date">Apr 2021</div><div class="item-title">Business Intelligence for Consultants</div><div class="item-org">LinkedIn</div></div><span class="item-arrow">→</span></button>
+        <button class="item tag-upskilling" onclick="openArticle('azure-devops-linkedin')"><span class="item-tag-wrap"><span class="tag tag-upskilling">Upskilling</span></span><div class="item-content"><div class="item-date">Apr 2021</div><div class="item-title">Azure for DevOps: Continuous Integration</div><div class="item-org">LinkedIn</div></div><span class="item-arrow">→</span></button>
+        <button class="item tag-upskilling" onclick="openArticle('azure-ad-linkedin')"><span class="item-tag-wrap"><span class="tag tag-upskilling">Upskilling</span></span><div class="item-content"><div class="item-date">Apr 2021</div><div class="item-title">Azure Active Directory: Basics</div><div class="item-org">LinkedIn</div></div><span class="item-arrow">→</span></button>
+        <button class="item tag-upskilling" onclick="openArticle('azure-admin-linkedin')"><span class="item-tag-wrap"><span class="tag tag-upskilling">Upskilling</span></span><div class="item-content"><div class="item-date">Apr 2021</div><div class="item-title">Azure Administration Essential Training</div><div class="item-org">LinkedIn</div></div><span class="item-arrow">→</span></button>
+        <button class="item tag-project" onclick="openArticle('project-2021')"><span class="item-tag-wrap"><span class="tag tag-project">Project</span></span><div class="item-content"><div class="item-date">2021</div><div class="item-title">Your Project Here</div><div class="item-org">Add your 2021 project</div></div><span class="item-arrow">→</span></button>
+      </div>
+    </div>
+
+    <!-- 2020 -->
+    <div class="year-group yr-2020">
+      <div class="year-header"><span class="year-label">2020</span><span class="year-node"></span></div>
+      <div class="items">
+        <button class="item tag-volunteer" onclick="openArticle('digital-volunteer')"><span class="item-tag-wrap"><span class="tag tag-volunteer">Volunteer</span></span><div class="item-content"><div class="item-date">Jul 2020 – Present</div><div class="item-title">Digital Volunteer – Bureau for Rights-Based Development &amp; United Nations Volunteer</div></div><span class="item-arrow">→</span></button>
+        <button class="item tag-procert" onclick="openArticle('bsa-uct')"><span class="item-tag-wrap"><span class="tag tag-procert">Pro Cert</span></span><div class="item-content"><div class="item-date">Jan 2020 – Oct 2020</div><div class="item-title">Business Systems Analysis</div><div class="item-org">University of Cape Town</div></div><span class="item-arrow">→</span></button>
+        <button class="item tag-project" onclick="openArticle('project-2020')"><span class="item-tag-wrap"><span class="tag tag-project">Project</span></span><div class="item-content"><div class="item-date">2020</div><div class="item-title">Your Project Here</div><div class="item-org">Add your 2020 project</div></div><span class="item-arrow">→</span></button>
+      </div>
+    </div>
+
+    <!-- 2017 -->
+    <div class="year-group yr-2017">
+      <div class="year-header"><span class="year-label">2017</span><span class="year-node"></span></div>
+      <div class="items">
+        <button class="item tag-work" onclick="openArticle('rmi-web-design')"><span class="item-tag-wrap"><span class="tag tag-work">Work</span></span><div class="item-content"><div class="item-date">Mar 2017 – Sep 2020</div><div class="item-title">Web Designer &amp; Developer</div><div class="item-org">RMI Web Design</div></div><span class="item-arrow">→</span></button>
+        <button class="item tag-project" onclick="openArticle('project-2017')"><span class="item-tag-wrap"><span class="tag tag-project">Project</span></span><div class="item-content"><div class="item-date">2017</div><div class="item-title">Your Project Here</div><div class="item-org">Add your 2017 project</div></div><span class="item-arrow">→</span></button>
+      </div>
+    </div>
+
+  </div><!-- /timeline -->
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:#c084fc"></div>Cert / Edu</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#2dd4bf"></div>Professional Cert</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#60a5fa"></div>Work</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#f472b6"></div>Hackathon</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#818cf8"></div>Community</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#34d399"></div>Upskilling / Volunteer</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#67e8f9"></div>Speaker</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#e879f9"></div>Project</div>
+  </div>
+</div>
+</div><!-- /view-roadmap -->
+
+<!-- ARTICLE VIEW -->
+<div id="view-article" class="view">
+  <div style="max-width:720px;margin:0 auto;padding:0 0 80px;">
+    <nav class="back-nav">
+      <button class="back-btn" onclick="goBack()"><span>←</span> Roadmap</button>
+    </nav>
+    <div class="banner" id="art-banner">
+      <div class="banner-inner" id="art-banner-inner">
+        <div class="banner-icon" id="art-icon"></div>
+        <div class="banner-hint">Replace with your image</div>
+      </div>
+      <div class="banner-overlay"></div>
+    </div>
+    <div class="article-body">
+      <div class="article-meta">
+        <span class="tag" id="art-tag-el"></span>
+        <span class="article-date" id="art-date"></span>
+      </div>
+      <h1 class="article-title" id="art-title"></h1>
+      <div class="article-org" id="art-org"></div>
+      <div class="image-slot">
+        <div class="image-slot-hint">Optional inline image<br><span style="opacity:0.5">add an &lt;img&gt; here when ready</span></div>
+      </div>
+      <div class="divider" id="art-divider"></div>
+      <div class="article-content" id="art-content"></div>
+      <div class="article-footer">
+        <div class="footer-tag-row">
+          <span class="tag" id="art-footer-tag"></span>
+          <span class="tag" id="art-footer-org-tag" style="opacity:0.5"></span>
+        </div>
+        <button class="footer-back-btn" onclick="goBack()">← Back to Roadmap</button>
+      </div>
+    </div>
+  </div>
+</div><!-- /view-article -->
+
+<script>
+// ── Star generator ──
+(function(){
+  const s = document.getElementById('stars');
+  for(let i=0;i<65;i++){
+    const el=document.createElement('div'); el.className='star';
+    const sz=Math.random()*2+0.5;
+    el.style.cssText=`left:${Math.random()*100}%;top:${Math.random()*100}%;width:${sz}px;height:${sz}px;--d:${2+Math.random()*4}s;--o:${0.1+Math.random()*0.38};animation-delay:${Math.random()*5}s;`;
+    s.appendChild(el);
+  }
+})();
+
+// ── Dummy text per article ──
+const articleContent = {
+  'copilot-command-specialist': { intro: "Achieving the Command Specialist badge represented a significant step forward in my Copilot Studio journey. This credential sits at the top of the Global AI Community's agent pathway, focusing on advanced agent orchestration, multi-topic design, and governance patterns for enterprise deployments.", learned: "I deepened my understanding of how to architect agents that handle complex, branching conversation flows without losing context. The emphasis on fallback strategies and escalation paths gave me practical frameworks I now apply directly in client solutions.", highlights: "Completed the full Global AI Community agent pathway. Applied command-level concepts immediately in a live Cogent project. Reinforced my positioning as a Copilot Studio specialist in the South African market." },
+  'ai-fluency-anthropic': { intro: "This course from Anthropic provided a structured foundation in AI literacy — covering how large language models work, how to prompt effectively, and how to think critically about AI outputs. It sits at the intersection of technical understanding and responsible use.", learned: "Understanding the mechanics behind model behaviour changed how I approach prompt design. I came away with a much clearer mental model of why certain instructions produce reliable results and others don't, which directly improves my client advisory work.", highlights: "Completed Anthropic's official AI fluency framework. Strengthened prompt engineering instincts across Power Platform AI Builder and Copilot Studio. Added a vendor-recognised credential to my AI portfolio." },
+  'ethics-of-ai-helsinki': { intro: "The University of Helsinki's Ethics of AI course offered a rigorous, academic perspective on the societal implications of artificial intelligence. From bias and fairness to transparency and accountability, the curriculum pushed me to think beyond functionality and consider impact.", learned: "I gained frameworks for evaluating AI systems not just on performance but on equity and harm. This directly informs how I design automation solutions — particularly when working in data-sensitive sectors where decisions affect real people.", highlights: "Completed a university-level ethics curriculum recognised internationally. Developed a personal ethics checklist I apply to AI solution designs. Broadened my perspective beyond technical implementation to systemic responsibility." },
+  'copilot-operative': { intro: "The Operative credential from the Global AI Community marked my progression beyond the basics of Copilot Studio. At this level, the focus shifted to building production-ready agents — handling authentication, integrating with external systems, and managing conversation state effectively.", learned: "Working through the Operative pathway sharpened my ability to connect Copilot Studio agents to real data sources via Power Platform connectors. I also got hands-on with adaptive cards and variable management, which opened up much richer interaction patterns.", highlights: "Second tier of the Global AI Community's structured agent pathway. Practical application in client-facing automation projects. Foundation for advancing to Command Specialist level." },
+  'copilot-recruit': { intro: "The Recruit badge was my formal entry point into the Global AI Community's Copilot Studio certification pathway. It covered the fundamentals of conversational AI design — topics, entities, actions, and the basics of deploying an agent to Microsoft Teams and web surfaces.", learned: "Starting a structured pathway rather than learning ad hoc filled important gaps in my conceptual understanding. I built a cleaner mental model of how topics connect and how to design conversations that feel natural rather than mechanical.", highlights: "Entry point to a structured AI agent certification pathway. Immediate application to Power Platform projects at Cogent. Foundation for the Operative and Command Specialist credentials." },
+  'pp-functional-consultant': { intro: "Earning the Microsoft Certified Power Platform Functional Consultant Associate certification was a major professional milestone. This credential validates the ability to configure, customise, and extend the Power Platform across model-driven apps, automated workflows, and virtual agent deployments — all within real enterprise contexts.", learned: "The certification process consolidated years of hands-on experience into a formally recognised body of knowledge. Preparing for the exam surfaced gaps in my understanding of Dataverse table relationships and solution lifecycle management that I've since addressed.", highlights: "Microsoft-recognised professional certification. Directly strengthens client trust and proposal credibility. Supports positioning as a specialist consultant in the South African and broader African market." },
+  'cogent-special-projects': { intro: "Joining Cogent's special projects team marked a shift from standard delivery work to higher-complexity, more strategically significant Power Platform engagements. The role involves designing and building solutions that sit at the edge of what the platform can do — often combining Copilot Studio, AI Builder, and custom connectors.", learned: "Working across varied client contexts in a short timeframe has sharpened my ability to scope accurately, communicate trade-offs clearly, and deliver under pressure. I've also grown significantly in my ability to translate ambiguous briefs into concrete technical architectures.", highlights: "Active role delivering complex Power Platform solutions. Exposure to enterprise-scale governance and ALM practices. Continued development of Copilot Studio and AI Builder expertise in live client environments." },
+  'upskilling-host': { intro: "Hosting community upskilling sessions grew out of a recognition that access to quality tech education in South Africa remains uneven. I began running sessions covering Power Platform basics, AI literacy, and practical automation skills — both online and in person — for people at various stages of their careers.", learned: "Teaching is one of the most effective ways to deepen your own understanding. Running these sessions forced me to articulate concepts clearly, anticipate confusion, and build explanations that work for different learning styles. It also connected me to a much wider professional network.", highlights: "Delivered sessions to diverse audiences across career levels. Built reusable learning materials covering Power Platform and AI fundamentals. Strengthened community ties and reinforced personal brand as a knowledgeable, generous practitioner." },
+  'esports-streaming': { intro: "Streaming Minecraft and Call of Duty Mobile was a personal creative outlet that also developed real skills in content production, audience engagement, and community building. It sat alongside my professional work as a space to explore digital culture and stay connected to the gaming community.", learned: "Running a stream teaches you to multitask under pressure — managing gameplay, chat interaction, and technical setup simultaneously. I developed a much stronger instinct for what keeps an audience engaged, which has fed back into how I think about user experience in professional contexts.", highlights: "Built a consistent content production habit. Developed real-time audience engagement skills. Stayed connected to gaming culture in a hands-on way." },
+  'sdg-johannesburg': { intro: "The University of Johannesburg's course on Sustainable Development Goals provided a valuable macro-level context for the work I do in digital transformation. Understanding the SDG framework — particularly goals relating to decent work, reduced inequalities, and innovation — shapes how I think about the broader purpose of technology solutions.", learned: "I came away with a stronger vocabulary for articulating impact beyond technical outputs. When I build automation that frees up a team's time, or design an accessible digital experience, I can now frame that work within a globally recognised framework for positive change.", highlights: "Completed a recognised course in sustainability and development. Integrated SDG thinking into how I frame the value of digital solutions. Added academic depth to my understanding of technology's social role." },
+  'esports-lead-eduvos': { intro: "Leading the esports community at Eduvos was one of the most creatively fulfilling roles I've held. I organised game jams, hackathons, and competitive events that brought students together and gave them a space to build technical and teamwork skills in a context they were genuinely passionate about.", learned: "Organising events at scale — handling logistics, communication, partnerships, and on-the-day execution — built a set of project management muscles that translate directly into professional delivery work. I also learned a great deal about motivating volunteers and building culture.", highlights: "Led a student esports community from the ground up. Organised multiple successful game jams and hackathons. Created a pipeline between gaming enthusiasm and technical skill development." },
+  'wigi-mentee': { intro: "Being selected as a mentee by Women in Gaming International, in partnership with Riot Games, was both an honour and a genuinely transformative experience. The programme paired me with industry professionals who offered honest, practical guidance on navigating a career at the intersection of technology and gaming.", learned: "The mentorship challenged me to think more intentionally about where I wanted to go, rather than just responding to opportunities as they arose. Conversations about visibility, positioning, and self-advocacy have had a lasting effect on how I approach my career.", highlights: "Selected for a globally recognised women in tech and gaming mentorship programme. Built connections with international industry professionals. Developed a more strategic approach to career development and personal branding." },
+  'eco-city-hackathon': { intro: "Placing in the top 10 of the Eco City Game Hackathon run by Ayoba was the result of rapid, high-pressure creative and technical collaboration. The challenge was to design a game concept that addressed urban sustainability — a brief that pushed me to think across design, narrative, and impact simultaneously.", learned: "Hackathons teach you to make decisive creative calls under time pressure and to ship something imperfect but real. Working within tight constraints forces a kind of clarity that more open-ended projects rarely demand. I also learned a great deal about what makes a game concept resonate with judges.", highlights: "Top 10 placement in a nationally recognised game hackathon. Demonstrated ability to execute under pressure and within constraints. Experience combining game design thinking with real-world sustainability challenges." },
+  'eduvos-developer': { intro: "My role as a Microsoft Dynamics and Power Platform Developer at Eduvos was where my skills consolidated into genuine expertise. Working in a higher education environment meant navigating complex stakeholder needs, legacy systems, and a constant tension between innovation and stability.", learned: "Three years in a single complex environment gave me depth that breadth alone can't provide. I learned to manage solution lifecycle properly, to advocate for technical decisions with non-technical stakeholders, and to build things that actually get used rather than just built.", highlights: "Over two years of enterprise Power Platform development in a regulated sector. Delivered student-facing and staff-facing solutions that improved operational efficiency. Developed deep familiarity with Dataverse, Power Automate, and Power Apps in production environments." },
+  'teens-in-ai': { intro: "Mentoring a team through the Teens in AI programme was one of the most rewarding experiences of my career. Supporting young people — particularly young women — as they designed and built an AI solution from scratch, and watching them place third internationally, was extraordinary.", learned: "Mentoring teenagers requires a completely different communication style to working with professional peers. I learned to explain abstract technical concepts in concrete, relatable terms, and to build confidence in people who were doubting their own abilities. That skill has made me a better communicator across the board.", highlights: "Supported a team to a 3rd place international finish. Contributed to increasing diversity in AI by supporting young women in tech. Developed coaching and communication skills that have transferred into professional contexts." },
+  'osint-judge': { intro: "Being invited to judge the Global OSINT Search Party CTF by Canvas Credentials was a recognition of my growing profile in the cyber and information security community. The competition tested participants' ability to gather, verify, and synthesise open-source intelligence under time pressure.", learned: "Sitting on the judging side of a CTF gave me a new appreciation for what separates good OSINT practice from great OSINT practice — specifically the quality of documentation, the clarity of reasoning chains, and the ability to distinguish signal from noise.", highlights: "Recognised as a subject matter expert in the OSINT and cybersecurity community. Gained insight into competitive CTF formats and evaluation criteria. Strengthened connections within the global security practitioner network." },
+  'ui-ux-codecademy': { intro: "Completing Codecademy's Introduction to UI and UX Design course gave me a formal grounding in design principles that I had largely been applying intuitively. The course covered user research methods, wireframing, prototyping, and the fundamentals of visual hierarchy and accessibility.", learned: "Formalising what I already knew in practice was clarifying in unexpected ways. The course gave me a shared vocabulary for design decisions — one I now use to communicate more precisely with designers and developers when collaborating on solutions.", highlights: "Formal credential in UX and UI fundamentals from a recognised platform. Strengthened design communication skills used in Power Apps and web projects. Added to a growing portfolio of design-focused qualifications." },
+  'hnd-ux-upskillist': { intro: "Completing the Higher National Diploma in UX Design through Upskillist was a year-long commitment to deepening my design expertise. The programme covered the full UX process — from research and personas through to interaction design and usability testing — at a level of rigour that short courses don't provide.", learned: "A diploma-length programme forces you to sit with complexity rather than moving quickly past it. I developed a genuine research-first mindset and a much stronger ability to design for users I'm not myself — a skill that matters enormously in both product and consulting work.", highlights: "Diploma-level qualification in UX Design. Comprehensive coverage of the end-to-end design process. Applied learning directly to projects delivered during the same period." },
+  'frontend-engineer-codecademy': { intro: "Codecademy's Front-End Engineer certification path took me from foundational HTML and CSS through to JavaScript, React, and the broader ecosystem of modern front-end development. It was a structured, rigorous curriculum that filled gaps and reinforced existing knowledge simultaneously.", learned: "Going back to basics with intent is humbling and useful in equal measure. I found myself unlearning shortcuts and understanding why best practices exist — particularly around accessibility, semantic HTML, and performance. That understanding shows up in everything I build.", highlights: "Comprehensive front-end certification covering HTML, CSS, JavaScript, and React. Directly applicable to Power Apps canvas app development and custom web builds. Strengthened ability to collaborate with dedicated front-end developers." },
+  'ux-austin-peay': { intro: "Austin Peay State University's UX Design programme offered an academically grounded approach to user experience, complementing the more applied learning I was doing elsewhere in 2022. The curriculum emphasised research methodology, cognitive psychology, and the theoretical underpinnings of human-computer interaction.", learned: "Understanding the cognitive science behind UX decisions — why certain layouts reduce cognitive load, how mental models form, why error prevention matters more than error recovery — gave me a richer foundation for every design decision I make.", highlights: "University-level academic grounding in UX theory and practice. Complementary to concurrent applied UX learning in 2022. Strengthened research and evaluation skills." },
+  'react-native-designcode': { intro: "Designcode.io's React Native for Designers certificate was a natural extension of my growing interest in the intersection of design and code. The course focused on building real, interactive mobile interfaces using React Native — bridging the gap between high-fidelity prototypes and production-ready components.", learned: "Learning to code in the medium you design for changes how you design. Understanding the constraints and capabilities of React Native made my interface designs more realistic and more buildable. It also gave me a useful shared language with mobile developers.", highlights: "Practical certificate in React Native mobile development. Applied directly to understanding and communicating mobile UI constraints. Supported growing expertise at the design-code boundary." },
+  'design-thinking-regent': { intro: "The Design Thinking certificate from Regent Business School introduced me to a structured problem-solving methodology that has since become central to how I approach every new project. The five-stage framework — empathise, define, ideate, prototype, test — provides a discipline that prevents jumping to solutions before problems are truly understood.", learned: "Design Thinking challenged my instinct to move quickly into solution mode. Learning to stay in the problem space longer, and to validate assumptions with real users before building, has saved significant rework time on multiple projects since.", highlights: "Recognised business school certification in Design Thinking methodology. Applied framework to Power Platform project discovery and scoping. Foundational to a human-centred approach to automation and solution design." },
+  'ai-intro-ibm': { intro: "IBM's Introduction to Artificial Intelligence course provided an accessible but substantive foundation in AI concepts — covering machine learning, neural networks, natural language processing, and the practical applications of AI across industries. It was an early touchpoint in what has become a central thread of my career.", learned: "This course sparked a genuine curiosity about AI that has only grown since. Understanding the basics of how models learn — the role of training data, the nature of predictions, the difference between supervised and unsupervised learning — gave me a foundation I've built on continuously.", highlights: "Early AI credential from a globally recognised technology company. Foundation for subsequent AI-focused learning and certifications. Planted the seed for a career direction increasingly centred on AI and automation." },
+  'digital-overdose-con': { intro: "Speaking at Digital Overdose Con as an international speaker was a defining moment in establishing my profile as a thought leader in the cybersecurity and technology community. The conference brings together practitioners, researchers, and enthusiasts from across the world, and being invited to present was a significant recognition of my expertise.", learned: "Preparing a conference talk forces a level of clarity and structure that everyday work rarely demands. I learned to distil complex technical content into a compelling narrative — a skill that has since made me a stronger communicator in client presentations, workshops, and mentoring.", highlights: "International speaking engagement at a globally recognised security conference. Established presence as a thought leader in the technology community. Developed public speaking skills that transfer across professional contexts." },
+  'hack-south-moderator': { intro: "Volunteering as a Discord server moderator for the Hack South community put me at the centre of one of South Africa's most active cybersecurity communities. The role involved managing conversations, supporting newcomers, enforcing community standards, and helping create an environment where knowledge sharing could thrive.", learned: "Community moderation taught me that healthy communities don't maintain themselves — they require consistent, thoughtful human effort. I developed a much stronger sense of how to set and uphold norms, how to de-escalate conflict, and how to make newcomers feel genuinely welcome.", highlights: "Active contributor to South Africa's leading cybersecurity community. Developed community management and digital facilitation skills. Built lasting connections within the local and global security practitioner network." },
+  'ethical-hacking-tcm': { intro: "TCM Security's Practical Ethical Hacking course is widely regarded as one of the most rigorous and hands-on entry points into offensive security. Over six months, the curriculum covered networking fundamentals, active directory attacks, web application hacking, and full penetration testing methodology.", learned: "Ethical hacking fundamentally changes how you think about the systems you build. Understanding how attackers move through networks and exploit misconfigurations made me a much more security-conscious developer and solution architect — particularly when designing Power Platform integrations with sensitive data flows.", highlights: "Completed one of the most respected practical hacking certifications available. Applied security thinking directly to enterprise Power Platform architecture decisions. Foundation for a security-informed approach to all technical work." },
+  'dot-development-africa': { intro: "My role as a Power Platform Consultant and Business Systems Analyst at Dot Development Africa was where I first operated as a professional in the Microsoft ecosystem. The role spanned requirements gathering, solution design, development, and client-facing delivery — a full-stack consulting experience.", learned: "Consulting from early in my career taught me that technical skill is only half the job. Understanding client needs, managing expectations, and translating between business language and technical language are the competencies that actually determine whether a project succeeds.", highlights: "First professional Power Platform consulting role. End-to-end experience across discovery, design, build, and delivery. Foundation for all subsequent consulting and development work." },
+  'govx-winner': { intro: "Winning the GovX Innovation Challenge, run by the Department of Telecommunications, was a formative experience in applying technology thinking to real public sector problems. The challenge called for innovative solutions that could meaningfully improve government service delivery — a brief that required both technical creativity and social awareness.", learned: "Competing in a government-focused innovation challenge pushed me to think about technology impact at a systemic level. It's one thing to build a clever tool; it's another to design something that could realistically be adopted and sustained within a complex institutional context.", highlights: "National-level innovation challenge winner. Recognition from a government department for applied technology thinking. Early validation of the ability to design solutions with real-world institutional fit." },
+  'bi-consultants-linkedin': { intro: "LinkedIn Learning's Business Intelligence for Consultants course provided a structured introduction to BI concepts specifically framed for consulting contexts — covering data storytelling, dashboard design principles, and how to communicate analytical findings to non-technical decision makers.", learned: "The consulting frame was what made this course valuable. Understanding how to present data to drive decisions, rather than just to display information, changed how I approach every reporting and analytics project. Clarity and narrative matter as much as accuracy.", highlights: "Applied BI communication skills directly to Power BI deliverables. Improved ability to frame data insights for executive audiences. Complementary to concurrent Azure and Power Platform development learning." },
+  'azure-devops-linkedin': { intro: "Azure for DevOps: Continuous Integration on LinkedIn Learning introduced me to the principles and practices of CI/CD pipelines within the Azure ecosystem. The course covered build pipelines, automated testing, and the fundamentals of deploying code reliably and repeatedly.", learned: "Understanding CI/CD changed how I think about solution delivery — particularly around the importance of automated testing and the risks of manual deployment processes. These principles now inform how I approach ALM in Power Platform projects, where governance and deployment pipelines matter enormously.", highlights: "Foundation in Azure DevOps practices applicable to Power Platform ALM. Improved understanding of automated deployment and testing. Directly applicable to enterprise-grade solution delivery." },
+  'azure-ad-linkedin': { intro: "Azure Active Directory: Basics on LinkedIn Learning provided a grounding in identity and access management within the Microsoft ecosystem. The course covered directory structure, user and group management, conditional access, and the fundamentals of securing cloud applications.", learned: "Understanding AAD is essential for anyone building on the Microsoft stack. It underpins every permission model in Power Platform, every SharePoint integration, and every Teams deployment. This course demystified concepts I had been working around rather than with.", highlights: "Foundation in Microsoft identity and access management. Directly applicable to Power Platform governance and security design. Supports more confident client conversations about data access and compliance." },
+  'azure-admin-linkedin': { intro: "LinkedIn Learning's Azure Administration Essential Training covered the core competencies needed to manage Azure resources — virtual machines, storage, networking, and the broader Azure portal experience. It provided important context for the cloud infrastructure underpinning the Microsoft solutions I work with daily.", learned: "Even as a primarily application-layer practitioner, understanding the infrastructure layer makes me a better solution designer. Knowing what happens under the hood — how resources scale, how costs are incurred, how security boundaries are drawn — informs better architectural decisions.", highlights: "Working knowledge of Azure administration and resource management. Improved ability to collaborate with infrastructure teams on enterprise projects. Supports end-to-end understanding of Microsoft cloud architecture." },
+  'digital-volunteer': { intro: "Volunteering with both the Bureau for Rights-Based Development and the United Nations Volunteer programme has been a long-running commitment to using my digital skills in service of meaningful social impact. The work spans digital strategy, tool implementation, and capacity building for organisations working in human rights and development.", learned: "Applying technology in under-resourced civil society contexts teaches you to do more with less and to prioritise ruthlessly. The constraints are different from commercial projects — budget, connectivity, and user digital literacy all require different design decisions — and working within them has made me a more adaptable practitioner.", highlights: "Ongoing volunteer commitment since 2020. Applied digital skills in support of human rights and development organisations. Developed cross-cultural communication and low-resource design capabilities." },
+  'bsa-uct': { intro: "The Business Systems Analysis programme at the University of Cape Town was a turning point in how I understood the relationship between organisational processes and technology systems. The curriculum covered requirements elicitation, process modelling, stakeholder management, and the formal methodologies that underpin professional systems analysis.", learned: "UCT's rigour pushed me to think systematically about problems before reaching for solutions. The programme gave me tools — use case diagrams, process maps, stakeholder matrices — that I still use regularly, and a professional discipline that distinguishes good analysis from guesswork.", highlights: "University of Cape Town credential in Business Systems Analysis. Foundation for all subsequent consulting and requirements work. Formal methodology training that continues to inform daily practice." },
+  'rmi-web-design': { intro: "Starting my professional career as a Web Designer and Developer at RMI Web Design was where theory met practice for the first time. Over three years, I designed and built websites for a range of clients — developing skills in HTML, CSS, JavaScript, and the fundamentals of visual communication and client management.", learned: "Early client-facing work teaches you things no course can — how to manage scope, how to handle feedback that contradicts your instincts, and how to deliver something that serves the client's needs rather than your own aesthetic preferences. It set a professional foundation I've built everything else on.", highlights: "First professional role in technology and design. Three years of client-facing web delivery experience. Foundation in HTML, CSS, JavaScript, and client communication that underpins all subsequent technical work." },
+  'project-2026': { intro: "This is a placeholder for a 2026 project. Replace this text with a description of what you built, designed, or shipped — the context, the problem it solved, and the approach you took.", learned: "Describe what this project taught you. What skills did you develop? What would you do differently? What surprised you?", highlights: "Key outcome one. Key outcome two. Key outcome three." },
+  'project-2025': { intro: "This is a placeholder for a 2025 project. Replace this text with a description of what you built, designed, or shipped — the context, the problem it solved, and the approach you took.", learned: "Describe what this project taught you. What skills did you develop? What would you do differently? What surprised you?", highlights: "Key outcome one. Key outcome two. Key outcome three." },
+  'project-2024': { intro: "This is a placeholder for a 2024 project. Replace this text with a description of what you built, designed, or shipped — the context, the problem it solved, and the approach you took.", learned: "Describe what this project taught you. What skills did you develop? What would you do differently? What surprised you?", highlights: "Key outcome one. Key outcome two. Key outcome three." },
+  'project-2023': { intro: "This is a placeholder for a 2023 project. Replace this text with a description of what you built, designed, or shipped — the context, the problem it solved, and the approach you took.", learned: "Describe what this project taught you. What skills did you develop? What would you do differently? What surprised you?", highlights: "Key outcome one. Key outcome two. Key outcome three." },
+  'project-2022': { intro: "This is a placeholder for a 2022 project. Replace this text with a description of what you built, designed, or shipped — the context, the problem it solved, and the approach you took.", learned: "Describe what this project taught you. What skills did you develop? What would you do differently? What surprised you?", highlights: "Key outcome one. Key outcome two. Key outcome three." },
+  'project-2021': { intro: "This is a placeholder for a 2021 project. Replace this text with a description of what you built, designed, or shipped — the context, the problem it solved, and the approach you took.", learned: "Describe what this project taught you. What skills did you develop? What would you do differently? What surprised you?", highlights: "Key outcome one. Key outcome two. Key outcome three." },
+  'project-2020': { intro: "This is a placeholder for a 2020 project. Replace this text with a description of what you built, designed, or shipped — the context, the problem it solved, and the approach you took.", learned: "Describe what this project taught you. What skills did you develop? What would you do differently? What surprised you?", highlights: "Key outcome one. Key outcome two. Key outcome three." },
+  'project-2017': { intro: "This is a placeholder for a 2017 project. Replace this text with a description of what you built, designed, or shipped — the context, the problem it solved, and the approach you took.", learned: "Describe what this project taught you. What skills did you develop? What would you do differently? What surprised you?", highlights: "Key outcome one. Key outcome two. Key outcome three." },
+};
+const articles = {
+  'copilot-command-specialist': { tag:'cert', tagLabel:'Cert', color:'#c084fc', icon:'🎓', date:'Mar 2026', title:'Copilot Studio Agent Command Specialist', org:'Global AI Community', bg:'linear-gradient(135deg,#1a0a2e 0%,#3b0764 40%,#1e1b4b 100%)' },
+  'ai-fluency-anthropic':       { tag:'cert', tagLabel:'Cert', color:'#c084fc', icon:'🎓', date:'Mar 2026', title:'AI Fluency Framework & Foundations', org:'Anthropic', bg:'linear-gradient(135deg,#1a0a2e 0%,#3b0764 40%,#1e1b4b 100%)' },
+  'ethics-of-ai-helsinki':      { tag:'cert', tagLabel:'Cert', color:'#c084fc', icon:'🎓', date:'Feb 2026', title:'Ethics of AI', org:'University of Helsinki', bg:'linear-gradient(135deg,#1a0a2e 0%,#3b0764 40%,#1e1b4b 100%)' },
+  'copilot-operative':          { tag:'cert', tagLabel:'Cert', color:'#c084fc', icon:'🎓', date:'Jan 2026', title:'Copilot Studio Agent Operative', org:'Global AI Community', bg:'linear-gradient(135deg,#1a0a2e 0%,#3b0764 40%,#1e1b4b 100%)' },
+  'copilot-recruit':            { tag:'cert', tagLabel:'Cert', color:'#c084fc', icon:'🎓', date:'Jan 2026', title:'Copilot Studio Agent Recruit', org:'Global AI Community', bg:'linear-gradient(135deg,#1a0a2e 0%,#3b0764 40%,#1e1b4b 100%)' },
+  'pp-functional-consultant':   { tag:'procert', tagLabel:'Pro Cert', color:'#2dd4bf', icon:'🎓', date:'Jul 2025', title:'Microsoft Certified: Power Platform Functional Consultant Associate', org:'Microsoft', bg:'linear-gradient(135deg,#042f2e 0%,#134e4a 40%,#0f172a 100%)' },
+  'cogent-special-projects':    { tag:'work', tagLabel:'Work', color:'#60a5fa', icon:'💼', date:'Feb 2025 – Present', title:'Power Platform Special Projects', org:'Cogent', bg:'linear-gradient(135deg,#0c1a2e 0%,#1e3a5f 40%,#0a1628 100%)' },
+  'upskilling-host':            { tag:'community', tagLabel:'Community', color:'#818cf8', icon:'🎮', date:'ca. 2024', title:'Community Upskilling Host', org:'Online & In-Person', bg:'linear-gradient(135deg,#150d2e 0%,#2e1065 40%,#150d2e 100%)' },
+  'esports-streaming':          { tag:'community', tagLabel:'Community', color:'#818cf8', icon:'🎮', date:'ca. 2024', title:'Esports Streaming – Minecraft & Call of Duty Mobile', org:'', bg:'linear-gradient(135deg,#150d2e 0%,#2e1065 40%,#150d2e 100%)' },
+  'sdg-johannesburg':           { tag:'cert', tagLabel:'Cert', color:'#c084fc', icon:'🎓', date:'May 2024', title:'Introduction to Sustainability Development Goals', org:'University of Johannesburg', bg:'linear-gradient(135deg,#1a0a2e 0%,#3b0764 40%,#1e1b4b 100%)' },
+  'esports-lead-eduvos':        { tag:'community', tagLabel:'Community', color:'#818cf8', icon:'🎮', date:'ca. 2023', title:'Esports Community Lead / Organizer – Eduvos', org:'Game Jams, Hackathons & Events', bg:'linear-gradient(135deg,#150d2e 0%,#2e1065 40%,#150d2e 100%)' },
+  'wigi-mentee':                { tag:'community', tagLabel:'Community', color:'#818cf8', icon:'🤝', date:'ca. 2023', title:'Mentee – Women in Gaming International (WIGI)', org:'with Riot Games', bg:'linear-gradient(135deg,#150d2e 0%,#2e1065 40%,#150d2e 100%)' },
+  'eco-city-hackathon':         { tag:'hackathon', tagLabel:'Hackathon', color:'#f472b6', icon:'🏆', date:'ca. 2023', title:'Top 10 – Eco City Game Hackathon', org:'Ayoba', bg:'linear-gradient(135deg,#2a0a1e 0%,#5a1040 40%,#1a0612 100%)' },
+  'eduvos-developer':           { tag:'work', tagLabel:'Work', color:'#60a5fa', icon:'💼', date:'Sep 2022 – Jan 2025', title:'Microsoft Dynamics and Power Platform Developer', org:'Eduvos', bg:'linear-gradient(135deg,#0c1a2e 0%,#1e3a5f 40%,#0a1628 100%)' },
+  'teens-in-ai':                { tag:'community', tagLabel:'Community', color:'#818cf8', icon:'🤝', date:'ca. 2022', title:'Mentor – Teens in AI', org:'Team placed 3rd internationally for AI solution', bg:'linear-gradient(135deg,#150d2e 0%,#2e1065 40%,#150d2e 100%)' },
+  'osint-judge':                { tag:'community', tagLabel:'Community', color:'#818cf8', icon:'🤝', date:'Aug 2022', title:'Judge – Global OSINT Search Party CTF', org:'Canvas Credentials', bg:'linear-gradient(135deg,#150d2e 0%,#2e1065 40%,#150d2e 100%)' },
+  'ui-ux-codecademy':           { tag:'cert', tagLabel:'Cert', color:'#c084fc', icon:'🎓', date:'Jul 2022', title:'Introduction to UI and UX Design', org:'Codecademy', bg:'linear-gradient(135deg,#1a0a2e 0%,#3b0764 40%,#1e1b4b 100%)' },
+  'hnd-ux-upskillist':          { tag:'diploma', tagLabel:'Diploma', color:'#c084fc', icon:'📜', date:'Jan – Dec 2022', title:'Higher National Diploma, UX Design', org:'Upskillist', bg:'linear-gradient(135deg,#1a0a2e 0%,#3b0764 40%,#1e1b4b 100%)' },
+  'frontend-engineer-codecademy':{ tag:'edu', tagLabel:'Edu', color:'#c084fc', icon:'📚', date:'Jan – Sep 2022', title:'Front-End Engineer Certification', org:'Codecademy', bg:'linear-gradient(135deg,#1a0a2e 0%,#3b0764 40%,#1e1b4b 100%)' },
+  'ux-austin-peay':             { tag:'edu', tagLabel:'Edu', color:'#c084fc', icon:'📚', date:'Jan – Aug 2022', title:'UX Design', org:'Austin Peay State University', bg:'linear-gradient(135deg,#1a0a2e 0%,#3b0764 40%,#1e1b4b 100%)' },
+  'react-native-designcode':    { tag:'edu', tagLabel:'Edu', color:'#c084fc', icon:'📚', date:'Jan – Jul 2022', title:'React Native for Designers Certificate', org:'Designcode.io', bg:'linear-gradient(135deg,#1a0a2e 0%,#3b0764 40%,#1e1b4b 100%)' },
+  'design-thinking-regent':     { tag:'edu', tagLabel:'Edu', color:'#c084fc', icon:'📚', date:'Jan – May 2022', title:'Certificate, Design Thinking', org:'Regent Business School', bg:'linear-gradient(135deg,#1a0a2e 0%,#3b0764 40%,#1e1b4b 100%)' },
+  'ai-intro-ibm':               { tag:'cert', tagLabel:'Cert', color:'#c084fc', icon:'🎓', date:'Feb 2022', title:'Artificial Intelligence Intro', org:'IBM', bg:'linear-gradient(135deg,#1a0a2e 0%,#3b0764 40%,#1e1b4b 100%)' },
+  'digital-overdose-con':       { tag:'speaker', tagLabel:'Speaker', color:'#67e8f9', icon:'🎤', date:'2021', title:'International Speaker – Digital Overdose Con', org:'', bg:'linear-gradient(135deg,#041e2e 0%,#0a4060 40%,#021628 100%)' },
+  'hack-south-moderator':       { tag:'volunteer', tagLabel:'Volunteer', color:'#34d399', icon:'🌱', date:'2021', title:'Discord Server Moderator', org:'Hack South Community', bg:'linear-gradient(135deg,#022c22 0%,#064e3b 40%,#022c22 100%)' },
+  'ethical-hacking-tcm':        { tag:'edu', tagLabel:'Edu', color:'#c084fc', icon:'📚', date:'Nov 2021 – Apr 2022', title:'Practical Ethical Hacking Certificate', org:'TCM Security', bg:'linear-gradient(135deg,#1a0a2e 0%,#3b0764 40%,#1e1b4b 100%)' },
+  'dot-development-africa':     { tag:'work', tagLabel:'Work', color:'#60a5fa', icon:'💼', date:'May 2021 – Aug 2022', title:'Power Platform Consultant / BSA', org:'Dot Development Africa', bg:'linear-gradient(135deg,#0c1a2e 0%,#1e3a5f 40%,#0a1628 100%)' },
+  'govx-winner':                { tag:'hackathon', tagLabel:'Hackathon', color:'#f472b6', icon:'🏆', date:'May 2021', title:'GovX Innovation Challenge Winner', org:'Dept. of Telecommunications', bg:'linear-gradient(135deg,#2a0a1e 0%,#5a1040 40%,#1a0612 100%)' },
+  'bi-consultants-linkedin':    { tag:'upskilling', tagLabel:'Upskilling', color:'#34d399', icon:'📗', date:'Apr 2021', title:'Business Intelligence for Consultants', org:'LinkedIn', bg:'linear-gradient(135deg,#022c22 0%,#064e3b 40%,#022c22 100%)' },
+  'azure-devops-linkedin':      { tag:'upskilling', tagLabel:'Upskilling', color:'#34d399', icon:'📗', date:'Apr 2021', title:'Azure for DevOps: Continuous Integration', org:'LinkedIn', bg:'linear-gradient(135deg,#022c22 0%,#064e3b 40%,#022c22 100%)' },
+  'azure-ad-linkedin':          { tag:'upskilling', tagLabel:'Upskilling', color:'#34d399', icon:'📗', date:'Apr 2021', title:'Azure Active Directory: Basics', org:'LinkedIn', bg:'linear-gradient(135deg,#022c22 0%,#064e3b 40%,#022c22 100%)' },
+  'azure-admin-linkedin':       { tag:'upskilling', tagLabel:'Upskilling', color:'#34d399', icon:'📗', date:'Apr 2021', title:'Azure Administration Essential Training', org:'LinkedIn', bg:'linear-gradient(135deg,#022c22 0%,#064e3b 40%,#022c22 100%)' },
+  'digital-volunteer':          { tag:'volunteer', tagLabel:'Volunteer', color:'#34d399', icon:'🌱', date:'Jul 2020 – Present', title:'Digital Volunteer – Bureau for Rights-Based Development & United Nations Volunteer', org:'', bg:'linear-gradient(135deg,#022c22 0%,#064e3b 40%,#022c22 100%)' },
+  'bsa-uct':                    { tag:'procert', tagLabel:'Pro Cert', color:'#2dd4bf', icon:'🎓', date:'Jan 2020 – Oct 2020', title:'Business Systems Analysis', org:'University of Cape Town', bg:'linear-gradient(135deg,#042f2e 0%,#134e4a 40%,#0f172a 100%)' },
+  'rmi-web-design':             { tag:'work', tagLabel:'Work', color:'#60a5fa', icon:'💼', date:'Mar 2017 – Sep 2020', title:'Web Designer & Developer', org:'RMI Web Design', bg:'linear-gradient(135deg,#0c1a2e 0%,#1e3a5f 40%,#0a1628 100%)' },
+  'project-2026': { tag:'project', tagLabel:'Project', color:'#e879f9', icon:'✦', date:'2026', title:'Your Project Here', org:'Add your 2026 project', bg:'linear-gradient(135deg,#1a0a2e 0%,#4a0080 40%,#1a0a2e 100%)' },
+  'project-2025': { tag:'project', tagLabel:'Project', color:'#e879f9', icon:'✦', date:'2025', title:'Your Project Here', org:'Add your 2025 project', bg:'linear-gradient(135deg,#1a0a2e 0%,#4a0080 40%,#1a0a2e 100%)' },
+  'project-2024': { tag:'project', tagLabel:'Project', color:'#e879f9', icon:'✦', date:'2024', title:'Your Project Here', org:'Add your 2024 project', bg:'linear-gradient(135deg,#1a0a2e 0%,#4a0080 40%,#1a0a2e 100%)' },
+  'project-2023': { tag:'project', tagLabel:'Project', color:'#e879f9', icon:'✦', date:'2023', title:'Your Project Here', org:'Add your 2023 project', bg:'linear-gradient(135deg,#1a0a2e 0%,#4a0080 40%,#1a0a2e 100%)' },
+  'project-2022': { tag:'project', tagLabel:'Project', color:'#e879f9', icon:'✦', date:'2022', title:'Your Project Here', org:'Add your 2022 project', bg:'linear-gradient(135deg,#1a0a2e 0%,#4a0080 40%,#1a0a2e 100%)' },
+  'project-2021': { tag:'project', tagLabel:'Project', color:'#e879f9', icon:'✦', date:'2021', title:'Your Project Here', org:'Add your 2021 project', bg:'linear-gradient(135deg,#1a0a2e 0%,#4a0080 40%,#1a0a2e 100%)' },
+  'project-2020': { tag:'project', tagLabel:'Project', color:'#e879f9', icon:'✦', date:'2020', title:'Your Project Here', org:'Add your 2020 project', bg:'linear-gradient(135deg,#1a0a2e 0%,#4a0080 40%,#1a0a2e 100%)' },
+  'project-2017': { tag:'project', tagLabel:'Project', color:'#e879f9', icon:'✦', date:'2017', title:'Your Project Here', org:'Add your 2017 project', bg:'linear-gradient(135deg,#1a0a2e 0%,#4a0080 40%,#1a0a2e 100%)' },
+};
+
+function openArticle(id) {
+  const a = articles[id];
+  if (!a) return;
+  // Banner
+  document.getElementById('art-banner').style.background = a.bg;
+  document.getElementById('art-icon').textContent = a.icon;
+  // Meta
+  const tagEl = document.getElementById('art-tag-el');
+  tagEl.textContent = a.tagLabel;
+  tagEl.className = 'tag tag-' + a.tag;
+  document.getElementById('art-date').textContent = a.date;
+  document.getElementById('art-title').textContent = a.title;
+  const orgEl = document.getElementById('art-org');
+  orgEl.textContent = a.org;
+  orgEl.style.display = a.org ? 'block' : 'none';
+  // Divider colour
+  document.getElementById('art-divider').style.background = a.color;
+  // Content
+  const content = articleContent[id];
+  const accentColor = a.color;
+  const contentEl = document.getElementById('art-content');
+  if (content) {
+    const highlights = content.highlights.split('. ').filter(h => h.trim()).map(h => `<li>${h.replace(/\.$/,'')}</li>`).join('');
+    contentEl.innerHTML = `
+      <p>${content.intro}</p>
+      <h3 style="font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:${accentColor};letter-spacing:0.08em;text-transform:uppercase;margin:24px 0 10px;opacity:0.85;">What I Learned</h3>
+      <p>${content.learned}</p>
+      <h3 style="font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:${accentColor};letter-spacing:0.08em;text-transform:uppercase;margin:24px 0 10px;opacity:0.85;">Key Highlights</h3>
+      <ul style="padding-left:18px;display:flex;flex-direction:column;gap:7px;">${highlights}</ul>
+    `;
+  } else {
+    contentEl.innerHTML = '<p style="opacity:0.4">No content yet — add your write-up here.</p>';
+  }
+  // Footer
+  const ft = document.getElementById('art-footer-tag');
+  ft.textContent = a.tagLabel; ft.className = 'tag tag-' + a.tag;
+  const fo = document.getElementById('art-footer-org-tag');
+  if (a.org) { fo.textContent = a.org; fo.className = 'tag tag-' + a.tag; fo.style.display='inline-block'; }
+  else { fo.style.display = 'none'; }
+  // Switch views
+  document.getElementById('view-roadmap').classList.remove('active');
+  const artView = document.getElementById('view-article');
+  artView.classList.add('active','slide-in');
+  window.scrollTo(0,0);
+  setTimeout(() => artView.classList.remove('slide-in'), 350);
+}
+
+function goBack() {
+  document.getElementById('view-article').classList.remove('active');
+  document.getElementById('view-roadmap').classList.add('active');
+  window.scrollTo(0,0);
+}
+</script>
+</body>
+</html>

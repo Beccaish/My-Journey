@@ -181,24 +181,26 @@ body::before {
 
 .timeline { position:relative; }
 .timeline::before {
-  content:''; position:absolute; left:84px; top:0; bottom:0; width:2px;
-  background:linear-gradient(to bottom,transparent 0%,var(--violet) 5%,var(--violet-glow) 30%,var(--teal) 60%,var(--mint) 85%,transparent 100%);
+  content:''; position:absolute; left:84px; top:14px; bottom:0; width:2px;
+  background:linear-gradient(to bottom,var(--violet) 0%,var(--violet-glow) 30%,var(--teal) 60%,var(--mint) 85%,transparent 100%);
   opacity:0.35;
 }
 
-.year-group { margin-bottom:8px; animation:fadeUp 0.45s ease both; }
-.year-header { display:flex; align-items:center; margin-bottom:6px; }
+.year-group { margin-bottom:4px; padding-top:8px; animation:fadeUp 0.45s ease both; }
+.year-header { display:flex; align-items:center; margin-bottom:4px; }
 .year-label {
   font-family:'Syne',sans-serif; font-size:18px; font-weight:800;
-  width:84px; flex-shrink:0; text-align:right; padding-right:20px; line-height:1;
+  width:84px; flex-shrink:0; text-align:right; padding-right:16px; line-height:1;
+  display:flex; align-items:center; justify-content:flex-end;
 }
 .year-node {
   width:12px; height:12px; border-radius:50%; border:2px solid;
   flex-shrink:0; z-index:2; margin-left:-6px; position:relative;
+  flex-shrink:0;
 }
 .year-node::after { content:''; position:absolute; inset:-4px; border-radius:50%; opacity:0.25; border:1px solid currentColor; }
 
-.items { padding-left:96px; display:flex; flex-direction:column; gap:4px; }
+.items { padding-left:96px; display:flex; flex-direction:column; gap:4px; margin-bottom:16px; }
 
 .item {
   display:flex; align-items:flex-start; gap:10px;
@@ -484,8 +486,8 @@ body::before {
   .dual-filters { gap:16px; }
   .item { padding:12px 16px; }
   .item-title { font-size:14px; }
-  .year-label { font-size:20px; width:92px; }
-  .timeline::before { left:92px; }
+  .year-label { font-size:20px; width:92px; padding-right:16px; }
+  .timeline::before { left:92px; top:14px; }
   .items { padding-left:108px; }
   .stats-bar { padding:24px 28px; }
   .dock-inner { gap:12px; }
@@ -501,8 +503,8 @@ body::before {
   .header-sub { font-size:10px; }
 
   /* Compress the year column so items have room */
-  .year-label { font-size:14px; width:62px; padding-right:12px; }
-  .timeline::before { left:62px; }
+  .year-label { font-size:14px; width:62px; padding-right:10px; }
+  .timeline::before { left:62px; top:14px; }
   .items { padding-left:74px; }
   .year-node { width:10px; height:10px; margin-left:-5px; }
 
@@ -950,70 +952,54 @@ let _editMode = false;
 
 // ── Skill tags per article ──
 const articleSkills = {
-  // ── 2026 certs ──
-  'copilot-command-specialist': ['AI & Automation','Copilot Studio','Power Platform'],
-  'ai-fluency-anthropic':       ['AI & Automation','Prompt Engineering'],
-  'ethics-of-ai-helsinki':      ['AI & Automation','AI Ethics'],
-  'copilot-operative':          ['AI & Automation','Copilot Studio','Power Automate','Power Platform'],
-  'copilot-recruit':            ['AI & Automation','Copilot Studio','Power Platform'],
-
-  // ── 2025 ──
-  'pp-functional-consultant':   ['Dataverse','Power Apps','Power Automate','Power Platform','Solution Architecture'],
-  'cogent-special-projects':    ['AI & Automation','AI Builder','Copilot Studio','Dataverse','Power Apps','Power Automate','Power Pages','Power Platform','SharePoint','Solution Architecture'],
-
-  // ── 2024 ──
-  'upskilling-host':            ['Community','Power Platform','Training'],
-  'esports-streaming':          ['Community','Content Creation'],
-  'sdg-johannesburg':           ['Business','Sustainability'],
-
-  // ── 2023 ──
-  'esports-lead-eduvos':        ['Community','Leadership'],
-  'wigi-mentee':                ['Community','Leadership','Mentorship'],
-  'eco-city-hackathon':         ['Community','UX Design'],
-
-  // ── 2022 work + certs ──
-  'eduvos-developer':           ['Dataverse','Dynamics 365','Microsoft 365','Power Apps','Power Automate','Power Pages','Power Platform','SharePoint','Solution Architecture','UI Design','UX Design'],
-  'teens-in-ai':                ['AI & Automation','Community','Mentorship'],
-  'osint-judge':                ['Community','Cybersecurity','OSINT'],
-  'ui-ux-codecademy':           ['UI Design','UX Design'],
-  'hnd-ux-upskillist':          ['UI Design','UX Design'],
+  // ── Certs: only the discipline the cert actually covers ──
+  'copilot-command-specialist':  ['Copilot Studio','Power Platform'],
+  'ai-fluency-anthropic':        ['AI & Automation','Prompt Engineering'],
+  'ethics-of-ai-helsinki':       ['AI Ethics'],
+  'copilot-operative':           ['Copilot Studio','Power Automate','Power Platform'],
+  'copilot-recruit':             ['Copilot Studio','Power Platform'],
+  'pp-functional-consultant':    ['Dataverse','Power Apps','Power Automate','Power Platform','Solution Architecture'],
+  'sdg-johannesburg':            ['Sustainability'],
+  'ui-ux-codecademy':            ['UI Design','UX Design'],
+  'hnd-ux-upskillist':           ['UX Design'],
   'frontend-engineer-codecademy':['CSS','Front-End','HTML','JavaScript','React'],
-  'ux-austin-peay':             ['Accessibility','UX Design'],
-  'react-native-designcode':    ['Front-End','Mobile','React Native','UI Design'],
-  'design-thinking-regent':     ['Design Thinking','UX Design'],
-  'ai-intro-ibm':               ['AI & Automation','Machine Learning'],
+  'ux-austin-peay':              ['Accessibility','UX Design'],
+  'react-native-designcode':     ['Mobile','React Native','UI Design'],
+  'design-thinking-regent':      ['Design Thinking'],
+  'ai-intro-ibm':                ['AI & Automation','Machine Learning'],
+  'ethical-hacking-tcm':         ['Cybersecurity','Ethical Hacking','Networking'],
+  'ai900-azure-ai':              ['AI & Automation','Azure'],
+  'bi-consultants-linkedin':     ['Business Intelligence','Power BI'],
+  'azure-devops-linkedin':       ['Azure DevOps','CI/CD'],
+  'azure-ad-linkedin':           ['Azure AD','Security'],
+  'azure-admin-linkedin':        ['Azure','Cloud'],
+  'bsa-uct':                     ['Business Analysis','Requirements Engineering'],
 
-  // ── 2021 ──
-  'digital-overdose-con':       ['Cybersecurity','Public Speaking'],
-  'hack-south-moderator':       ['Community','Cybersecurity'],
-  'ethical-hacking-tcm':        ['Cybersecurity','Ethical Hacking','Networking'],
-  'dot-development-africa':     ['Business Analysis','Digital Transformation','Power Apps','Power Automate','Power BI','Power Platform','Requirements Engineering','Solution Architecture'],
-  'govx-winner':                ['Business','Power Platform','Solution Architecture'],
-  'ai900-azure-ai':             ['AI & Automation','Azure','Machine Learning'],
-  'bi-consultants-linkedin':    ['Business Intelligence','Data Management','Power BI'],
-  'azure-devops-linkedin':      ['Azure','Azure DevOps','CI/CD'],
-  'azure-ad-linkedin':          ['Azure','Azure AD','Security'],
-  'azure-admin-linkedin':       ['Azure','Cloud'],
+  // ── Work: only the tools and disciplines actively used in that role ──
+  'cogent-special-projects':     ['Copilot Studio','Dataverse','Power Apps','Power Automate','Power Pages','Power Platform','SharePoint','Solution Architecture'],
+  'eduvos-developer':            ['Dataverse','Dynamics 365','Power Apps','Power Automate','Power Pages','Power Platform','SharePoint','Solution Architecture','UI Design'],
+  'dot-development-africa':      ['Business Analysis','Digital Transformation','Power Apps','Power Automate','Power BI','Power Platform','Requirements Engineering','Solution Architecture'],
+  'mpt-accountant':              ['ERP Systems','Financial Systems','SAP'],
+  'initec-civils':               ['Data Management','Financial Systems','Project Management','Reporting'],
+  'rmi-web-design':              ['Branding','CSS','HTML','JavaScript','UI Design','Web Design','WordPress'],
+  'office-space-online':         ['CRM Systems','Operations'],
+  'ontime-accountant':           ['Financial Systems','Reconciliation'],
+  'tracetec':                    ['CRM Systems','Financial Systems'],
+  'profile-cut':                 ['Compliance','Financial Systems','Payroll Systems'],
+  'ontime-bookkeeper':           ['Financial Systems'],
 
-  // ── 2020 ──
-  'digital-volunteer':          ['Community','Digital Transformation','Training'],
-  'bsa-uct':                    ['Business Analysis','Requirements Engineering','Solution Architecture'],
-  'mpt-accountant':             ['Data Management','ERP Systems','Financial Systems','SAP'],
-
-  // ── 2017 ──
-  'initec-civils':              ['Business Analysis','Data Management','Financial Systems','Project Management','Reporting','Web Design'],
-  'rmi-web-design':             ['Branding','CSS','Front-End','HTML','JavaScript','UI Design','UX Design','Web Design','WordPress'],
-
-  // ── 2016 ──
-  'office-space-online':        ['CRM Systems','Digital Transformation','Operations'],
-  'ontime-accountant':          ['Data Management','Financial Systems','Reconciliation'],
-
-  // ── 2015 ──
-  'tracetec':                   ['CRM Systems','Data Management','Financial Systems','Reporting'],
-
-  // ── 2013–2014 ──
-  'profile-cut':                ['Compliance','Data Management','Financial Systems','Payroll Systems'],
-  'ontime-bookkeeper':          ['Data Management','Financial Systems'],
+  // ── Volunteer / Community: the actual activity ──
+  'upskilling-host':             ['Power Platform','Training'],
+  'esports-streaming':           ['Content Creation'],
+  'esports-lead-eduvos':         ['Leadership'],
+  'wigi-mentee':                 ['Leadership','Mentorship'],
+  'eco-city-hackathon':          ['UX Design'],
+  'teens-in-ai':                 ['AI & Automation','Mentorship'],
+  'osint-judge':                 ['Cybersecurity','OSINT'],
+  'digital-overdose-con':        ['Cybersecurity','Public Speaking'],
+  'hack-south-moderator':        ['Cybersecurity'],
+  'digital-volunteer':           ['Digital Transformation'],
+  'govx-winner':                 ['Power Platform','Solution Architecture'],
 
   // ── Projects ──
   'project-2026': [],
@@ -1028,9 +1014,9 @@ const articleSkills = {
 
 // ── Skill categories ──
 const skillCategories = {
-  'Business':    ['AI Ethics','Branding','Business','Business Analysis','Business Intelligence','Compliance','CRM Systems','Data Management','Design Thinking','Digital Transformation','ERP Systems','Financial Systems','Operations','Payroll Systems','Project Management','Reconciliation','Reporting','Requirements Engineering','Solution Architecture','Sustainability','Training'],
-  'Tech':        ['Accessibility','AI & Automation','AI Builder','Azure','Azure AD','Azure DevOps','CI/CD','Cloud','Copilot Studio','CSS','Cybersecurity','Dataverse','Dynamics 365','Ethical Hacking','Front-End','HTML','JavaScript','Machine Learning','Microsoft 365','Mobile','Networking','OSINT','Power Apps','Power Automate','Power BI','Power Pages','Power Platform','Prompt Engineering','React','React Native','SAP','Security','SharePoint','UI Design','UX Design','Web Design','WordPress'],
-  'Community':   ['Community','Content Creation','Leadership','Mentorship','Public Speaking'],
+  'Business':    ['AI Ethics','Business Analysis','Business Intelligence','CI/CD','Compliance','CRM Systems','Data Management','Design Thinking','Digital Transformation','ERP Systems','Financial Systems','Operations','Payroll Systems','Project Management','Reconciliation','Reporting','Requirements Engineering','Solution Architecture','Sustainability','Training'],
+  'Tech':        ['Accessibility','AI & Automation','AI Builder','Azure','Azure AD','Azure DevOps','Branding','Cloud','Copilot Studio','CSS','Cybersecurity','Dataverse','Dynamics 365','Ethical Hacking','Front-End','HTML','JavaScript','Machine Learning','Mobile','Networking','OSINT','Power Apps','Power Automate','Power BI','Power Pages','Power Platform','Prompt Engineering','React','React Native','SAP','Security','SharePoint','UI Design','UX Design','Web Design','WordPress'],
+  'Community':   ['Content Creation','Leadership','Mentorship','Public Speaking'],
 };
 
 // ── Work experience date ranges (start, end) ──
@@ -1050,45 +1036,37 @@ const workRanges = {
 
 // Skills-to-work mapping: which work entries involve each skill
 const skillWorkMap = {
-  // Financial era
-  'Financial Systems':      ['ontime-bookkeeper','profile-cut','tracetec','ontime-accountant','initec-civils','mpt-accountant'],
-  'Data Management':        ['ontime-bookkeeper','profile-cut','tracetec','ontime-accountant','initec-civils','mpt-accountant'],
-  'Payroll Systems':        ['profile-cut'],
-  'Compliance':             ['profile-cut','mpt-accountant'],
-  'CRM Systems':            ['tracetec','office-space-online'],
-  'Reconciliation':         ['ontime-accountant'],
-  'Reporting':              ['tracetec','initec-civils'],
-  'ERP Systems':            ['mpt-accountant'],
-  'SAP':                    ['mpt-accountant'],
-  'Operations':             ['office-space-online'],
-  'Project Management':     ['initec-civils'],
-  'Business Analysis':      ['initec-civils','dot-development-africa','bsa-uct'],
-  'Digital Transformation': ['office-space-online','dot-development-africa'],
-  // Web / design era
-  'Web Design':             ['initec-civils','rmi-web-design'],
-  'HTML':                   ['rmi-web-design'],
-  'CSS':                    ['rmi-web-design'],
-  'JavaScript':             ['rmi-web-design'],
-  'WordPress':              ['rmi-web-design'],
-  'Branding':               ['rmi-web-design'],
-  'Front-End':              ['rmi-web-design'],
-  'UI Design':              ['rmi-web-design','eduvos-developer'],
-  'UX Design':              ['rmi-web-design','eduvos-developer'],
-  // Power Platform era
-  'Power Platform':         ['dot-development-africa','eduvos-developer','cogent-special-projects'],
-  'Power Apps':             ['dot-development-africa','eduvos-developer','cogent-special-projects'],
-  'Power Automate':         ['dot-development-africa','eduvos-developer','cogent-special-projects'],
-  'Power BI':               ['dot-development-africa'],
-  'Power Pages':            ['eduvos-developer','cogent-special-projects'],
-  'Solution Architecture':  ['dot-development-africa','eduvos-developer','cogent-special-projects'],
+  'Financial Systems':       ['ontime-bookkeeper','profile-cut','tracetec','ontime-accountant','initec-civils','mpt-accountant'],
+  'Payroll Systems':         ['profile-cut'],
+  'Compliance':              ['profile-cut'],
+  'CRM Systems':             ['tracetec','office-space-online'],
+  'Reconciliation':          ['ontime-accountant'],
+  'Reporting':               ['initec-civils'],
+  'Data Management':         ['initec-civils','mpt-accountant'],
+  'Project Management':      ['initec-civils'],
+  'ERP Systems':             ['mpt-accountant'],
+  'SAP':                     ['mpt-accountant'],
+  'Operations':              ['office-space-online'],
+  'Digital Transformation':  ['office-space-online','dot-development-africa'],
+  'Business Analysis':       ['dot-development-africa'],
   'Requirements Engineering':['dot-development-africa'],
-  'Copilot Studio':         ['cogent-special-projects'],
-  'AI & Automation':        ['cogent-special-projects'],
-  'AI Builder':             ['cogent-special-projects'],
-  'Dataverse':              ['eduvos-developer','cogent-special-projects'],
-  'Dynamics 365':           ['eduvos-developer'],
-  'Microsoft 365':          ['eduvos-developer','cogent-special-projects'],
-  'SharePoint':             ['eduvos-developer','cogent-special-projects'],
+  'Power Platform':          ['dot-development-africa','eduvos-developer','cogent-special-projects'],
+  'Power Apps':              ['dot-development-africa','eduvos-developer','cogent-special-projects'],
+  'Power Automate':          ['dot-development-africa','eduvos-developer','cogent-special-projects'],
+  'Power BI':                ['dot-development-africa'],
+  'Power Pages':             ['eduvos-developer','cogent-special-projects'],
+  'Solution Architecture':   ['dot-development-africa','eduvos-developer','cogent-special-projects'],
+  'Dataverse':               ['eduvos-developer','cogent-special-projects'],
+  'Dynamics 365':            ['eduvos-developer'],
+  'SharePoint':              ['eduvos-developer','cogent-special-projects'],
+  'UI Design':               ['eduvos-developer','rmi-web-design'],
+  'Copilot Studio':          ['cogent-special-projects'],
+  'HTML':                    ['rmi-web-design'],
+  'CSS':                     ['rmi-web-design'],
+  'JavaScript':              ['rmi-web-design'],
+  'Web Design':              ['rmi-web-design'],
+  'WordPress':               ['rmi-web-design'],
+  'Branding':                ['rmi-web-design'],
 };
 
 // ── Build master skills list ──

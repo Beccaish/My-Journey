@@ -7,7 +7,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #0a0812;
+  --bg: #13102a;
   --violet: #7c3aed;
   --violet-glow: #a855f7;
   --teal: #14b8a6;
@@ -15,9 +15,9 @@
   --gold: #f59e0b;
   --rose: #f43f5e;
   --orange: #fb923c;
-  --white: #f1eeff;
-  --muted: #6b5f8a;
-  --border: rgba(124,58,237,0.25);
+  --white: #ede9ff;
+  --muted: #9d93c4;
+  --border: rgba(168,85,247,0.3);
 }
 * { margin:0; padding:0; box-sizing:border-box; }
 html, body { height:100%; }
@@ -33,9 +33,9 @@ body {
 body::before {
   content:''; position:fixed; inset:0; z-index:0; pointer-events:none;
   background:
-    radial-gradient(ellipse 60% 40% at 15% 20%, rgba(124,58,237,0.16) 0%, transparent 70%),
-    radial-gradient(ellipse 40% 60% at 85% 70%, rgba(20,184,166,0.11) 0%, transparent 70%),
-    radial-gradient(ellipse 50% 30% at 50% 90%, rgba(168,85,247,0.09) 0%, transparent 60%);
+    radial-gradient(ellipse 60% 40% at 15% 20%, rgba(139,92,246,0.22) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 60% at 85% 70%, rgba(20,184,166,0.15) 0%, transparent 70%),
+    radial-gradient(ellipse 50% 30% at 50% 90%, rgba(168,85,247,0.13) 0%, transparent 60%);
 }
 #stars { position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden; }
 .star { position:absolute; background:white; border-radius:50%; animation:twinkle var(--d,3s) ease-in-out infinite; opacity:0; }
@@ -79,6 +79,85 @@ body::before {
 }
 .header-sub { font-size:11px; color:var(--muted); letter-spacing:0.1em; }
 
+/* ── DUAL FILTERS ── */
+.dual-filters {
+  display:grid; grid-template-columns:1fr 1fr; gap:12px;
+  margin-bottom:16px;
+}
+.filter-panel { position:relative; }
+.filter-panel-label {
+  font-size:8px; letter-spacing:0.2em; text-transform:uppercase;
+  color:var(--muted); margin-bottom:6px; padding-left:2px;
+}
+.filter-toggle {
+  width:100%; display:flex; align-items:center; justify-content:space-between;
+  padding:9px 14px; border-radius:10px;
+  background:rgba(255,255,255,0.05); border:1px solid rgba(168,85,247,0.25);
+  color:var(--muted); font-family:'DM Mono',monospace; font-size:10px;
+  letter-spacing:0.06em; cursor:pointer; transition:all 0.18s; white-space:nowrap; overflow:hidden;
+}
+.filter-toggle:hover { border-color:rgba(168,85,247,0.5); color:var(--white); }
+.filter-toggle.active-filter { border-color:rgba(168,85,247,0.6); color:var(--white); background:rgba(168,85,247,0.1); }
+.filter-toggle .arrow { transition:transform 0.2s; flex-shrink:0; margin-left:6px; }
+.filter-toggle.open .arrow { transform:rotate(180deg); }
+.filter-dropdown {
+  display:none; position:absolute; top:calc(100% + 6px); left:0; right:0;
+  z-index:100; padding:12px;
+  background:rgba(19,16,42,0.98); border:1px solid rgba(168,85,247,0.3);
+  border-radius:10px; backdrop-filter:blur(16px);
+  box-shadow:0 8px 32px rgba(0,0,0,0.4);
+  min-width:200px;
+}
+.filter-dropdown.open { display:block; }
+.filter-pills-grid { display:flex; flex-wrap:wrap; gap:5px; }
+.filter-pill {
+  font-family:'DM Mono',monospace; font-size:9px; letter-spacing:0.1em; text-transform:uppercase;
+  padding:4px 10px; border-radius:20px; border:1px solid rgba(255,255,255,0.15);
+  background:rgba(255,255,255,0.04); color:rgba(237,233,255,0.6);
+  cursor:pointer; transition:all 0.15s ease;
+}
+.filter-pill:hover { background:rgba(255,255,255,0.09); color:var(--white); }
+.filter-pill.active { color:#13102a; border-color:transparent; font-weight:600; background:var(--fc,#ede9ff); }
+.filter-active-label { font-size:9px; color:#c084fc; margin-left:4px; overflow:hidden; text-overflow:ellipsis; }
+
+/* Skill filter specifics */
+.skill-search {
+  width:100%; padding:7px 11px; border-radius:8px; margin-bottom:10px;
+  background:rgba(255,255,255,0.06); border:1px solid rgba(168,85,247,0.2);
+  color:var(--white); font-family:'DM Mono',monospace; font-size:11px;
+  outline:none; transition:border-color 0.18s;
+}
+.skill-search::placeholder { color:var(--muted); opacity:0.6; }
+.skill-search:focus { border-color:rgba(168,85,247,0.5); }
+.skill-pills-grid { display:flex; flex-wrap:wrap; gap:5px; }
+.skill-filter-pill {
+  font-family:'DM Mono',monospace; font-size:9px; letter-spacing:0.1em; text-transform:uppercase;
+  padding:4px 10px; border-radius:20px; border:1px solid rgba(168,85,247,0.3);
+  background:rgba(168,85,247,0.07); color:rgba(237,233,255,0.65);
+  cursor:pointer; transition:all 0.15s ease;
+}
+.skill-filter-pill:hover { background:rgba(168,85,247,0.18); color:var(--white); }
+.skill-filter-pill.active { background:#a855f7; border-color:#a855f7; color:#13102a; font-weight:600; }
+.skill-filter-pill.hidden-pill { display:none; }
+
+/* Active filter summary bar */
+.filter-summary {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:8px 14px; border-radius:8px; margin-bottom:20px;
+  background:rgba(168,85,247,0.1); border:1px solid rgba(168,85,247,0.25);
+  font-size:10px; color:rgba(237,233,255,0.75); letter-spacing:0.05em;
+}
+.filter-clear {
+  font-family:'DM Mono',monospace; font-size:9px; letter-spacing:0.1em; text-transform:uppercase;
+  border:none; background:none; color:#c084fc; cursor:pointer; padding:0; transition:color 0.15s;
+}
+.filter-clear:hover { color:var(--white); }
+
+.item.hidden { display:none; }
+.year-group.all-hidden .year-node { opacity:0.2; }
+.year-group.all-hidden .year-label { opacity:0.2; }
+.year-group.all-hidden .items { opacity:0; height:0; overflow:hidden; margin:0; padding:0; }
+
 .timeline { position:relative; }
 .timeline::before {
   content:''; position:absolute; left:68px; top:0; bottom:0; width:2px;
@@ -108,7 +187,7 @@ body::before {
   position:relative; background:none;
   -webkit-tap-highlight-color:transparent; text-align:left; width:100%;
 }
-.item:hover { background:rgba(124,58,237,0.1); border-color:var(--border); transform:translateX(2px); }
+.item:hover { background:rgba(168,85,247,0.12); border-color:var(--border); transform:translateX(2px); }
 .item::before {
   content:''; position:absolute; left:-20px; top:50%;
   transform:translateY(-50%); width:5px; height:5px;
@@ -116,9 +195,9 @@ body::before {
 }
 .item-tag-wrap { flex-shrink:0; padding-top:1px; }
 .item-content { flex:1; min-width:0; }
-.item-date { font-size:9px; opacity:0.4; margin-bottom:2px; letter-spacing:0.05em; }
+.item-date { font-size:9px; opacity:0.55; margin-bottom:2px; letter-spacing:0.05em; }
 .item-title { font-size:12px; line-height:1.45; font-weight:400; color:var(--white); }
-.item-org { font-size:10px; opacity:0.45; font-style:italic; margin-top:1px; color:var(--white); }
+.item-org { font-size:10px; opacity:0.6; font-style:italic; margin-top:1px; color:var(--white); }
 .item-arrow { font-size:12px; opacity:0.25; flex-shrink:0; align-self:center; margin-left:4px; transition:opacity 0.2s; }
 .item:hover .item-arrow { opacity:0.7; }
 
@@ -131,8 +210,8 @@ body::before {
 .yr-2020 .year-label{color:#f87171} .yr-2020 .year-node{color:#f87171;border-color:#f87171}
 .yr-2017 .year-label{color:#fca5a5} .yr-2017 .year-node{color:#fca5a5;border-color:#fca5a5}
 
-.legend { display:flex; flex-wrap:wrap; gap:10px 20px; margin-top:52px; padding-top:24px; border-top:1px solid rgba(124,58,237,0.12); justify-content:center; }
-.legend-item { display:flex; align-items:center; gap:6px; font-size:9px; opacity:0.6; letter-spacing:0.1em; text-transform:uppercase; }
+.legend { display:flex; flex-wrap:wrap; gap:10px 20px; margin-top:52px; padding-top:24px; border-top:1px solid rgba(168,85,247,0.2); justify-content:center; }
+.legend-item { display:flex; align-items:center; gap:6px; font-size:9px; opacity:0.75; letter-spacing:0.1em; text-transform:uppercase; }
 .legend-dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
 
 /* ════════════════════════════
@@ -166,16 +245,16 @@ body::before {
 
 .image-slot {
   width:100%; border-radius:12px; overflow:hidden;
-  background:rgba(255,255,255,0.03); border:1px dashed rgba(255,255,255,0.09);
+  background:rgba(255,255,255,0.05); border:1px dashed rgba(255,255,255,0.15);
   min-height:160px; display:flex; align-items:center; justify-content:center; margin-bottom:28px;
 }
 .image-slot-hint { text-align:center; padding:36px 20px; font-size:9px; letter-spacing:0.15em; text-transform:uppercase; color:var(--muted); opacity:0.45; line-height:1.9; }
 
 .divider { width:40px; height:2px; border-radius:2px; margin:0 0 24px; opacity:0.7; }
 
-.article-content { font-size:13px; line-height:1.9; color:rgba(241,238,255,0.72); }
+.article-content { font-size:13px; line-height:1.9; color:rgba(237,233,255,0.88); }
 .article-content p { margin-bottom:16px; }
-.article-content ul li { font-size:13px; line-height:1.7; color:rgba(241,238,255,0.72); }
+.article-content ul li { font-size:13px; line-height:1.7; color:rgba(237,233,255,0.88); }
 
 .placeholder-block { background:rgba(255,255,255,0.03); border:1px dashed rgba(255,255,255,0.08); border-radius:8px; padding:16px; margin-bottom:14px; }
 .placeholder-label { font-size:9px; letter-spacing:0.18em; text-transform:uppercase; opacity:0.55; margin-bottom:10px; }
@@ -185,10 +264,49 @@ body::before {
 .placeholder-lines span:nth-child(3){width:92%}
 .placeholder-lines span:nth-child(4){width:68%}
 
-.article-footer { margin-top:36px; padding-top:20px; border-top:1px solid rgba(255,255,255,0.06); display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; }
+.article-footer { margin-top:36px; padding-top:20px; border-top:1px solid rgba(255,255,255,0.1); display:flex; flex-direction:column; gap:16px; }
+.footer-top-row { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; }
 .footer-tag-row { display:flex; gap:8px; flex-wrap:wrap; }
 .footer-back-btn { font-size:10px; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); border:none; background:none; cursor:pointer; font-family:'DM Mono',monospace; transition:color 0.2s; padding:0; }
 .footer-back-btn:hover { color:var(--white); }
+.skill-tags-section { display:flex; flex-direction:column; gap:8px; }
+.skill-tags-label { font-size:9px; letter-spacing:0.18em; text-transform:uppercase; color:var(--muted); opacity:0.7; }
+.skill-tags-row { display:flex; flex-wrap:wrap; gap:6px; }
+.skill-pill {
+  font-family:'DM Mono',monospace; font-size:9px; letter-spacing:0.1em; text-transform:uppercase;
+  padding:3px 10px; border-radius:20px; border:1px solid rgba(168,85,247,0.35);
+  background:rgba(168,85,247,0.08); color:rgba(237,233,255,0.75);
+  cursor:pointer; transition:all 0.15s ease;
+}
+.skill-pill:hover { background:rgba(168,85,247,0.2); border-color:rgba(168,85,247,0.6); color:var(--white); }
+
+/* ── STATS BAR ── */
+.stats-bar {
+  display:flex; align-items:center; gap:16px;
+  margin-top:52px; padding:20px 24px;
+  border-radius:14px;
+  background:rgba(168,85,247,0.08);
+  border:1px solid rgba(168,85,247,0.2);
+  transition:all 0.3s ease;
+}
+.stats-icon {
+  font-size:28px; flex-shrink:0; opacity:0.7;
+  transition:all 0.3s ease;
+}
+.stats-content { flex:1; min-width:0; }
+.stats-value {
+  font-family:'Syne',sans-serif; font-size:clamp(22px,4vw,32px);
+  font-weight:800; line-height:1; color:var(--white);
+  margin-bottom:5px; transition:color 0.3s ease;
+}
+.stats-label {
+  font-size:10px; letter-spacing:0.1em; text-transform:uppercase;
+  color:var(--muted); line-height:1.5;
+}
+.stats-sub {
+  font-size:10px; color:var(--muted); margin-top:3px;
+  letter-spacing:0.05em; opacity:0.7;
+}
 
 @keyframes fadeUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
 .year-group:nth-child(1){animation-delay:0.05s}
@@ -219,6 +337,54 @@ body::before {
     <div class="header-eyebrow">Career &amp; Learning Journey</div>
     <div class="header-title">Roadmap</div>
     <div class="header-sub">2017 → 2026 · Becca Isherwood</div>
+  </div>
+
+  <div class="dual-filters">
+
+    <!-- LEFT: Tag filter -->
+    <div class="filter-panel">
+      <div class="filter-panel-label">Filter by Type</div>
+      <button class="filter-toggle" id="tag-toggle" onclick="togglePanel('tag')">
+        <span>All Types <span class="filter-active-label" id="tag-active-label"></span></span>
+        <span class="arrow">▾</span>
+      </button>
+      <div class="filter-dropdown" id="tag-dropdown">
+        <div class="filter-pills-grid">
+          <button class="filter-pill active" data-tag="all" style="--fc:#ede9ff" onclick="setTagFilter('all',this)">All</button>
+          <button class="filter-pill" data-tag="work"       style="--fc:#60a5fa" onclick="setTagFilter('work',this)">Work</button>
+          <button class="filter-pill" data-tag="cert"       style="--fc:#c084fc" onclick="setTagFilter('cert',this)">Cert</button>
+          <button class="filter-pill" data-tag="procert"    style="--fc:#2dd4bf" onclick="setTagFilter('procert',this)">Pro Cert</button>
+          <button class="filter-pill" data-tag="edu"        style="--fc:#c084fc" onclick="setTagFilter('edu',this)">Edu</button>
+          <button class="filter-pill" data-tag="diploma"    style="--fc:#c084fc" onclick="setTagFilter('diploma',this)">Diploma</button>
+          <button class="filter-pill" data-tag="hackathon"  style="--fc:#f472b6" onclick="setTagFilter('hackathon',this)">Hackathon</button>
+          <button class="filter-pill" data-tag="community"  style="--fc:#818cf8" onclick="setTagFilter('community',this)">Community</button>
+          <button class="filter-pill" data-tag="upskilling" style="--fc:#34d399" onclick="setTagFilter('upskilling',this)">Upskilling</button>
+          <button class="filter-pill" data-tag="volunteer"  style="--fc:#34d399" onclick="setTagFilter('volunteer',this)">Volunteer</button>
+          <button class="filter-pill" data-tag="speaker"    style="--fc:#67e8f9" onclick="setTagFilter('speaker',this)">Speaker</button>
+          <button class="filter-pill" data-tag="project"    style="--fc:#e879f9" onclick="setTagFilter('project',this)">Project</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Skill filter -->
+    <div class="filter-panel">
+      <div class="filter-panel-label">Filter by Skill</div>
+      <button class="filter-toggle" id="skill-toggle" onclick="togglePanel('skill')">
+        <span>All Skills <span class="filter-active-label" id="skill-active-label"></span></span>
+        <span class="arrow">▾</span>
+      </button>
+      <div class="filter-dropdown" id="skill-dropdown">
+        <input class="skill-search" id="skill-search" type="text" placeholder="Search skills..." oninput="searchSkills(this.value)">
+        <div class="skill-pills-grid" id="skill-pills-grid"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Active filter summary -->
+  <div class="filter-summary" id="filter-summary" style="display:none">
+    <span id="filter-summary-text"></span>
+    <button onclick="clearAllFilters()" class="filter-clear">✕ Clear all</button>
   </div>
 
   <div class="timeline">
@@ -324,16 +490,14 @@ body::before {
 
   </div><!-- /timeline -->
 
-  <div class="legend">
-    <div class="legend-item"><div class="legend-dot" style="background:#c084fc"></div>Cert / Edu</div>
-    <div class="legend-item"><div class="legend-dot" style="background:#2dd4bf"></div>Professional Cert</div>
-    <div class="legend-item"><div class="legend-dot" style="background:#60a5fa"></div>Work</div>
-    <div class="legend-item"><div class="legend-dot" style="background:#f472b6"></div>Hackathon</div>
-    <div class="legend-item"><div class="legend-dot" style="background:#818cf8"></div>Community</div>
-    <div class="legend-item"><div class="legend-dot" style="background:#34d399"></div>Upskilling / Volunteer</div>
-    <div class="legend-item"><div class="legend-dot" style="background:#67e8f9"></div>Speaker</div>
-    <div class="legend-item"><div class="legend-dot" style="background:#e879f9"></div>Project</div>
+  <div class="stats-bar" id="stats-bar">
+    <div class="stats-icon" id="stats-icon">✦</div>
+    <div class="stats-content">
+      <div class="stats-value" id="stats-value">9 years</div>
+      <div class="stats-label" id="stats-label">Total career span · 2017–2026</div>
+    </div>
   </div>
+
 </div>
 </div><!-- /view-roadmap -->
 
@@ -363,11 +527,17 @@ body::before {
       <div class="divider" id="art-divider"></div>
       <div class="article-content" id="art-content"></div>
       <div class="article-footer">
-        <div class="footer-tag-row">
-          <span class="tag" id="art-footer-tag"></span>
-          <span class="tag" id="art-footer-org-tag" style="opacity:0.5"></span>
+        <div class="footer-top-row">
+          <div class="footer-tag-row">
+            <span class="tag" id="art-footer-tag"></span>
+            <span class="tag" id="art-footer-org-tag" style="opacity:0.5"></span>
+          </div>
+          <button class="footer-back-btn" onclick="goBack()">← Back to Roadmap</button>
         </div>
-        <button class="footer-back-btn" onclick="goBack()">← Back to Roadmap</button>
+        <div class="skill-tags-section" id="art-skill-tags-section">
+          <div class="skill-tags-label">Skills</div>
+          <div class="skill-tags-row" id="art-skill-tags"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -516,12 +686,412 @@ function openArticle(id) {
   const fo = document.getElementById('art-footer-org-tag');
   if (a.org) { fo.textContent = a.org; fo.className = 'tag tag-' + a.tag; fo.style.display='inline-block'; }
   else { fo.style.display = 'none'; }
+  // Skill tags in footer
+  renderArticleSkills(id, a.color);
+
   // Switch views
   document.getElementById('view-roadmap').classList.remove('active');
   const artView = document.getElementById('view-article');
   artView.classList.add('active','slide-in');
   window.scrollTo(0,0);
   setTimeout(() => artView.classList.remove('slide-in'), 350);
+}
+
+// ── Filter state ──
+let activeTag = 'all';
+let activeSkill = null;
+
+// ── Combined filter engine (AND logic) ──
+function applyFilters() {
+  document.querySelectorAll('#view-roadmap .item').forEach(item => {
+    const id = item.getAttribute('onclick')?.match(/'([^']+)'/)?.[1];
+    const tagMatch = activeTag === 'all' || item.classList.contains('tag-' + activeTag);
+    const skillMatch = !activeSkill || (id && (articleSkills[id] || []).includes(activeSkill));
+    item.classList.toggle('hidden', !(tagMatch && skillMatch));
+  });
+  document.querySelectorAll('.year-group').forEach(group => {
+    const visible = group.querySelectorAll('.item:not(.hidden)');
+    group.classList.toggle('all-hidden', visible.length === 0);
+  });
+  updateFilterSummary();
+}
+
+function updateFilterSummary() {
+  const summary = document.getElementById('filter-summary');
+  const text = document.getElementById('filter-summary-text');
+  const parts = [];
+  if (activeTag !== 'all') parts.push(`Type: <strong>${activeTag}</strong>`);
+  if (activeSkill) parts.push(`Skill: <strong>${activeSkill}</strong>`);
+  if (parts.length) {
+    summary.style.display = 'flex';
+    text.innerHTML = 'Showing ' + parts.join(' + ');
+  } else {
+    summary.style.display = 'none';
+  }
+}
+
+// ── Tag filter ──
+function setTagFilter(tag, btn) {
+  activeTag = tag;
+  document.querySelectorAll('.filter-pill[data-tag]').forEach(b => {
+    b.classList.remove('active');
+    b.style.background = 'rgba(255,255,255,0.04)';
+    b.style.color = 'rgba(237,233,255,0.6)';
+    b.style.borderColor = 'rgba(255,255,255,0.15)';
+  });
+  btn.classList.add('active');
+  const fc = getComputedStyle(btn).getPropertyValue('--fc').trim() || '#ede9ff';
+  btn.style.background = fc;
+  btn.style.color = '#13102a';
+  btn.style.borderColor = 'transparent';
+  const toggle = document.getElementById('tag-toggle');
+  const label = document.getElementById('tag-active-label');
+  label.textContent = tag !== 'all' ? `· ${tag}` : '';
+  toggle.classList.toggle('active-filter', tag !== 'all');
+  // Close dropdown
+  toggle.classList.remove('open');
+  document.getElementById('tag-dropdown').classList.remove('open');
+  applyFilters();
+}
+
+// ── Skill filter ──
+function applySkillFilter(skill, btn) {
+  activeSkill = skill || null;
+  document.querySelectorAll('#skill-pills-grid .skill-filter-pill').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  const toggle = document.getElementById('skill-toggle');
+  const label = document.getElementById('skill-active-label');
+  label.textContent = skill ? `· ${skill}` : '';
+  toggle.classList.toggle('active-filter', !!skill);
+  // Close dropdown
+  toggle.classList.remove('open');
+  document.getElementById('skill-dropdown').classList.remove('open');
+  applyFilters();
+}
+
+// ── Clear all ──
+function clearAllFilters() {
+  activeTag = 'all';
+  activeSkill = null;
+  // Reset tag pills
+  document.querySelectorAll('.filter-pill[data-tag]').forEach(b => {
+    b.classList.remove('active');
+    b.style.background = 'rgba(255,255,255,0.04)';
+    b.style.color = 'rgba(237,233,255,0.6)';
+    b.style.borderColor = 'rgba(255,255,255,0.15)';
+  });
+  const allTagPill = document.querySelector('.filter-pill[data-tag="all"]');
+  if (allTagPill) { allTagPill.classList.add('active'); allTagPill.style.background='#ede9ff'; allTagPill.style.color='#13102a'; allTagPill.style.borderColor='transparent'; }
+  // Reset skill pills
+  document.querySelectorAll('#skill-pills-grid .skill-filter-pill').forEach(p => p.classList.remove('active'));
+  const allSkillPill = document.querySelector('#skill-pills-grid [data-skill=""]');
+  if (allSkillPill) allSkillPill.classList.add('active');
+  // Reset labels & toggles
+  document.getElementById('tag-active-label').textContent = '';
+  document.getElementById('skill-active-label').textContent = '';
+  document.getElementById('tag-toggle').classList.remove('active-filter');
+  document.getElementById('skill-toggle').classList.remove('active-filter');
+  applyFilters();
+}
+
+// ── Panel toggle (close other when opening) ──
+function togglePanel(panel) {
+  const tagToggle = document.getElementById('tag-toggle');
+  const tagDrop   = document.getElementById('tag-dropdown');
+  const skillToggle = document.getElementById('skill-toggle');
+  const skillDrop   = document.getElementById('skill-dropdown');
+  if (panel === 'tag') {
+    skillToggle.classList.remove('open'); skillDrop.classList.remove('open');
+    tagToggle.classList.toggle('open'); tagDrop.classList.toggle('open');
+  } else {
+    tagToggle.classList.remove('open'); tagDrop.classList.remove('open');
+    skillToggle.classList.toggle('open'); skillDrop.classList.toggle('open');
+  }
+}
+
+// Close dropdowns when clicking outside
+document.addEventListener('click', e => {
+  if (!e.target.closest('.filter-panel')) {
+    document.querySelectorAll('.filter-toggle').forEach(t => t.classList.remove('open'));
+    document.querySelectorAll('.filter-dropdown').forEach(d => d.classList.remove('open'));
+  }
+});
+
+// filterAndGoBack from article skill pill
+function filterAndGoBack(skill) {
+  goBack();
+  setTimeout(() => {
+    const pill = document.querySelector(`#skill-pills-grid [data-skill="${skill}"]`);
+    if (pill) applySkillFilter(skill, pill);
+  }, 50);
+}
+
+// Initialise tag All pill
+(function(){
+  const allPill = document.querySelector('.filter-pill[data-tag="all"]');
+  if (allPill) { allPill.style.background='#ede9ff'; allPill.style.color='#13102a'; allPill.style.borderColor='transparent'; }
+})();
+
+// ── Work experience date ranges (start, end) ──
+const workRanges = {
+  'rmi-web-design':          { start:[2017,3],  end:[2020,9]  },
+  'dot-development-africa':  { start:[2021,5],  end:[2022,8]  },
+  'eduvos-developer':        { start:[2022,9],  end:[2025,1]  },
+  'cogent-special-projects': { start:[2025,2],  end:'present' },
+};
+
+// Skills-to-work mapping: which work entries involve each skill
+const skillWorkMap = {
+  'Power Platform':       ['dot-development-africa','eduvos-developer','cogent-special-projects'],
+  'Power Apps':           ['dot-development-africa','eduvos-developer','cogent-special-projects'],
+  'Power Automate':       ['dot-development-africa','eduvos-developer','cogent-special-projects'],
+  'Copilot Studio':       ['cogent-special-projects'],
+  'AI & Automation':      ['cogent-special-projects'],
+  'AI Builder':           ['cogent-special-projects'],
+  'Dataverse':            ['eduvos-developer','cogent-special-projects'],
+  'Dynamics 365':         ['eduvos-developer'],
+  'Microsoft 365':        ['eduvos-developer','cogent-special-projects'],
+  'SharePoint':           ['eduvos-developer','dot-development-africa'],
+  'Solution Architecture':['dot-development-africa','eduvos-developer','cogent-special-projects'],
+  'Business Analysis':    ['dot-development-africa'],
+  'Consulting':           ['dot-development-africa'],
+  'HTML':                 ['rmi-web-design'],
+  'CSS':                  ['rmi-web-design'],
+  'JavaScript':           ['rmi-web-design'],
+  'Web Design':           ['rmi-web-design'],
+  'Front-End':            ['rmi-web-design'],
+  'UI Design':            ['rmi-web-design'],
+};
+
+function calcMonths(range) {
+  const now = new Date();
+  const end = range.end === 'present' ? [now.getFullYear(), now.getMonth()+1] : range.end;
+  return (end[0] - range.start[0]) * 12 + (end[1] - range.start[1]);
+}
+
+function formatDuration(totalMonths) {
+  const yrs = Math.floor(totalMonths / 12);
+  const mos = totalMonths % 12;
+  if (yrs === 0) return `${mos} month${mos !== 1 ? 's' : ''}`;
+  if (mos === 0) return `${yrs} year${yrs !== 1 ? 's' : ''}`;
+  return `${yrs} yr${yrs !== 1 ? 's' : ''} ${mos} mo${mos !== 1 ? 's' : ''}`;
+}
+
+function totalWorkMonths(ids) {
+  return ids.reduce((sum, id) => workRanges[id] ? sum + calcMonths(workRanges[id]) : sum, 0);
+}
+
+// Tag configs: icon, color, stat logic
+const tagStats = {
+  'all':       { icon:'✦', color:'#c084fc', fn: () => ({ value:'9 years', label:'Total career span · 2017–2026', sub:'' }) },
+  'work':      { icon:'💼', color:'#60a5fa', fn: () => {
+    const total = totalWorkMonths(Object.keys(workRanges));
+    return { value: formatDuration(total), label:'Total professional work experience', sub:'Across 4 roles · 2017–present' };
+  }},
+  'cert':      { icon:'🎓', color:'#c084fc', fn: (items) => ({ value:`${items.length} cert${items.length!==1?'s':''}`, label:'Certifications earned', sub:'' }) },
+  'procert':   { icon:'🎓', color:'#2dd4bf', fn: (items) => ({ value:`${items.length} professional cert${items.length!==1?'s':''}`, label:'Industry-recognised professional qualifications', sub:'' }) },
+  'edu':       { icon:'📚', color:'#c084fc', fn: (items) => ({ value:`${items.length} course${items.length!==1?'s':''}`, label:'Education programmes completed', sub:'' }) },
+  'diploma':   { icon:'📜', color:'#c084fc', fn: (items) => ({ value:`${items.length} diploma${items.length!==1?'s':''}`, label:'Diploma-level qualifications', sub:'' }) },
+  'hackathon': { icon:'🏆', color:'#f472b6', fn: (items) => ({ value:`${items.length} hackathon${items.length!==1?'s':''}`, label:'Competitions entered · 1 win · 1 top 10', sub:'' }) },
+  'community': { icon:'🤝', color:'#818cf8', fn: (items) => ({ value:`${items.length} initiative${items.length!==1?'s':''}`, label:'Community involvements', sub:'' }) },
+  'upskilling':{ icon:'📗', color:'#34d399', fn: (items) => ({ value:`${items.length} course${items.length!==1?'s':''}`, label:'Upskilling & short courses completed', sub:'' }) },
+  'volunteer': { icon:'🌱', color:'#34d399', fn: (items) => ({ value:`${items.length} role${items.length!==1?'s':''}`, label:'Volunteer commitments', sub:'Ongoing since 2020' }) },
+  'speaker':   { icon:'🎤', color:'#67e8f9', fn: (items) => ({ value:`${items.length} talk${items.length!==1?'s':''}`, label:'Speaking engagements', sub:'International conference · 2021' }) },
+  'project':   { icon:'✦', color:'#e879f9', fn: (items) => ({ value:`${items.length} project${items.length!==1?'s':''}`, label:'Projects documented', sub:'' }) },
+};
+
+function updateStats() {
+  const bar   = document.getElementById('stats-bar');
+  const icon  = document.getElementById('stats-icon');
+  const value = document.getElementById('stats-value');
+  const label = document.getElementById('stats-label');
+
+  let stat;
+
+  // Skill filter takes precedence for experience calculation
+  if (activeSkill) {
+    const relatedWork = skillWorkMap[activeSkill] || [];
+    if (relatedWork.length) {
+      const months = totalWorkMonths(relatedWork);
+      stat = {
+        icon:'💡', color:'#c084fc',
+        value: formatDuration(months),
+        label:`Work experience using ${activeSkill}`,
+        sub: `Across ${relatedWork.length} role${relatedWork.length!==1?'s':''}`
+      };
+    } else {
+      // Count visible items for this skill
+      const visible = [...document.querySelectorAll('#view-roadmap .item:not(.hidden)')].filter(i => {
+        const id = i.getAttribute('onclick')?.match(/'([^']+)'/)?.[1];
+        return id && (articleSkills[id]||[]).includes(activeSkill);
+      });
+      stat = {
+        icon:'📌', color:'#c084fc',
+        value:`${visible.length} item${visible.length!==1?'s':''}`,
+        label:`Entries involving ${activeSkill}`,
+        sub:''
+      };
+    }
+  } else if (activeTag !== 'all') {
+    const cfg = tagStats[activeTag];
+    const visibleItems = [...document.querySelectorAll('#view-roadmap .item:not(.hidden).tag-'+activeTag)];
+    const s = cfg ? cfg.fn(visibleItems) : { value:'—', label:'', sub:'' };
+    stat = { icon: cfg?.icon||'✦', color: cfg?.color||'#c084fc', ...s };
+  } else {
+    const cfg = tagStats['all'];
+    stat = { icon: cfg.icon, color: cfg.color, ...cfg.fn() };
+  }
+
+  // Animate update
+  bar.style.borderColor = stat.color + '44';
+  bar.style.background  = stat.color + '11';
+  icon.textContent = stat.icon;
+  value.style.color = stat.color;
+  value.textContent = stat.value;
+  label.textContent = stat.label;
+
+  // Sub-label
+  let sub = document.getElementById('stats-sub');
+  if (stat.sub) {
+    if (!sub) { sub = document.createElement('div'); sub.id='stats-sub'; sub.className='stats-sub'; label.after(sub); }
+    sub.textContent = stat.sub;
+  } else if (sub) sub.textContent = '';
+}
+
+// Hook stats into filter changes
+const _applyFilters = applyFilters;
+applyFilters = function() { _applyFilters(); updateStats(); };
+updateStats();
+
+// ── Skill tags per article ──
+const articleSkills = {
+  'copilot-command-specialist': ['AI & Automation','Copilot Studio','Microsoft 365','Power Platform'],
+  'ai-fluency-anthropic':       ['AI & Automation','Prompt Engineering'],
+  'ethics-of-ai-helsinki':      ['AI & Automation','Business'],
+  'copilot-operative':          ['AI & Automation','Copilot Studio','Microsoft 365','Power Automate','Power Platform'],
+  'copilot-recruit':            ['AI & Automation','Copilot Studio','Microsoft 365','Power Platform'],
+  'pp-functional-consultant':   ['Dataverse','Microsoft 365','Power Apps','Power Automate','Power Platform','Solution Architecture'],
+  'cogent-special-projects':    ['AI & Automation','AI Builder','Copilot Studio','Dataverse','Power Apps','Power Automate','Power Platform','Solution Architecture'],
+  'upskilling-host':            ['Business','Community','Power Platform','Training'],
+  'esports-streaming':          ['Community','Content Creation'],
+  'sdg-johannesburg':           ['Business','Community'],
+  'esports-lead-eduvos':        ['Community','Leadership'],
+  'wigi-mentee':                ['Community','Leadership','Mentorship'],
+  'eco-city-hackathon':         ['Community','UX Design'],
+  'eduvos-developer':           ['Dataverse','Dynamics 365','Microsoft 365','Power Apps','Power Automate','Power Platform','SharePoint','Solution Architecture'],
+  'teens-in-ai':                ['AI & Automation','Community','Mentorship'],
+  'osint-judge':                ['Community','Cybersecurity','OSINT'],
+  'ui-ux-codecademy':           ['UI Design','UX Design'],
+  'hnd-ux-upskillist':          ['UI Design','UX Design'],
+  'frontend-engineer-codecademy':['CSS','Front-End','HTML','JavaScript','React'],
+  'ux-austin-peay':             ['Accessibility','UX Design'],
+  'react-native-designcode':    ['Front-End','Mobile','React Native','UI Design'],
+  'design-thinking-regent':     ['Business','Design Thinking','UX Design'],
+  'ai-intro-ibm':               ['AI & Automation','Machine Learning'],
+  'digital-overdose-con':       ['Community','Cybersecurity','Public Speaking'],
+  'hack-south-moderator':       ['Community','Cybersecurity'],
+  'ethical-hacking-tcm':        ['Cybersecurity','Ethical Hacking','Networking'],
+  'dot-development-africa':     ['Business Analysis','Consulting','Power Apps','Power Automate','Power Platform','SharePoint','Solution Architecture'],
+  'govx-winner':                ['Business','Community','Solution Architecture'],
+  'bi-consultants-linkedin':    ['Business Intelligence','Power BI','Reporting'],
+  'azure-devops-linkedin':      ['Azure','Azure DevOps','Solution Architecture'],
+  'azure-ad-linkedin':          ['Azure','Azure AD','Microsoft 365','Security'],
+  'azure-admin-linkedin':       ['Azure','Cloud','Microsoft 365'],
+  'digital-volunteer':          ['Business','Community','Training'],
+  'bsa-uct':                    ['Business Analysis','Consulting','Requirements Engineering','Solution Architecture'],
+  'rmi-web-design':             ['CSS','Front-End','HTML','JavaScript','UI Design','Web Design'],
+  'project-2026': [],
+  'project-2025': [],
+  'project-2024': [],
+  'project-2023': [],
+  'project-2022': [],
+  'project-2021': [],
+  'project-2020': [],
+  'project-2017': [],
+};
+
+// ── Skill categories ──
+const skillCategories = {
+  'Business':    ['Business','Business Analysis','Business Intelligence','Consulting','Design Thinking','Reporting','Requirements Engineering','Solution Architecture','Training'],
+  'Tech':        ['Accessibility','AI & Automation','AI Builder','Azure','Azure AD','Azure DevOps','CI/CD','Cloud','Copilot Studio','CSS','Cybersecurity','Dataverse','Dynamics 365','Ethical Hacking','Front-End','HTML','JavaScript','Machine Learning','Microsoft 365','Mobile','Networking','OSINT','Power Apps','Power Automate','Power BI','Power Platform','Prompt Engineering','React','React Native','Security','SharePoint','UI Design','UX Design','Web Design'],
+  'Community':   ['Community','Content Creation','Leadership','Mentorship','Public Speaking'],
+};
+
+// ── Build master skills list ──
+const allSkills = [...new Set(Object.values(articleSkills).flat())].sort((a,b) => a.localeCompare(b));
+let activeSkillFilter = null;
+
+// ── Populate skill pills grid ──
+function buildSkillPills() {
+  const grid = document.getElementById('skill-pills-grid');
+  grid.innerHTML = '';
+
+  // All pill
+  const allPill = document.createElement('button');
+  allPill.className = 'skill-filter-pill active';
+  allPill.textContent = 'All';
+  allPill.dataset.skill = '';
+  allPill.onclick = () => applySkillFilter('', allPill);
+  grid.appendChild(allPill);
+
+  // Group skills by category
+  const usedSkills = new Set(allSkills);
+  const catColors = { 'Business':'#2dd4bf', 'Tech':'#c084fc', 'Community':'#818cf8' };
+
+  Object.entries(skillCategories).forEach(([cat, catSkills]) => {
+    const matching = catSkills.filter(s => usedSkills.has(s)).sort((a,b) => a.localeCompare(b));
+    if (!matching.length) return;
+
+    // Category label
+    const label = document.createElement('div');
+    label.style.cssText = `width:100%;font-size:8px;letter-spacing:0.18em;text-transform:uppercase;color:${catColors[cat]};opacity:0.7;margin:10px 0 4px;font-family:'DM Mono',monospace;`;
+    label.textContent = cat;
+    grid.appendChild(label);
+
+    matching.forEach(skill => {
+      const btn = document.createElement('button');
+      btn.className = 'skill-filter-pill';
+      btn.textContent = skill;
+      btn.dataset.skill = skill;
+      btn.dataset.cat = cat;
+      btn.onclick = () => applySkillFilter(skill, btn);
+      grid.appendChild(btn);
+    });
+  });
+}
+
+// init
+buildSkillPills();
+
+function searchSkills(val) {
+  const q = val.toLowerCase();
+  const grid = document.getElementById('skill-pills-grid');
+  let lastLabel = null;
+  let visibleInGroup = 0;
+  Array.from(grid.children).forEach(el => {
+    if (!el.dataset && el.tagName !== 'BUTTON') {
+      if (lastLabel) lastLabel.style.display = visibleInGroup ? '' : 'none';
+      lastLabel = el; visibleInGroup = 0;
+    } else if (el.dataset.skill === '') {
+      el.classList.remove('hidden-pill');
+    } else if (el.dataset.skill) {
+      const match = el.dataset.skill.toLowerCase().includes(q);
+      el.classList.toggle('hidden-pill', !match);
+      if (match) visibleInGroup++;
+    }
+  });
+  if (lastLabel) lastLabel.style.display = visibleInGroup ? '' : 'none';
+}
+
+function renderArticleSkills(id, accentColor) {
+  const skills = articleSkills[id] || [];
+  const section = document.getElementById('art-skill-tags-section');
+  const row = document.getElementById('art-skill-tags');
+  if (!skills.length) { section.style.display = 'none'; return; }
+  section.style.display = 'flex';
+  row.innerHTML = skills.map(s =>
+    `<button class="skill-pill" onclick="filterAndGoBack('${s}')" style="border-color:${accentColor}55;color:${accentColor}">${s}</button>`
+  ).join('');
 }
 
 function goBack() {

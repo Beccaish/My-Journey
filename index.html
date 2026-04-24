@@ -64,7 +64,7 @@ body::before { content:''; position:fixed; inset:0; z-index:0; pointer-events:no
 .loading-error code { font-family:'DM Mono',monospace; font-size:11px; background:rgba(255,255,255,0.06); padding:2px 6px; border-radius:4px; display:block; margin-top:8px; color:var(--muted); }
 
 /* ── ROADMAP VIEW ── */
-#view-roadmap { max-width:720px; margin:0 auto; padding:48px 20px 120px; }
+#view-roadmap { max-width:var(--content-width); margin:0 auto; padding:48px 20px 120px; }
 .header { text-align:center; margin-bottom:56px; }
 .header-eyebrow { font-size:13px; letter-spacing:0.3em; color:var(--teal); text-transform:uppercase; margin-bottom:14px; opacity:0.9; font-family:'DM Mono',monospace; }
 .header-title { font-family:'Syne',sans-serif; font-size:clamp(32px,8vw,58px); font-weight:800; line-height:1; background:linear-gradient(135deg,var(--white) 0%,var(--violet-glow) 50%,var(--teal) 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; letter-spacing:-0.02em; margin-bottom:8px; }
@@ -146,7 +146,7 @@ body::before { content:''; position:fixed; inset:0; z-index:0; pointer-events:no
 .yr-2012 .year-label{color:#a5b4fc} .yr-2012 .year-node{color:#a5b4fc;border-color:#a5b4fc;box-shadow:0 0 8px #a5b4fc44}
 
 /* ── ARTICLE VIEW ── */
-#view-article { max-width:720px; margin:0 auto; padding:0 0 80px; }
+#view-article { max-width:var(--content-width); margin:0 auto; padding:0 0 80px; }
 .back-nav { padding:20px 20px 0; }
 .back-btn { display:inline-flex; align-items:center; gap:6px; font-size:11px; letter-spacing:0.1em; color:var(--muted); text-transform:uppercase; border:none; background:none; cursor:pointer; font-family:'DM Mono',monospace; transition:color 0.2s; padding:0; }
 .back-btn:hover { color:var(--white); }
@@ -180,7 +180,7 @@ body::before { content:''; position:fixed; inset:0; z-index:0; pointer-events:no
 
 /* ── DOCK ── */
 .dock { position:fixed; bottom:0; left:0; right:0; z-index:200; display:flex; justify-content:center; padding:12px 20px 20px; background:linear-gradient(to top,rgba(14,12,30,0.98) 60%,transparent 100%); pointer-events:none; }
-.dock-inner { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; width:100%; max-width:720px; pointer-events:all; }
+.dock-inner { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; width:100%; max-width:var(--content-width); pointer-events:all; }
 .dock-btn { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; padding:10px 8px; border-radius:12px; border:1px solid rgba(176,110,243,0.2); background:rgba(14,12,30,0.88); cursor:pointer; transition:all 0.18s; backdrop-filter:blur(12px); font-family:'DM Mono',monospace; }
 .dock-btn:hover:not(:disabled) { border-color:rgba(176,110,243,0.5); background:rgba(176,110,243,0.1); }
 .dock-btn.active { border-color:rgba(176,110,243,0.6); background:rgba(176,110,243,0.15); }
@@ -192,10 +192,10 @@ body::before { content:''; position:fixed; inset:0; z-index:0; pointer-events:no
 /* ── PANEL VIEW ── */
 #view-panel { position:fixed; inset:0; z-index:100; background:var(--bg); overflow-y:auto; display:none; }
 #view-panel.active { display:block; }
-.panel-nav { display:flex; align-items:center; padding:20px 20px 12px; max-width:720px; margin:0 auto; position:sticky; top:0; z-index:10; background:linear-gradient(to bottom,var(--bg) 80%,transparent 100%); }
+.panel-nav { display:flex; align-items:center; padding:20px 20px 12px; max-width:var(--content-width); margin:0 auto; position:sticky; top:0; z-index:10; background:linear-gradient(to bottom,var(--bg) 80%,transparent 100%); }
 .panel-back-btn { display:inline-flex; align-items:center; gap:6px; font-size:11px; letter-spacing:0.1em; color:var(--muted); text-transform:uppercase; border:none; background:none; cursor:pointer; font-family:'DM Mono',monospace; transition:color 0.2s; padding:0; }
 .panel-back-btn:hover { color:var(--white); }
-.panel-body { max-width:720px; margin:0 auto; padding:8px 20px 120px; }
+.panel-body { max-width:var(--content-width); margin:0 auto; padding:8px 20px 120px; }
 .panel-eyebrow { font-size:9px; letter-spacing:0.3em; text-transform:uppercase; color:var(--teal); opacity:0.8; margin-bottom:10px; }
 .panel-title { font-family:'Syne',sans-serif; font-size:clamp(24px,6vw,40px); font-weight:800; line-height:1.05; letter-spacing:-0.02em; background:linear-gradient(135deg,var(--white) 0%,var(--violet-glow) 50%,var(--teal) 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; margin-bottom:32px; }
 .panel-section { margin-bottom:32px; }
@@ -222,8 +222,74 @@ body::before { content:''; position:fixed; inset:0; z-index:0; pointer-events:no
 .slide-in { animation:slideIn 0.3s ease both; }
 @keyframes slideIn { from{opacity:0;transform:translateX(18px)} to{opacity:1;transform:translateX(0)} }
 
-@media(min-width:820px){ #view-roadmap{padding:60px 40px 140px} .year-label{font-size:20px;width:92px;padding-right:16px} .timeline::before{left:92px;top:14px} .items{padding-left:108px} .stats-bar{padding:24px 28px} }
-@media(max-width:479px){ #view-roadmap{padding:36px 14px 120px} .year-label{font-size:14px;width:62px;padding-right:10px} .timeline::before{left:62px;top:14px} .items{padding-left:74px} .year-node{width:10px;height:10px;margin-left:-5px} .item{padding:9px 10px;gap:7px} .item-title{font-size:12px} .item-date{font-size:9px} .item-arrow{display:none} .tag{font-size:8px;padding:2px 6px} .dual-filters{gap:8px} .article-body{padding:18px 14px 0} .back-nav{padding:16px 14px 0} .banner{margin:12px 14px 0;height:160px;border-radius:12px} }
+/* ── RESPONSIVE LAYOUT ──
+   Mobile:  full width, comfortable padding
+   Tablet:  wider, still edge-to-edge
+   Desktop: centred card with border, max readable width
+────────────────────────────────────────────────── */
+:root { --content-width: 860px; --content-pad: 40px; }
+
+/* Desktop — centred card with subtle border */
+@media(min-width:1024px){
+  body { display:flex; justify-content:center; }
+  body::after {
+    content:''; position:fixed; top:0; bottom:0;
+    left:50%; transform:translateX(-50%);
+    width:var(--content-width);
+    border-left:1px solid rgba(176,110,243,0.12);
+    border-right:1px solid rgba(176,110,243,0.12);
+    pointer-events:none; z-index:0;
+  }
+  #stars { width:100vw; left:0; }
+  body::before { width:100vw; }
+
+  #view-roadmap  > div { max-width:var(--content-width); padding:60px var(--content-pad) 140px; }
+  #view-article  > div { max-width:var(--content-width); }
+  #view-projects > div { max-width:var(--content-width); padding:0 var(--content-pad) 120px; }
+  #view-project-detail > div { max-width:var(--content-width); padding:0 var(--content-pad) 120px; }
+  #view-panel .panel-nav  { max-width:var(--content-width); }
+  #view-panel .panel-body { max-width:var(--content-width); padding:8px var(--content-pad) 120px; }
+  .dock { justify-content:center; }
+  .dock-inner { max-width:var(--content-width); }
+
+  .year-label { font-size:20px; width:92px; padding-right:16px; }
+  .timeline::before { left:92px; top:14px; }
+  .items { padding-left:108px; }
+  .stats-bar { padding:24px 28px; }
+  .item { padding:12px 16px; }
+  .item-title { font-size:14px; }
+  .banner { height:300px; margin:20px var(--content-pad) 0; border-radius:20px; }
+  .article-body { padding:28px var(--content-pad) 0; }
+  .back-nav { padding:24px var(--content-pad) 0; }
+  .dual-filters { gap:16px; }
+}
+
+/* Tablet */
+@media(min-width:600px) and (max-width:1023px){
+  #view-roadmap > div  { padding:48px 32px 120px; }
+  #view-projects > div { padding:0 32px 120px; }
+  #view-project-detail > div { padding:0 32px 120px; }
+  .banner { height:240px; }
+  .article-title { font-size:26px; }
+}
+
+/* Mobile */
+@media(max-width:479px){
+  #view-roadmap{padding:36px 14px 120px}
+  .year-label{font-size:14px;width:62px;padding-right:10px}
+  .timeline::before{left:62px;top:14px}
+  .items{padding-left:74px}
+  .year-node{width:10px;height:10px;margin-left:-5px}
+  .item{padding:9px 10px;gap:7px}
+  .item-title{font-size:12px}
+  .item-date{font-size:9px}
+  .item-arrow{display:none}
+  .tag{font-size:8px;padding:2px 6px}
+  .dual-filters{gap:8px}
+  .article-body{padding:18px 14px 0}
+  .back-nav{padding:16px 14px 0}
+  .banner{margin:12px 14px 0;height:160px;border-radius:12px}
+}
 
 /* ── PROJECT GALLERY VIEW ── */
 .proj-year-eyebrow { font-size:9px; letter-spacing:0.3em; text-transform:uppercase; color:var(--c-project); font-family:'DM Mono',monospace; margin-bottom:10px; opacity:0.8; }
@@ -272,7 +338,7 @@ body::before { content:''; position:fixed; inset:0; z-index:0; pointer-events:no
 
 <!-- ROADMAP VIEW -->
 <div id="view-roadmap" class="view">
-  <div style="max-width:720px;margin:0 auto;padding:48px 20px 80px;">
+  <div style="max-width:var(--content-width);margin:0 auto;padding:48px 20px 80px;">
     <div class="header">
       <div class="header-eyebrow">Career &amp; Learning Journey</div>
       <div class="header-title">Roadmap</div>
@@ -327,7 +393,7 @@ body::before { content:''; position:fixed; inset:0; z-index:0; pointer-events:no
 
 <!-- ARTICLE VIEW -->
 <div id="view-article" class="view">
-  <div style="max-width:720px;margin:0 auto;padding:0 0 80px;">
+  <div style="max-width:var(--content-width);margin:0 auto;padding:0 0 80px;">
     <nav class="back-nav"><button class="back-btn" onclick="goBack()"><span>←</span> Roadmap</button></nav>
     <div class="banner" id="art-banner">
       <div class="banner-inner"><div class="banner-icon" id="art-icon"></div></div>
@@ -360,7 +426,7 @@ body::before { content:''; position:fixed; inset:0; z-index:0; pointer-events:no
 
 <!-- PROJECT GALLERY VIEW -->
 <div id="view-projects" class="view">
-  <div style="max-width:720px;margin:0 auto;padding:0 20px 120px;">
+  <div style="max-width:var(--content-width);margin:0 auto;padding:0 20px 120px;">
     <nav class="back-nav"><button class="back-btn" onclick="goBack()"><span>←</span> Roadmap</button></nav>
     <div id="proj-gallery-header" style="margin:24px 0 28px;"></div>
     <div id="proj-cards-grid"></div>
@@ -369,7 +435,7 @@ body::before { content:''; position:fixed; inset:0; z-index:0; pointer-events:no
 
 <!-- PROJECT DETAIL VIEW -->
 <div id="view-project-detail" class="view">
-  <div style="max-width:720px;margin:0 auto;padding:0 20px 120px;">
+  <div style="max-width:var(--content-width);margin:0 auto;padding:0 20px 120px;">
     <nav class="back-nav">
       <button class="back-btn" id="proj-detail-back-btn" onclick="closeProjectDetail()"><span>←</span> Projects</button>
     </nav>

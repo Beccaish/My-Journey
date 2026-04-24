@@ -5,8 +5,19 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Career Roadmap · Becca Isherwood</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500;600&family=DM+Mono:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
-<style>
 
+<!--
+  VIEWER FILE — safe to publish publicly on GitHub.
+  Only the Firestore Project ID is here. It is not a secret —
+  it identifies the project but grants no write access.
+  Write access is locked to false in Firestore Security Rules.
+  The editor (roadmap-editor.html) stays on your local machine only.
+-->
+<script>
+const FIRESTORE_PROJECT_ID = "myjourney-681ca"; // not a secret — public identifier only
+</script>
+
+<style>
 :root {
   --bg: #0e0c1e;
   --violet: #7c3aed;
@@ -19,227 +30,107 @@
   --white: #f0ecff;
   --muted: #a89fc8;
   --border: rgba(176,110,243,0.35);
-
-  /* tag accent colours — vivid & distinct */
-  --c-cert:      #c77dff;
-  --c-procert:   #00e5cc;
-  --c-work:      #60b4ff;
-  --c-hackathon: #ff6eb4;
-  --c-volunteer: #4ade80;
-  --c-speaker:   #38f0f0;
-  --c-project:   #f472b6;
-  --c-upskilling:#facc15;
-  --c-org:       #a5b4fc;
+  --c-cert:#c77dff; --c-procert:#00e5cc; --c-work:#60b4ff;
+  --c-hackathon:#ff6eb4; --c-volunteer:#4ade80; --c-speaker:#38f0f0;
+  --c-project:#f472b6; --c-upskilling:#facc15; --c-org:#a5b4fc;
 }
 * { margin:0; padding:0; box-sizing:border-box; }
 html, body { height:100%; }
-body {
-  background: var(--bg);
-  color: var(--white);
-  font-family: 'Inter', sans-serif;
-  min-height: 100vh;
-  position: relative;
-  overflow-x: hidden;
-  -webkit-font-smoothing: antialiased;
-}
-body::before {
-  content:''; position:fixed; inset:0; z-index:0; pointer-events:none;
-  background:
-    radial-gradient(ellipse 60% 40% at 15% 20%, rgba(176,110,243,0.28) 0%, transparent 70%),
-    radial-gradient(ellipse 40% 60% at 85% 70%, rgba(0,229,204,0.18) 0%, transparent 70%),
-    radial-gradient(ellipse 50% 30% at 50% 90%, rgba(255,110,180,0.12) 0%, transparent 60%);
-}
+body { background:var(--bg); color:var(--white); font-family:'Inter',sans-serif; min-height:100vh; position:relative; overflow-x:hidden; -webkit-font-smoothing:antialiased; }
+body::before { content:''; position:fixed; inset:0; z-index:0; pointer-events:none; background:radial-gradient(ellipse 60% 40% at 15% 20%,rgba(176,110,243,0.28) 0%,transparent 70%),radial-gradient(ellipse 40% 60% at 85% 70%,rgba(0,229,204,0.18) 0%,transparent 70%),radial-gradient(ellipse 50% 30% at 50% 90%,rgba(255,110,180,0.12) 0%,transparent 60%); }
 #stars { position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden; }
 .star { position:absolute; background:white; border-radius:50%; animation:twinkle var(--d,3s) ease-in-out infinite; opacity:0; }
 @keyframes twinkle { 0%,100%{opacity:0} 50%{opacity:var(--o,0.4)} }
-
-/* ── VIEWS ── */
 .view { display:none; position:relative; z-index:1; }
 .view.active { display:block; }
+.tag { display:inline-block; font-size:9px; letter-spacing:0.12em; text-transform:uppercase; padding:2px 8px; border-radius:20px; border:1px solid currentColor; font-family:'DM Mono',monospace; white-space:nowrap; line-height:1.6; }
+.tag-cert { color:var(--c-cert); } .tag-procert { color:var(--c-procert); } .tag-work { color:var(--c-work); }
+.tag-edu { color:var(--c-cert); } .tag-diploma { color:var(--c-cert); } .tag-hackathon { color:var(--c-hackathon); }
+.tag-community { color:var(--c-volunteer); } .tag-upskilling { color:var(--c-upskilling); } .tag-speaker { color:var(--c-speaker); }
+.tag-volunteer { color:var(--c-volunteer); } .tag-org { color:var(--c-org); } .tag-project { color:var(--c-project); }
 
-/* ── TAG ── */
-.tag {
-  display:inline-block; font-size:9px; letter-spacing:0.12em; text-transform:uppercase;
-  padding:2px 8px; border-radius:20px; border:1px solid currentColor;
-  font-family:'DM Mono',monospace; white-space:nowrap; line-height:1.6;
+/* ── LOADING SCREEN ── */
+#loading-screen {
+  position:fixed; inset:0; z-index:999; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; gap:20px;
+  background:var(--bg);
 }
-.tag-cert       { color:var(--c-cert); }
-.tag-procert    { color:var(--c-procert); }
-.tag-work       { color:var(--c-work); }
-.tag-edu        { color:var(--c-cert); }
-.tag-diploma    { color:var(--c-cert); }
-.tag-hackathon  { color:var(--c-hackathon); }
-.tag-community  { color:var(--c-volunteer); }
-.tag-upskilling { color:var(--c-upskilling); }
-.tag-speaker    { color:var(--c-speaker); }
-.tag-volunteer  { color:var(--c-volunteer); }
-.tag-org        { color:var(--c-org); }
-.tag-project    { color:var(--c-project); }
+.loading-logo { font-family:'Syne',sans-serif; font-size:28px; font-weight:800; background:linear-gradient(135deg,var(--white) 0%,var(--violet-glow) 50%,var(--teal) 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+.loading-bar-wrap { width:200px; height:2px; background:rgba(176,110,243,0.2); border-radius:2px; overflow:hidden; }
+.loading-bar { height:100%; background:linear-gradient(90deg,var(--violet),var(--teal)); animation:loadBar 1.5s ease-in-out infinite; }
+@keyframes loadBar { 0%{width:0;margin-left:0} 50%{width:80%;margin-left:0} 100%{width:0;margin-left:100%} }
+.loading-text { font-family:'DM Mono',monospace; font-size:10px; letter-spacing:0.2em; text-transform:uppercase; color:var(--muted); }
+.loading-error { background:rgba(251,75,110,0.1); border:1px solid rgba(251,75,110,0.3); border-radius:10px; padding:16px 20px; max-width:400px; text-align:center; font-size:13px; color:var(--rose); line-height:1.6; }
+.loading-error code { font-family:'DM Mono',monospace; font-size:11px; background:rgba(255,255,255,0.06); padding:2px 6px; border-radius:4px; display:block; margin-top:8px; color:var(--muted); }
 
-/* ════════════════════════════
-   ROADMAP VIEW
-════════════════════════════ */
+/* ── ROADMAP VIEW ── */
 #view-roadmap { max-width:720px; margin:0 auto; padding:48px 20px 120px; }
-
 .header { text-align:center; margin-bottom:56px; }
 .header-eyebrow { font-size:13px; letter-spacing:0.3em; color:var(--teal); text-transform:uppercase; margin-bottom:14px; opacity:0.9; font-family:'DM Mono',monospace; }
-.header-title {
-  font-family:'Syne',sans-serif; font-size:clamp(32px,8vw,58px); font-weight:800; line-height:1;
-  background:linear-gradient(135deg,var(--white) 0%,var(--violet-glow) 50%,var(--teal) 100%);
-  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
-  letter-spacing:-0.02em; margin-bottom:8px;
-}
+.header-title { font-family:'Syne',sans-serif; font-size:clamp(32px,8vw,58px); font-weight:800; line-height:1; background:linear-gradient(135deg,var(--white) 0%,var(--violet-glow) 50%,var(--teal) 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; letter-spacing:-0.02em; margin-bottom:8px; }
 .header-sub { font-size:12px; color:var(--muted); letter-spacing:0.1em; font-family:'DM Mono',monospace; }
-.export-btn {
-  margin-top:16px; display:inline-flex; align-items:center; gap:6px;
-  font-family:'DM Mono',monospace; font-size:10px; letter-spacing:0.12em;
-  text-transform:uppercase; padding:7px 18px; border-radius:20px;
-  border:1px solid rgba(0,229,204,0.35); background:rgba(0,229,204,0.08);
-  color:var(--c-procert); cursor:pointer; transition:all 0.18s;
-}
-.export-btn:hover { background:rgba(0,229,204,0.18); border-color:rgba(0,229,204,0.6); color:var(--white); }
-.export-btn:disabled { opacity:0.5; cursor:default; }
-
-/* ── DUAL FILTERS ── */
-.dual-filters {
-  display:grid; grid-template-columns:1fr 1fr; gap:12px;
-  margin-bottom:16px;
-}
+.dual-filters { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:16px; }
 .filter-panel { position:relative; }
-.filter-panel-label {
-  font-size:8px; letter-spacing:0.2em; text-transform:uppercase;
-  color:var(--muted); margin-bottom:6px; padding-left:2px;
-}
-.filter-toggle {
-  width:100%; display:flex; align-items:center; justify-content:space-between;
-  padding:9px 14px; border-radius:10px;
-  background:rgba(255,255,255,0.05); border:1px solid rgba(168,85,247,0.25);
-  color:var(--muted); font-family:'DM Mono',monospace; font-size:10px;
-  letter-spacing:0.06em; cursor:pointer; transition:all 0.18s; white-space:nowrap; overflow:hidden;
-}
+.filter-panel-label { font-size:8px; letter-spacing:0.2em; text-transform:uppercase; color:var(--muted); margin-bottom:6px; padding-left:2px; }
+.filter-toggle { width:100%; display:flex; align-items:center; justify-content:space-between; padding:9px 14px; border-radius:10px; background:rgba(255,255,255,0.05); border:1px solid rgba(168,85,247,0.25); color:var(--muted); font-family:'DM Mono',monospace; font-size:10px; letter-spacing:0.06em; cursor:pointer; transition:all 0.18s; white-space:nowrap; overflow:hidden; }
 .filter-toggle:hover { border-color:rgba(168,85,247,0.5); color:var(--white); }
 .filter-toggle.active-filter { border-color:rgba(168,85,247,0.6); color:var(--white); background:rgba(168,85,247,0.1); }
 .filter-toggle .arrow { transition:transform 0.2s; flex-shrink:0; margin-left:6px; }
 .filter-toggle.open .arrow { transform:rotate(180deg); }
-.filter-dropdown {
-  display:none; position:absolute; top:calc(100% + 6px); left:0; right:0;
-  z-index:100; padding:12px;
-  background:rgba(19,16,42,0.98); border:1px solid rgba(168,85,247,0.3);
-  border-radius:10px; backdrop-filter:blur(16px);
-  box-shadow:0 8px 32px rgba(0,0,0,0.4);
-  min-width:200px;
-}
+.filter-dropdown { display:none; position:absolute; top:calc(100% + 6px); left:0; right:0; z-index:100; padding:12px; background:rgba(19,16,42,0.98); border:1px solid rgba(168,85,247,0.3); border-radius:10px; backdrop-filter:blur(16px); box-shadow:0 8px 32px rgba(0,0,0,0.4); min-width:200px; }
 .filter-dropdown.open { display:block; }
 .filter-pills-grid { display:flex; flex-wrap:wrap; gap:5px; }
-.filter-pill {
-  font-family:'DM Mono',monospace; font-size:9px; letter-spacing:0.1em; text-transform:uppercase;
-  padding:4px 10px; border-radius:20px; border:1px solid rgba(255,255,255,0.15);
-  background:rgba(255,255,255,0.04); color:rgba(237,233,255,0.6);
-  cursor:pointer; transition:all 0.15s ease;
-}
+.filter-pill { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:0.1em; text-transform:uppercase; padding:4px 10px; border-radius:20px; border:1px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.04); color:rgba(237,233,255,0.6); cursor:pointer; transition:all 0.15s ease; }
 .filter-pill:hover { background:rgba(255,255,255,0.09); color:var(--white); }
 .filter-pill.active { color:#13102a; border-color:transparent; font-weight:600; background:var(--fc,#ede9ff); }
 .filter-active-label { font-size:9px; color:#c084fc; margin-left:4px; overflow:hidden; text-overflow:ellipsis; }
-
-/* Skill filter specifics */
-.skill-search {
-  width:100%; padding:7px 11px; border-radius:8px; margin-bottom:10px;
-  background:rgba(255,255,255,0.06); border:1px solid rgba(168,85,247,0.2);
-  color:var(--white); font-family:'DM Mono',monospace; font-size:11px;
-  outline:none; transition:border-color 0.18s;
-}
+.skill-search { width:100%; padding:7px 11px; border-radius:8px; margin-bottom:10px; background:rgba(255,255,255,0.06); border:1px solid rgba(168,85,247,0.2); color:var(--white); font-family:'DM Mono',monospace; font-size:11px; outline:none; transition:border-color 0.18s; }
 .skill-search::placeholder { color:var(--muted); opacity:0.6; }
 .skill-search:focus { border-color:rgba(168,85,247,0.5); }
 .skill-pills-grid { display:flex; flex-wrap:wrap; gap:5px; }
-.skill-filter-pill {
-  font-family:'DM Mono',monospace; font-size:9px; letter-spacing:0.1em; text-transform:uppercase;
-  padding:4px 10px; border-radius:20px; border:1px solid rgba(168,85,247,0.3);
-  background:rgba(168,85,247,0.07); color:rgba(237,233,255,0.65);
-  cursor:pointer; transition:all 0.15s ease;
-}
+.skill-filter-pill { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:0.1em; text-transform:uppercase; padding:4px 10px; border-radius:20px; border:1px solid rgba(168,85,247,0.3); background:rgba(168,85,247,0.07); color:rgba(237,233,255,0.65); cursor:pointer; transition:all 0.15s ease; }
 .skill-filter-pill:hover { background:rgba(168,85,247,0.18); color:var(--white); }
 .skill-filter-pill.active { background:#a855f7; border-color:#a855f7; color:#13102a; font-weight:600; }
 .skill-filter-pill.hidden-pill { display:none; }
-
-/* Active filter summary bar */
-.filter-summary {
-  display:flex; align-items:center; justify-content:space-between;
-  padding:8px 14px; border-radius:8px; margin-bottom:20px;
-  background:rgba(168,85,247,0.1); border:1px solid rgba(168,85,247,0.25);
-  font-size:10px; color:rgba(237,233,255,0.75); letter-spacing:0.05em;
-}
-.filter-clear {
-  font-family:'DM Mono',monospace; font-size:9px; letter-spacing:0.1em; text-transform:uppercase;
-  border:none; background:none; color:#c084fc; cursor:pointer; padding:0; transition:color 0.15s;
-}
+.filter-summary { display:flex; align-items:center; justify-content:space-between; padding:8px 14px; border-radius:8px; margin-bottom:20px; background:rgba(168,85,247,0.1); border:1px solid rgba(168,85,247,0.25); font-size:10px; color:rgba(237,233,255,0.75); letter-spacing:0.05em; }
+.filter-clear { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:0.1em; text-transform:uppercase; border:none; background:none; color:#c084fc; cursor:pointer; padding:0; transition:color 0.15s; }
 .filter-clear:hover { color:var(--white); }
-
 .item.hidden { display:none; }
 .year-group.all-hidden .year-node { opacity:0.2; }
 .year-group.all-hidden .year-label { opacity:0.2; }
 .year-group.all-hidden .items { opacity:0; height:0; overflow:hidden; margin:0; padding:0; }
-
 .timeline { position:relative; }
-.timeline::before {
-  content:''; position:absolute; left:84px; top:14px; bottom:0; width:2px;
-  background:linear-gradient(to bottom,var(--violet) 0%,var(--violet-glow) 30%,var(--teal) 60%,var(--mint) 85%,transparent 100%);
-  opacity:0.35;
-}
-
+.timeline::before { content:''; position:absolute; left:84px; top:14px; bottom:0; width:2px; background:linear-gradient(to bottom,var(--violet) 0%,var(--violet-glow) 30%,var(--teal) 60%,var(--mint) 85%,transparent 100%); opacity:0.35; }
 .year-group { margin-bottom:4px; padding-top:8px; animation:fadeUp 0.45s ease both; }
 .year-header { display:flex; align-items:center; margin-bottom:4px; }
-.year-label {
-  font-family:'Syne',sans-serif; font-size:18px; font-weight:800;
-  width:84px; flex-shrink:0; text-align:right; padding-right:16px; line-height:1;
-  display:flex; align-items:center; justify-content:flex-end;
-}
-.year-node {
-  width:12px; height:12px; border-radius:50%; border:2px solid;
-  flex-shrink:0; z-index:2; margin-left:-6px; position:relative;
-  flex-shrink:0;
-}
+.year-label { font-family:'Syne',sans-serif; font-size:18px; font-weight:800; width:84px; flex-shrink:0; text-align:right; padding-right:16px; line-height:1; display:flex; align-items:center; justify-content:flex-end; }
+.year-node { width:12px; height:12px; border-radius:50%; border:2px solid; flex-shrink:0; z-index:2; margin-left:-6px; position:relative; }
 .year-node::after { content:''; position:absolute; inset:-4px; border-radius:50%; opacity:0.25; border:1px solid currentColor; }
-
 .items { padding-left:96px; display:flex; flex-direction:column; gap:4px; margin-bottom:16px; }
-
-.item {
-  display:flex; align-items:flex-start; gap:10px;
-  padding:10px 12px; border-radius:10px;
-  border:1px solid rgba(255,255,255,0.07); cursor:pointer;
-  transition:border-color 0.2s, background 0.2s, transform 0.15s;
-  position:relative; background:rgba(255,255,255,0.04);
-  -webkit-tap-highlight-color:transparent; text-align:left; width:100%;
-}
+.item { display:flex; align-items:flex-start; gap:10px; padding:10px 12px; border-radius:10px; border:1px solid rgba(255,255,255,0.07); cursor:pointer; transition:border-color 0.2s,background 0.2s,transform 0.15s; position:relative; background:rgba(255,255,255,0.04); -webkit-tap-highlight-color:transparent; text-align:left; width:100%; }
 .item:hover { border-color:rgba(255,255,255,0.18); transform:translateX(2px); }
-
-/* Per-type card tints */
-.item.tag-cert      { background:rgba(199,125,255,0.07); border-color:rgba(199,125,255,0.15); }
-.item.tag-cert:hover{ background:rgba(199,125,255,0.14); border-color:rgba(199,125,255,0.35); }
-.item.tag-procert      { background:rgba(0,229,204,0.07); border-color:rgba(0,229,204,0.15); }
-.item.tag-procert:hover{ background:rgba(0,229,204,0.14); border-color:rgba(0,229,204,0.35); }
-.item.tag-work      { background:rgba(96,180,255,0.07); border-color:rgba(96,180,255,0.15); }
-.item.tag-work:hover{ background:rgba(96,180,255,0.14); border-color:rgba(96,180,255,0.35); }
-.item.tag-hackathon      { background:rgba(255,110,180,0.07); border-color:rgba(255,110,180,0.15); }
-.item.tag-hackathon:hover{ background:rgba(255,110,180,0.14); border-color:rgba(255,110,180,0.35); }
-.item.tag-volunteer      { background:rgba(74,222,128,0.07); border-color:rgba(74,222,128,0.15); }
-.item.tag-volunteer:hover{ background:rgba(74,222,128,0.14); border-color:rgba(74,222,128,0.35); }
-.item.tag-speaker      { background:rgba(56,240,240,0.07); border-color:rgba(56,240,240,0.15); }
-.item.tag-speaker:hover{ background:rgba(56,240,240,0.14); border-color:rgba(56,240,240,0.35); }
-.item.tag-project      { background:rgba(244,114,182,0.07); border-color:rgba(244,114,182,0.15); }
-.item.tag-project:hover{ background:rgba(244,114,182,0.14); border-color:rgba(244,114,182,0.35); }
-.item::before {
-  content:''; position:absolute; left:-20px; top:50%;
-  transform:translateY(-50%); width:5px; height:5px;
-  border-radius:50%; background:currentColor; opacity:0.4;
-}
+.item.tag-cert { background:rgba(199,125,255,0.07); border-color:rgba(199,125,255,0.15); }
+.item.tag-cert:hover { background:rgba(199,125,255,0.14); border-color:rgba(199,125,255,0.35); }
+.item.tag-procert { background:rgba(0,229,204,0.07); border-color:rgba(0,229,204,0.15); }
+.item.tag-procert:hover { background:rgba(0,229,204,0.14); border-color:rgba(0,229,204,0.35); }
+.item.tag-work { background:rgba(96,180,255,0.07); border-color:rgba(96,180,255,0.15); }
+.item.tag-work:hover { background:rgba(96,180,255,0.14); border-color:rgba(96,180,255,0.35); }
+.item.tag-hackathon { background:rgba(255,110,180,0.07); border-color:rgba(255,110,180,0.15); }
+.item.tag-hackathon:hover { background:rgba(255,110,180,0.14); border-color:rgba(255,110,180,0.35); }
+.item.tag-volunteer { background:rgba(74,222,128,0.07); border-color:rgba(74,222,128,0.15); }
+.item.tag-volunteer:hover { background:rgba(74,222,128,0.14); border-color:rgba(74,222,128,0.35); }
+.item.tag-speaker { background:rgba(56,240,240,0.07); border-color:rgba(56,240,240,0.15); }
+.item.tag-speaker:hover { background:rgba(56,240,240,0.14); border-color:rgba(56,240,240,0.35); }
+.item.tag-project { background:rgba(244,114,182,0.07); border-color:rgba(244,114,182,0.15); }
+.item.tag-project:hover { background:rgba(244,114,182,0.14); border-color:rgba(244,114,182,0.35); }
+.item::before { content:''; position:absolute; left:-20px; top:50%; transform:translateY(-50%); width:5px; height:5px; border-radius:50%; background:currentColor; opacity:0.4; }
 .item-tag-wrap { flex-shrink:0; padding-top:1px; }
 .item-content { flex:1; min-width:0; }
 .item-date { font-size:10px; opacity:0.55; margin-bottom:3px; letter-spacing:0.03em; color:var(--white); font-family:'DM Mono',monospace; }
-.item-title { font-size:13px; line-height:1.4; font-weight:500; color:var(--white); opacity:0.95; font-family:'Inter',sans-serif; }
-.item-org { font-size:11px; opacity:0.6; font-style:italic; margin-top:2px; color:var(--white); font-family:'Inter',sans-serif; }
+.item-title { font-size:13px; line-height:1.4; font-weight:500; color:var(--white); opacity:0.95; }
+.item-org { font-size:11px; opacity:0.6; font-style:italic; margin-top:2px; color:var(--white); }
 .item-arrow { font-size:12px; opacity:0.25; flex-shrink:0; align-self:center; margin-left:4px; transition:opacity 0.2s; }
 .item:hover .item-arrow { opacity:0.7; }
-
 .yr-2026 .year-label{color:#bf7bff} .yr-2026 .year-node{color:#bf7bff;border-color:#bf7bff;box-shadow:0 0 14px #bf7bff88}
 .yr-2025 .year-label{color:#d4b8ff} .yr-2025 .year-node{color:#d4b8ff;border-color:#d4b8ff;box-shadow:0 0 8px #d4b8ff44}
 .yr-2024 .year-label{color:#00e5cc} .yr-2024 .year-node{color:#00e5cc;border-color:#00e5cc;box-shadow:0 0 8px #00e5cc44}
@@ -254,511 +145,181 @@ body::before {
 .yr-2013 .year-label{color:#67e8f9} .yr-2013 .year-node{color:#67e8f9;border-color:#67e8f9;box-shadow:0 0 8px #67e8f944}
 .yr-2012 .year-label{color:#a5b4fc} .yr-2012 .year-node{color:#a5b4fc;border-color:#a5b4fc;box-shadow:0 0 8px #a5b4fc44}
 
-.legend { display:flex; flex-wrap:wrap; gap:10px 20px; margin-top:52px; padding-top:24px; border-top:1px solid rgba(168,85,247,0.2); justify-content:center; }
-.legend-item { display:flex; align-items:center; gap:6px; font-size:9px; opacity:0.75; letter-spacing:0.1em; text-transform:uppercase; }
-.legend-dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
-
-/* ════════════════════════════
-   ARTICLE VIEW
-════════════════════════════ */
+/* ── ARTICLE VIEW ── */
 #view-article { max-width:720px; margin:0 auto; padding:0 0 80px; }
-
 .back-nav { padding:20px 20px 0; }
-.back-btn {
-  display:inline-flex; align-items:center; gap:6px;
-  font-size:11px; letter-spacing:0.1em; color:var(--muted);
-  text-transform:uppercase; border:none; background:none; cursor:pointer;
-  font-family:'DM Mono',monospace; transition:color 0.2s; padding:0;
-}
+.back-btn { display:inline-flex; align-items:center; gap:6px; font-size:11px; letter-spacing:0.1em; color:var(--muted); text-transform:uppercase; border:none; background:none; cursor:pointer; font-family:'DM Mono',monospace; transition:color 0.2s; padding:0; }
 .back-btn:hover { color:var(--white); }
-
-.banner {
-  margin:16px 20px 0; border-radius:16px; overflow:hidden; position:relative;
-  height:200px; display:flex; align-items:center; justify-content:center;
-}
+.banner { margin:16px 20px 0; border-radius:16px; overflow:hidden; position:relative; height:200px; display:flex; align-items:center; justify-content:center; }
 .banner-inner { width:100%; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; }
 .banner-icon { font-size:40px; opacity:0.75; }
-.banner-hint { font-size:9px; letter-spacing:0.15em; text-transform:uppercase; opacity:0.25; }
 .banner-overlay { position:absolute; inset:0; background:linear-gradient(to top,rgba(10,8,18,0.8) 0%,transparent 60%); z-index:2; pointer-events:none; }
-
 .article-body { padding:24px 20px 0; }
 .article-meta { display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:14px; }
 .article-date { font-size:11px; color:var(--muted); letter-spacing:0.06em; }
 .article-title { font-family:'Syne',sans-serif; font-size:clamp(20px,5vw,28px); font-weight:800; line-height:1.15; color:var(--white); margin-bottom:6px; }
-.article-org { font-size:12px; color:var(--muted); font-style:italic; margin-bottom:24px; }
-
-/* ── ARTICLE FOOTER ── */
-.article-footer {
-  margin-top:40px; padding-top:24px;
-  border-top:1px solid rgba(255,255,255,0.08);
-  display:flex; flex-direction:column; gap:20px;
-}
-.footer-top-row {
-  display:flex; align-items:center; justify-content:space-between;
-  flex-wrap:wrap; gap:12px;
-}
+.article-org { font-size:12px; color:var(--muted); font-style:italic; margin-bottom:24px; font-family:'Inter',sans-serif; }
+.article-footer { margin-top:40px; padding-top:24px; border-top:1px solid rgba(255,255,255,0.08); display:flex; flex-direction:column; gap:20px; }
+.footer-top-row { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; }
 .footer-tag-row { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
-.footer-back-btn {
-  font-size:11px; letter-spacing:0.08em; text-transform:uppercase;
-  color:var(--muted); border:none; background:none; cursor:pointer;
-  font-family:'DM Mono',monospace; transition:color 0.2s; padding:0;
-}
+.footer-back-btn { font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); border:none; background:none; cursor:pointer; font-family:'DM Mono',monospace; transition:color 0.2s; padding:0; }
 .footer-back-btn:hover { color:var(--white); }
-
-/* ── SKILL TAGS SECTION (article footer) ── */
-.skill-tags-section {
-  display:flex; flex-direction:column; gap:10px;
-}
-.skill-tags-label {
-  font-size:9px; letter-spacing:0.2em; text-transform:uppercase;
-  color:var(--muted); opacity:0.6; font-family:'DM Mono',monospace;
-}
+.skill-tags-section { display:flex; flex-direction:column; gap:10px; }
+.skill-tags-label { font-size:9px; letter-spacing:0.2em; text-transform:uppercase; color:var(--muted); opacity:0.6; font-family:'DM Mono',monospace; }
 .skill-tags-row { display:flex; flex-wrap:wrap; gap:8px; }
-.skill-pill {
-  display:inline-block;
-  font-family:'DM Mono',monospace; font-size:10px; letter-spacing:0.08em;
-  text-transform:uppercase; padding:5px 14px; border-radius:999px;
-  border:1px solid currentColor; background:transparent;
-  cursor:pointer; transition:all 0.15s ease; line-height:1.5;
-  opacity:0.75; white-space:nowrap;
-}
+.skill-pill { display:inline-block; font-family:'DM Mono',monospace; font-size:10px; letter-spacing:0.08em; text-transform:uppercase; padding:5px 14px; border-radius:999px; border:1px solid currentColor; background:transparent; cursor:pointer; transition:all 0.15s ease; line-height:1.5; opacity:0.75; white-space:nowrap; }
 .skill-pill:hover { opacity:1; background:rgba(255,255,255,0.06); }
-.stats-bar {
-  display:flex; align-items:center; gap:16px;
-  margin-top:52px; padding:20px 24px;
-  border-radius:14px;
-  background:rgba(168,85,247,0.08);
-  border:1px solid rgba(168,85,247,0.2);
-  transition:all 0.3s ease;
-}
-.stats-icon {
-  font-size:28px; flex-shrink:0; opacity:0.7;
-  transition:all 0.3s ease;
-}
+.stats-bar { display:flex; align-items:center; gap:16px; margin-top:52px; padding:20px 24px; border-radius:14px; background:rgba(168,85,247,0.08); border:1px solid rgba(168,85,247,0.2); transition:all 0.3s ease; }
+.stats-icon { font-size:28px; flex-shrink:0; opacity:0.7; }
 .stats-content { flex:1; min-width:0; }
-.stats-value {
-  font-family:'Syne',sans-serif; font-size:clamp(22px,4vw,32px);
-  font-weight:800; line-height:1; color:var(--white);
-  margin-bottom:5px; transition:color 0.3s ease;
-}
-.stats-label {
-  font-size:10px; letter-spacing:0.1em; text-transform:uppercase;
-  color:var(--muted); line-height:1.5;
-}
-.stats-sub {
-  font-size:10px; color:var(--muted); margin-top:3px;
-  letter-spacing:0.05em; opacity:0.7;
-}
+.stats-value { font-family:'Syne',sans-serif; font-size:clamp(22px,4vw,32px); font-weight:800; line-height:1; color:var(--white); margin-bottom:5px; }
+.stats-label { font-size:10px; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); line-height:1.5; }
+#art-content { font-family:'Inter',sans-serif; font-size:14px; line-height:1.85; color:rgba(237,233,255,0.88); }
+#art-content p { margin-bottom:16px; }
+#art-content li { font-size:14px; line-height:1.7; margin-bottom:4px; }
 
-@keyframes fadeUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
-.year-group:nth-child(1){animation-delay:0.05s}
-.year-group:nth-child(2){animation-delay:0.10s}
-.year-group:nth-child(3){animation-delay:0.15s}
-.year-group:nth-child(4){animation-delay:0.20s}
-.year-group:nth-child(5){animation-delay:0.25s}
-.year-group:nth-child(6){animation-delay:0.30s}
-.year-group:nth-child(7){animation-delay:0.35s}
-.year-group:nth-child(8){animation-delay:0.40s}
-
-.slide-in { animation: slideIn 0.3s ease both; }
-@keyframes slideIn { from{opacity:0;transform:translateX(18px)} to{opacity:1;transform:translateX(0)} }
-
-/* ── BOTTOM DOCK ── */
-.dock {
-  position:fixed; bottom:0; left:0; right:0; z-index:200;
-  display:flex; justify-content:center; padding:12px 20px 20px;
-  background:linear-gradient(to top,rgba(14,12,30,0.98) 60%,transparent 100%);
-  pointer-events:none;
-}
-.dock-inner {
-  display:grid; grid-template-columns:repeat(4,1fr);
-  gap:8px; width:100%; max-width:720px; pointer-events:all;
-}
-.dock-btn {
-  display:flex; flex-direction:column; align-items:center; justify-content:center;
-  gap:4px; padding:10px 8px; border-radius:12px;
-  border:1px solid rgba(176,110,243,0.2); background:rgba(14,12,30,0.88);
-  cursor:pointer; transition:all 0.18s; backdrop-filter:blur(12px);
-  font-family:'DM Mono',monospace;
-}
+/* ── DOCK ── */
+.dock { position:fixed; bottom:0; left:0; right:0; z-index:200; display:flex; justify-content:center; padding:12px 20px 20px; background:linear-gradient(to top,rgba(14,12,30,0.98) 60%,transparent 100%); pointer-events:none; }
+.dock-inner { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; width:100%; max-width:720px; pointer-events:all; }
+.dock-btn { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; padding:10px 8px; border-radius:12px; border:1px solid rgba(176,110,243,0.2); background:rgba(14,12,30,0.88); cursor:pointer; transition:all 0.18s; backdrop-filter:blur(12px); font-family:'DM Mono',monospace; }
 .dock-btn:hover:not(:disabled) { border-color:rgba(176,110,243,0.5); background:rgba(176,110,243,0.1); }
 .dock-btn.active { border-color:rgba(176,110,243,0.6); background:rgba(176,110,243,0.15); }
 .dock-btn:disabled { opacity:0.28; cursor:default; }
 .dock-btn-icon { font-size:18px; line-height:1; }
-.dock-btn-label {
-  font-size:8px; letter-spacing:0.12em; text-transform:uppercase;
-  color:var(--muted); line-height:1.3; text-align:center;
-}
-.dock-btn:hover:not(:disabled) .dock-btn-label,
-.dock-btn.active .dock-btn-label { color:var(--white); }
+.dock-btn-label { font-size:8px; letter-spacing:0.12em; text-transform:uppercase; color:var(--muted); line-height:1.3; text-align:center; }
+.dock-btn:hover:not(:disabled) .dock-btn-label, .dock-btn.active .dock-btn-label { color:var(--white); }
 
 /* ── PANEL VIEW ── */
-#view-panel {
-  position:fixed; inset:0; z-index:100;
-  background:var(--bg); overflow-y:auto; display:none;
-}
+#view-panel { position:fixed; inset:0; z-index:100; background:var(--bg); overflow-y:auto; display:none; }
 #view-panel.active { display:block; }
-.panel-nav {
-  display:flex; align-items:center; padding:20px 20px 12px;
-  max-width:720px; margin:0 auto; position:sticky; top:0; z-index:10;
-  background:linear-gradient(to bottom,var(--bg) 80%,transparent 100%);
-}
-.panel-back-btn {
-  display:inline-flex; align-items:center; gap:6px;
-  font-size:11px; letter-spacing:0.1em; color:var(--muted);
-  text-transform:uppercase; border:none; background:none; cursor:pointer;
-  font-family:'DM Mono',monospace; transition:color 0.2s; padding:0;
-}
+.panel-nav { display:flex; align-items:center; padding:20px 20px 12px; max-width:720px; margin:0 auto; position:sticky; top:0; z-index:10; background:linear-gradient(to bottom,var(--bg) 80%,transparent 100%); }
+.panel-back-btn { display:inline-flex; align-items:center; gap:6px; font-size:11px; letter-spacing:0.1em; color:var(--muted); text-transform:uppercase; border:none; background:none; cursor:pointer; font-family:'DM Mono',monospace; transition:color 0.2s; padding:0; }
 .panel-back-btn:hover { color:var(--white); }
 .panel-body { max-width:720px; margin:0 auto; padding:8px 20px 120px; }
-.panel-eyebrow {
-  font-size:9px; letter-spacing:0.3em; text-transform:uppercase;
-  color:var(--teal); opacity:0.8; margin-bottom:10px;
-}
-.panel-title {
-  font-family:'Syne',sans-serif; font-size:clamp(24px,6vw,40px);
-  font-weight:800; line-height:1.05; letter-spacing:-0.02em;
-  background:linear-gradient(135deg,var(--white) 0%,var(--violet-glow) 50%,var(--teal) 100%);
-  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
-  margin-bottom:32px;
-}
+.panel-eyebrow { font-size:9px; letter-spacing:0.3em; text-transform:uppercase; color:var(--teal); opacity:0.8; margin-bottom:10px; }
+.panel-title { font-family:'Syne',sans-serif; font-size:clamp(24px,6vw,40px); font-weight:800; line-height:1.05; letter-spacing:-0.02em; background:linear-gradient(135deg,var(--white) 0%,var(--violet-glow) 50%,var(--teal) 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; margin-bottom:32px; }
 .panel-section { margin-bottom:32px; }
-.panel-section-title {
-  font-family:'Syne',sans-serif; font-size:11px; font-weight:700;
-  letter-spacing:0.2em; text-transform:uppercase;
-  color:var(--c-procert); margin-bottom:14px; opacity:0.9;
-}
+.panel-section-title { font-family:'Syne',sans-serif; font-size:11px; font-weight:700; letter-spacing:0.2em; text-transform:uppercase; color:var(--c-procert); margin-bottom:14px; opacity:0.9; }
 .panel-competency { margin-bottom:16px; }
-.panel-competency-cat {
-  font-size:9px; letter-spacing:0.18em; text-transform:uppercase;
-  color:var(--c-cert); margin-bottom:7px; opacity:0.75;
-}
+.panel-competency-cat { font-size:9px; letter-spacing:0.18em; text-transform:uppercase; color:var(--c-cert); margin-bottom:7px; opacity:0.75; }
 .panel-tags { display:flex; flex-wrap:wrap; gap:5px; }
-.panel-tag {
-  font-family:'DM Mono',monospace; font-size:10px; letter-spacing:0.05em;
-  padding:3px 10px; border-radius:20px;
-  border:1px solid rgba(176,110,243,0.25); background:rgba(176,110,243,0.07);
-  color:rgba(237,233,255,0.78);
-}
+.panel-tag { font-family:'DM Mono',monospace; font-size:10px; letter-spacing:0.05em; padding:3px 10px; border-radius:20px; border:1px solid rgba(176,110,243,0.25); background:rgba(176,110,243,0.07); color:rgba(237,233,255,0.78); }
 .panel-divider { width:100%; height:1px; background:rgba(176,110,243,0.15); margin:28px 0; }
 .panel-narrative { margin-bottom:24px; }
-.panel-narrative-period {
-  font-family:'Syne',sans-serif; font-size:14px; font-weight:700;
-  color:var(--white); margin-bottom:4px;
-}
-.panel-narrative-date {
-  font-size:9px; letter-spacing:0.15em; text-transform:uppercase;
-  color:var(--c-work); opacity:0.7; margin-bottom:8px;
-}
-.panel-narrative p { font-size:13px; line-height:1.9; color:rgba(237,233,255,0.82); }
-.panel-synthesis-item {
-  display:flex; gap:10px; margin-bottom:12px; align-items:flex-start;
-}
-.panel-synthesis-dot {
-  width:5px; height:5px; border-radius:50%; background:var(--c-procert);
-  flex-shrink:0; margin-top:8px;
-}
+.panel-narrative-period { font-family:'Syne',sans-serif; font-size:14px; font-weight:700; color:var(--white); margin-bottom:4px; }
+.panel-narrative-date { font-size:9px; letter-spacing:0.15em; text-transform:uppercase; color:var(--c-work); opacity:0.7; margin-bottom:8px; }
 .panel-narrative p { font-size:14px; line-height:1.85; color:rgba(237,233,255,0.82); font-family:'Inter',sans-serif; }
+.panel-synthesis-item { display:flex; gap:10px; margin-bottom:12px; align-items:flex-start; }
+.panel-synthesis-dot { width:5px; height:5px; border-radius:50%; background:var(--c-procert); flex-shrink:0; margin-top:8px; }
 .panel-synthesis-text { font-size:14px; line-height:1.8; color:rgba(237,233,255,0.82); font-family:'Inter',sans-serif; }
 .panel-synthesis-text strong { color:var(--white); font-weight:600; }
 
-/* ── ARTICLE CONTENT (dynamic) ── */
-#art-content { font-family:'Inter',sans-serif; font-size:14px; line-height:1.85; color:rgba(237,233,255,0.88); }
-#art-content p { margin-bottom:16px; }
-#art-content li { font-size:14px; line-height:1.7; margin-bottom:4px; }
-.article-org { font-size:12px; color:var(--muted); font-style:italic; margin-bottom:24px; font-family:'Inter',sans-serif; }
-.article-date { font-size:11px; color:var(--muted); letter-spacing:0.04em; font-family:'DM Mono',monospace; }
-.skill-tags-label { font-size:9px; letter-spacing:0.18em; text-transform:uppercase; color:var(--muted); opacity:0.7; font-family:'DM Mono',monospace; }
+@keyframes fadeUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
+.year-group:nth-child(1){animation-delay:0.05s} .year-group:nth-child(2){animation-delay:0.10s}
+.year-group:nth-child(3){animation-delay:0.15s} .year-group:nth-child(4){animation-delay:0.20s}
+.year-group:nth-child(5){animation-delay:0.25s} .year-group:nth-child(6){animation-delay:0.30s}
+.year-group:nth-child(7){animation-delay:0.35s} .year-group:nth-child(8){animation-delay:0.40s}
+.slide-in { animation:slideIn 0.3s ease both; }
+@keyframes slideIn { from{opacity:0;transform:translateX(18px)} to{opacity:1;transform:translateX(0)} }
 
-/* ── RESPONSIVE ── */
+@media(min-width:820px){ #view-roadmap{padding:60px 40px 140px} .year-label{font-size:20px;width:92px;padding-right:16px} .timeline::before{left:92px;top:14px} .items{padding-left:108px} .stats-bar{padding:24px 28px} }
+@media(max-width:479px){ #view-roadmap{padding:36px 14px 120px} .year-label{font-size:14px;width:62px;padding-right:10px} .timeline::before{left:62px;top:14px} .items{padding-left:74px} .year-node{width:10px;height:10px;margin-left:-5px} .item{padding:9px 10px;gap:7px} .item-title{font-size:12px} .item-date{font-size:9px} .item-arrow{display:none} .tag{font-size:8px;padding:2px 6px} .dual-filters{gap:8px} .article-body{padding:18px 14px 0} .back-nav{padding:16px 14px 0} .banner{margin:12px 14px 0;height:160px;border-radius:12px} }
 
-/* Tablet (600px+) */
-@media(min-width:600px){
-  .banner { height:260px; }
-  .article-title { font-size:28px; }
-  .header-eyebrow { font-size:14px; letter-spacing:0.35em; }
-  .dock-btn-label { font-size:9px; }
+/* ── PROJECT GALLERY VIEW ── */
+.proj-year-eyebrow { font-size:9px; letter-spacing:0.3em; text-transform:uppercase; color:var(--c-project); font-family:'DM Mono',monospace; margin-bottom:10px; opacity:0.8; }
+.proj-year-title { font-family:'Syne',sans-serif; font-size:clamp(28px,7vw,44px); font-weight:800; line-height:1; letter-spacing:-0.02em; background:linear-gradient(135deg,var(--white) 0%,#f472b6 60%,var(--violet-glow) 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; margin-bottom:6px; }
+.proj-year-count { font-size:11px; color:var(--muted); font-family:'DM Mono',monospace; }
+.proj-grid { display:flex; flex-direction:column; gap:16px; }
+.proj-card {
+  border-radius:14px; border:1px solid rgba(244,114,182,0.15);
+  background:rgba(244,114,182,0.04); overflow:hidden;
+  animation:fadeUp 0.35s ease both;
 }
-
-/* Desktop (820px+) — centre in viewport with comfortable padding */
-@media(min-width:820px){
-  #view-roadmap { padding:60px 40px 140px; }
-  .dual-filters { gap:16px; }
-  .item { padding:12px 16px; }
-  .item-title { font-size:14px; }
-  .year-label { font-size:20px; width:92px; padding-right:16px; }
-  .timeline::before { left:92px; top:14px; }
-  .items { padding-left:108px; }
-  .stats-bar { padding:24px 28px; }
-  .dock-inner { gap:12px; }
-  .dock-btn { padding:12px 10px; }
-}
-
-/* Mobile — compressed timeline, stacked layout */
-@media(max-width:479px){
-  #view-roadmap { padding:36px 14px 120px; }
-  .header { margin-bottom:40px; }
-  .header-eyebrow { font-size:11px; letter-spacing:0.2em; }
-  .header-title { font-size:clamp(28px,9vw,48px); }
-  .header-sub { font-size:10px; }
-
-  /* Compress the year column so items have room */
-  .year-label { font-size:14px; width:62px; padding-right:10px; }
-  .timeline::before { left:62px; top:14px; }
-  .items { padding-left:74px; }
-  .year-node { width:10px; height:10px; margin-left:-5px; }
-
-  /* Item cards */
-  .item { padding:9px 10px; gap:7px; }
-  .item-tag-wrap { padding-top:2px; }
-  .item-title { font-size:12px; }
-  .item-date { font-size:9px; }
-  .item-org { font-size:10px; }
-  .item-arrow { display:none; }
-  .tag { font-size:8px; padding:2px 6px; }
-
-  /* Filters — stack on very small screens */
-  .dual-filters { grid-template-columns:1fr 1fr; gap:8px; }
-  .filter-toggle { font-size:9px; padding:8px 10px; }
-  .filter-panel-label { font-size:7px; }
-
-  /* Stats bar */
-  .stats-bar { padding:14px 16px; gap:12px; }
-  .stats-icon { font-size:22px; }
-  .stats-value { font-size:clamp(18px,5vw,26px); }
-  .stats-label { font-size:9px; }
-
-  /* Article view */
-  .article-body { padding:18px 14px 0; }
-  .back-nav { padding:16px 14px 0; }
-  .banner { margin:12px 14px 0; height:160px; border-radius:12px; }
-  .article-title { font-size:clamp(18px,5vw,24px); }
-  #art-content { font-size:13px; }
-  #art-content li { font-size:13px; }
-
-  /* Dock */
-  .dock { padding:10px 12px 16px; }
-  .dock-btn { padding:8px 4px; border-radius:10px; gap:3px; }
-  .dock-btn-icon { font-size:16px; }
-  .dock-btn-label { font-size:7px; letter-spacing:0.08em; }
-
-  /* Panel */
-  .panel-body { padding:6px 14px 100px; }
-  .panel-title { font-size:clamp(22px,7vw,34px); margin-bottom:24px; }
-  .panel-narrative p, .panel-synthesis-text { font-size:13px; }
-}
+.proj-card-top { padding:20px 20px 16px; }
+.proj-card-status { font-size:9px; letter-spacing:0.15em; text-transform:uppercase; font-family:'DM Mono',monospace; margin-bottom:10px; }
+.proj-card-name { font-family:'Syne',sans-serif; font-size:18px; font-weight:800; line-height:1.2; color:var(--white); margin-bottom:4px; }
+.proj-card-org { font-size:12px; color:var(--muted); font-style:italic; margin-bottom:14px; }
+.proj-card-desc { font-size:13px; line-height:1.8; color:rgba(237,233,255,0.82); }
+.proj-card-bottom { padding:14px 20px; border-top:1px solid rgba(255,255,255,0.06); display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; }
+.proj-tech-row { display:flex; flex-wrap:wrap; gap:5px; }
+.proj-tech-pill { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:0.06em; padding:3px 9px; border-radius:20px; border:1px solid rgba(255,255,255,0.12); color:var(--muted2); }
+.proj-link { font-family:'DM Mono',monospace; font-size:10px; letter-spacing:0.08em; text-transform:uppercase; color:var(--teal); text-decoration:none; opacity:0.8; transition:opacity 0.15s; }
+.proj-link:hover { opacity:1; }
+.proj-empty { text-align:center; padding:48px 20px; opacity:0.35; font-family:'DM Mono',monospace; font-size:12px; letter-spacing:0.1em; text-transform:uppercase; }
 </style>
 </head>
 <body>
+
 <div id="stars"></div>
 
-<!-- ROADMAP VIEW -->
-<div id="view-roadmap" class="view active">
-<div style="max-width:720px;margin:0 auto;padding:48px 20px 80px;">
-  <div class="header">
-    <div class="header-eyebrow">Career &amp; Learning Journey</div>
-    <div class="header-title">Roadmap</div>
-    <div class="header-sub">2012 → 2026 · Becca Isherwood</div>
-  </div>
+<!-- LOADING SCREEN -->
+<div id="loading-screen">
+  <div class="loading-logo">Roadmap</div>
+  <div class="loading-bar-wrap"><div class="loading-bar"></div></div>
+  <div class="loading-text" id="loading-text">Loading from Firebase...</div>
+</div>
 
-  <div class="dual-filters">
-    <div class="filter-panel">
-      <div class="filter-panel-label">Filter by Type</div>
-      <button class="filter-toggle" id="tag-toggle" onclick="togglePanel('tag')">
-        <span>All Types <span class="filter-active-label" id="tag-active-label"></span></span>
-        <span class="arrow">▾</span>
-      </button>
-      <div class="filter-dropdown" id="tag-dropdown">
-        <div class="filter-pills-grid">
-          <button class="filter-pill active" data-tag="all"       style="--fc:#ede9ff" onclick="setTagFilter('all',this)">All</button>
-          <button class="filter-pill" data-tag="work"             style="--fc:#60b4ff" onclick="setTagFilter('work',this)">Work</button>
-          <button class="filter-pill" data-tag="cert"             style="--fc:#c77dff" onclick="setTagFilter('cert',this)">Cert</button>
-          <button class="filter-pill" data-tag="procert"          style="--fc:#00e5cc" onclick="setTagFilter('procert',this)">Pro Cert</button>
-          <button class="filter-pill" data-tag="hackathon"        style="--fc:#ff6eb4" onclick="setTagFilter('hackathon',this)">Hackathon</button>
-          <button class="filter-pill" data-tag="volunteer"        style="--fc:#4ade80" onclick="setTagFilter('volunteer',this)">Volunteer / Community</button>
-          <button class="filter-pill" data-tag="speaker"          style="--fc:#38f0f0" onclick="setTagFilter('speaker',this)">Speaker</button>
-          <button class="filter-pill" data-tag="project"          style="--fc:#f472b6" onclick="setTagFilter('project',this)">Project</button>
+<!-- ROADMAP VIEW -->
+<div id="view-roadmap" class="view">
+  <div style="max-width:720px;margin:0 auto;padding:48px 20px 80px;">
+    <div class="header">
+      <div class="header-eyebrow">Career &amp; Learning Journey</div>
+      <div class="header-title">Roadmap</div>
+      <div class="header-sub">2012 → 2026 · Becca Isherwood</div>
+    </div>
+    <div class="dual-filters">
+      <div class="filter-panel">
+        <div class="filter-panel-label">Filter by Type</div>
+        <button class="filter-toggle" id="tag-toggle" onclick="togglePanel('tag')">
+          <span>All Types <span class="filter-active-label" id="tag-active-label"></span></span>
+          <span class="arrow">▾</span>
+        </button>
+        <div class="filter-dropdown" id="tag-dropdown">
+          <div class="filter-pills-grid">
+            <button class="filter-pill active" data-tag="all" style="--fc:#ede9ff" onclick="setTagFilter('all',this)">All</button>
+            <button class="filter-pill" data-tag="work" style="--fc:#60b4ff" onclick="setTagFilter('work',this)">Work</button>
+            <button class="filter-pill" data-tag="cert" style="--fc:#c77dff" onclick="setTagFilter('cert',this)">Cert</button>
+            <button class="filter-pill" data-tag="procert" style="--fc:#00e5cc" onclick="setTagFilter('procert',this)">Pro Cert</button>
+            <button class="filter-pill" data-tag="hackathon" style="--fc:#ff6eb4" onclick="setTagFilter('hackathon',this)">Hackathon</button>
+            <button class="filter-pill" data-tag="volunteer" style="--fc:#4ade80" onclick="setTagFilter('volunteer',this)">Volunteer / Community</button>
+            <button class="filter-pill" data-tag="speaker" style="--fc:#38f0f0" onclick="setTagFilter('speaker',this)">Speaker</button>
+            <button class="filter-pill" data-tag="project" style="--fc:#f472b6" onclick="setTagFilter('project',this)">Project</button>
+          </div>
+        </div>
+      </div>
+      <div class="filter-panel">
+        <div class="filter-panel-label">Filter by Skill</div>
+        <button class="filter-toggle" id="skill-toggle" onclick="togglePanel('skill')">
+          <span>All Skills <span class="filter-active-label" id="skill-active-label"></span></span>
+          <span class="arrow">▾</span>
+        </button>
+        <div class="filter-dropdown" id="skill-dropdown">
+          <input class="skill-search" id="skill-search" type="text" placeholder="Search skills..." oninput="searchSkills(this.value)">
+          <div class="skill-pills-grid" id="skill-pills-grid"></div>
         </div>
       </div>
     </div>
-    <div class="filter-panel">
-      <div class="filter-panel-label">Filter by Skill</div>
-      <button class="filter-toggle" id="skill-toggle" onclick="togglePanel('skill')">
-        <span>All Skills <span class="filter-active-label" id="skill-active-label"></span></span>
-        <span class="arrow">▾</span>
-      </button>
-      <div class="filter-dropdown" id="skill-dropdown">
-        <input class="skill-search" id="skill-search" type="text" placeholder="Search skills..." oninput="searchSkills(this.value)">
-        <div class="skill-pills-grid" id="skill-pills-grid"></div>
+    <div class="filter-summary" id="filter-summary" style="display:none">
+      <span id="filter-summary-text"></span>
+      <button onclick="clearAllFilters()" class="filter-clear">✕ Clear all</button>
+    </div>
+    <div class="timeline" id="timeline-root"></div>
+    <div class="stats-bar" id="stats-bar">
+      <div class="stats-icon" id="stats-icon">✦</div>
+      <div class="stats-content">
+        <div class="stats-value" id="stats-value">—</div>
+        <div class="stats-label" id="stats-label">Loading...</div>
       </div>
     </div>
   </div>
-
-  <div class="filter-summary" id="filter-summary" style="display:none">
-    <span id="filter-summary-text"></span>
-    <button onclick="clearAllFilters()" class="filter-clear">✕ Clear all</button>
-  </div>
-
-  <div class="timeline">
-
-    <!-- 2026 -->
-    <div class="year-group yr-2026">
-      <div class="year-header"><span class="year-label">2026</span><span class="year-node"></span></div>
-      <div class="items">
-        <button class="item tag-cert" onclick="openArticle('copilot-command-specialist')"><span class="item-tag-wrap"><span class="tag tag-cert">Cert</span></span><div class="item-content"><div class="item-date">Mar 2026</div><div class="item-title">Copilot Studio Agent Command Specialist</div><div class="item-org">Global AI Community</div></div><span class="item-arrow">→</span></button>
-        <button class="item tag-cert" onclick="openArticle('ai-fluency-anthropic')"><span class="item-tag-wrap"><span class="tag tag-cert">Cert</span></span><div class="item-content"><div class="item-date">Mar 2026</div><div class="item-title">AI Fluency Framework &amp; Foundations</div><div class="item-org">Anthropic</div></div><span class="item-arrow">→</span></button>
-        <button class="item tag-cert" onclick="openArticle('ethics-of-ai-helsinki')"><span class="item-tag-wrap"><span class="tag tag-cert">Cert</span></span><div class="item-content"><div class="item-date">Feb 2026</div><div class="item-title">Ethics of AI</div><div class="item-org">University of Helsinki</div></div><span class="item-arrow">→</span></button>
-        <button class="item tag-cert" onclick="openArticle('copilot-operative')"><span class="item-tag-wrap"><span class="tag tag-cert">Cert</span></span><div class="item-content"><div class="item-date">Jan 2026</div><div class="item-title">Copilot Studio Agent Operative</div><div class="item-org">Global AI Community</div></div><span class="item-arrow">→</span></button>
-        <button class="item tag-cert" onclick="openArticle('copilot-recruit')"><span class="item-tag-wrap"><span class="tag tag-cert">Cert</span></span><div class="item-content"><div class="item-date">Jan 2026</div><div class="item-title">Copilot Studio Agent Recruit</div><div class="item-org">Global AI Community</div></div><span class="item-arrow">→</span></button>
-        <button class="item tag-project" onclick="openArticle('project-2026')"><span class="item-tag-wrap"><span class="tag tag-project">Project</span></span><div class="item-content"><div class="item-date">2026</div><div class="item-title">Your Project Here</div><div class="item-org">Add your 2026 project</div></div><span class="item-arrow">→</span></button>
-      </div>
-    </div>
-
-    <!-- 2025 -->
-    <div class="year-group yr-2025">
-      <div class="year-header"><span class="year-label">2025</span><span class="year-node"></span></div>
-      <div class="items">
-        <button class="item tag-procert" onclick="openArticle('pp-functional-consultant')"><span class="item-tag-wrap"><span class="tag tag-procert">Pro Cert</span></span><div class="item-content"><div class="item-date">Jul 2025</div><div class="item-title">Microsoft Certified: Power Platform Functional Consultant Associate</div><div class="item-org">Microsoft</div></div><span class="item-arrow">→</span></button>
-        <button class="item tag-work" onclick="openArticle('cogent-special-projects')"><span class="item-tag-wrap"><span class="tag tag-work">Work</span></span><div class="item-content"><div class="item-date">Feb 2025 – Present</div><div class="item-title">Power Platform Special Projects Lead</div><div class="item-org">Cogent</div></div><span class="item-arrow">→</span></button>
-        <button class="item tag-project" onclick="openArticle('project-2025')"><span class="item-tag-wrap"><span class="tag tag-project">Project</span></span><div class="item-content"><div class="item-date">2025</div><div class="item-title">Your Project Here</div><div class="item-org">Add your 2025 project</div></div><span class="item-arrow">→</span></button>
-      </div>
-    </div>
-
-    <!-- 2024 -->
-    <div class="year-group yr-2024">
-      <div class="year-header"><span class="year-label">2024</span><span class="year-node"></span></div>
-      <div class="items">
-        <button class="item tag-volunteer" onclick="openArticle('upskilling-host')"><span class="item-tag-wrap"><span class="tag tag-volunteer">Volunteer/Community</span></span><div class="item-content"><div class="item-date">ca. 2024</div><div class="item-title">Community Upskilling Host</div><div class="item-org">Online &amp; In-Person</div></div><span class="item-arrow">→</span></button>
-        <button class="item tag-volunteer" onclick="openArticle('esports-streaming')"><span class="item-tag-wrap"><span class="tag tag-volunteer">Volunteer/Community</span></span><div class="item-content"><div class="item-date">ca. 2024</div><div class="item-title">Esports Streaming – Minecraft &amp; Call of Duty Mobile</div></div><span class="item-arrow">→</span></button>
-        <button class="item tag-cert" onclick="openArticle('sdg-johannesburg')"><span class="item-tag-wrap"><span class="tag tag-cert">Cert</span></span><div class="item-content"><div class="item-date">May 2024</div><div class="item-title">Introduction to Sustainability Development Goals</div><div class="item-org">University of Johannesburg</div></div><span class="item-arrow">→</span></button>
-        <button class="item tag-project" onclick="openArticle('project-2024')"><span class="item-tag-wrap"><span class="tag tag-project">Project</span></span><div class="item-content"><div class="item-date">2024</div><div class="item-title">Your Project Here</div><div class="item-org">Add your 2024 project</div></div><span class="item-arrow">→</span></button>
-      </div>
-    </div>
-
-    <!-- 2023 -->
-    <div class="year-group yr-2023">
-      <div class="year-header"><span class="year-label">2023</span><span class="year-node"></span></div>
-      <div class="items">
-        <button class="item tag-volunteer" onclick="openArticle('esports-lead-eduvos')"><span class="item-tag-wrap"><span class="tag tag-volunteer">Volunteer/Community</span></span><div class="item-content"><div class="item-date">ca. 2023</div><div class="item-title">Esports Community Lead / Organizer – Eduvos</div><div class="item-org">Game Jams, Hackathons &amp; Events</div></div><span class="item-arrow">→</span></button>
-        <button class="item tag-volunteer" onclick="openArticle('wigi-mentee')"><span class="item-tag-wrap"><span class="tag tag-volunteer">Volunteer/Community</span></span><div class="item-content"><div class="item-date">ca. 2023</div><div class="item-title">Mentee – Women in Gaming International (WIGI)</div><div class="item-org">with Riot Games</div></div><span class="item-arrow">→</span></button>
-        <button class="item tag-hackathon" onclick="openArticle('eco-city-hackathon')"><span class="item-tag-wrap"><span class="tag tag-hackathon">Hackathon</span></span><div class="item-content"><div class="item-date">ca. 2023</div><div class="item-title">Top 10 – Eco City Game Hackathon</div><div class="item-org">Ayoba</div></div><span class="item-arrow">→</span></button>
-        <button class="item tag-project" onclick="openArticle('project-2023')"><span class="item-tag-wrap"><span class="tag tag-project">Project</span></span><div class="item-content"><div class="item-date">2023</div><div class="item-title">Your Project Here</div><div class="item-org">Add your 2023 project</div></div><span class="item-arrow">→</span></button>
-      </div>
-    </div>
-
-    <!-- 2022 -->
-    <div class="year-group yr-2022">
-      <div class="year-header"><span class="year-label">2022</span><span class="year-node"></span></div>
-      <div class="items">
-        <button class="item tag-work" onclick="openArticle('eduvos-developer')"><span class="item-tag-wrap"><span class="tag tag-work">Work</span></span><div class="item-content"><div class="item-date">Sep 2022 – Jan 2025</div><div class="item-title">Microsoft Dynamics and Power Platform Developer</div><div class="item-org">Eduvos</div></div><span class="item-arrow">→</span></button>
-        <button class="item tag-volunteer" onclick="openArticle('teens-in-ai')"><span class="item-tag-wrap"><span class="tag tag-volunteer">Volunteer/Community</span></span><div class="item-content"><div class="item-date">ca. 2022</div><div class="item-title">Mentor – Teens in AI</div><div class="item-org">Team placed 3rd internationally for AI solution</div></div><span class="item-arrow">→</span></button>
-        <button class="item tag-volunteer" onclick="openArticle('osint-judge')"><span class="item-tag-wrap"><span class="tag tag-volunteer">Volunteer/Community</span></span><div class="item-content"><div class="item-date">Aug 2022</div><div class="item-title">Judge – Global OSINT Search Party CTF</div><div class="item-org">Canvas Credentials</div></div><span class="item-arrow">→</span></button>
-        <button class="item tag-cert" onclick="openArticle('ui-ux-codecademy')"><span class="item-tag-wrap"><span class="tag tag-cert">Cert</span></span><div class="item-content"><div class="item-date">Jul 2022</div><div class="item-title">Introduction to UI and UX Design</div><div class="item-org">Codecademy</div></div><span class="item-arrow">→</span></button>
-        <button class="item tag-cert" onclick="openArticle('hnd-ux-upskillist')"><span class="item-tag-wrap"><span class="tag tag-cert">Cert</span></span><div class="item-content"><div class="item-date">Jan – Dec 2022</div><div class="item-title">Higher National Diploma, UX Design</div><div class="item-org">Upskillist</div></div><span class="item-arrow">→</span></button>
-        <button class="item tag-cert" onclick="openArticle('frontend-engineer-codecademy')"><span class="item-tag-wrap"><span class="tag tag-cert">Cert</span></span><div class="item-content"><div class="item-date">Jan – Sep 2022</div><div class="item-title">Front-End Engineer Certification</div><div class="item-org">Codecademy</div></div><span class="item-arrow">→</span></button>
-        <button class="item tag-cert" onclick="openArticle('ux-austin-peay')"><span class="item-tag-wrap"><span class="tag tag-cert">Cert</span></span><div class="item-content"><div class="item-date">Jan – Aug 2022</div><div class="item-title">UX Design</div><div class="item-org">Austin Peay State University</div></div><span class="item-arrow">→</span></button>
-        <button class="item tag-cert" onclick="openArticle('react-native-designcode')"><span class="item-tag-wrap"><span class="tag tag-cert">Cert</span></span><div class="item-content"><div class="item-date">Jan – Jul 2022</div><div class="item-title">React Native for Designers Certificate</div><div class="item-org">Designcode.io</div></div><span class="item-arrow">→</span></button>
-        <button class="item tag-cert" onclick="openArticle('design-thinking-regent')"><span class="item-tag-wrap"><span class="tag tag-cert">Cert</span></span><div class="item-content"><div class="item-date">Jan – May 2022</div><div class="item-title">Certificate, Design Thinking</div><div class="item-org">Regent Business School</div></div><span class="item-arrow">→</span></button>
-        <button class="item tag-cert" onclick="openArticle('ai-intro-ibm')"><span class="item-tag-wrap"><span class="tag tag-cert">Cert</span></span><div class="item-content"><div class="item-date">Feb 2022</div><div class="item-title">Artificial Intelligence Intro</div><div class="item-org">IBM</div></div><span class="item-arrow">→</span></button>
-        <button class="item tag-project" onclick="openArticle('project-2022')"><span class="item-tag-wrap"><span class="tag tag-project">Project</span></span><div class="item-content"><div class="item-date">2022</div><div class="item-title">Your Project Here</div><div class="item-org">Add your 2022 project</div></div><span class="item-arrow">→</span></button>
-      </div>
-    </div>
-
-    <!-- 2021 -->
-    <div class="year-group yr-2021">
-      <div class="year-header"><span class="year-label">2021</span><span class="year-node"></span></div>
-      <div class="items">
-        <button class="item tag-speaker" onclick="openArticle('digital-overdose-con')"><span class="item-tag-wrap"><span class="tag tag-speaker">Speaker</span></span><div class="item-content"><div class="item-date">2021</div><div class="item-title">International Speaker – Digital Overdose Con</div></div><span class="item-arrow">→</span></button>
-        <button class="item tag-volunteer" onclick="openArticle('hack-south-moderator')"><span class="item-tag-wrap"><span class="tag tag-volunteer">Volunteer/Community</span></span><div class="item-content"><div class="item-date">2021</div><div class="item-title">Discord Server Moderator</div><div class="item-org">Hack South Community</div></div><span class="item-arrow">→</span></button>
-        <button class="item tag-cert" onclick="openArticle('ethical-hacking-tcm')"><span class="item-tag-wrap"><span class="tag tag-cert">Cert</span></span><div class="item-content"><div class="item-date">Nov 2021 – Apr 2022</div><div class="item-title">Practical Ethical Hacking Certificate</div><div class="item-org">TCM Security</div></div><span class="item-arrow">→</span></button>
-        <button class="item tag-work" onclick="openArticle('dot-development-africa')"><span class="item-tag-wrap"><span class="tag tag-work">Work</span></span><div class="item-content"><div class="item-date">May 2021 – Aug 2022</div><div class="item-title">Founder & Power Platform Consultant</div><div class="item-org">Dot Development Africa</div></div><span class="item-arrow">→</span></button>
-        <button class="item tag-hackathon" onclick="openArticle('govx-winner')"><span class="item-tag-wrap"><span class="tag tag-hackathon">Hackathon</span></span><div class="item-content"><div class="item-date">May 2021</div><div class="item-title">GovX Innovation Challenge Winner</div><div class="item-org">Dept. of Telecommunications</div></div><span class="item-arrow">→</span></button>
-        <button class="item tag-procert" onclick="openArticle('ai900-azure-ai')"><span class="item-tag-wrap"><span class="tag tag-procert">Pro Cert</span></span><div class="item-content"><div class="item-date">Jun 2021</div><div class="item-title">AI-900: Azure AI Fundamentals</div><div class="item-org">Microsoft</div></div><span class="item-arrow">→</span></button>
-        <button class="item tag-cert" onclick="openArticle('bi-consultants-linkedin')"><span class="item-tag-wrap"><span class="tag tag-cert">Cert</span></span><div class="item-content"><div class="item-date">Apr 2021</div><div class="item-title">Business Intelligence for Consultants</div><div class="item-org">LinkedIn</div></div><span class="item-arrow">→</span></button>
-        <button class="item tag-cert" onclick="openArticle('azure-devops-linkedin')"><span class="item-tag-wrap"><span class="tag tag-cert">Cert</span></span><div class="item-content"><div class="item-date">Apr 2021</div><div class="item-title">Azure for DevOps: Continuous Integration</div><div class="item-org">LinkedIn</div></div><span class="item-arrow">→</span></button>
-        <button class="item tag-cert" onclick="openArticle('azure-ad-linkedin')"><span class="item-tag-wrap"><span class="tag tag-cert">Cert</span></span><div class="item-content"><div class="item-date">Apr 2021</div><div class="item-title">Azure Active Directory: Basics</div><div class="item-org">LinkedIn</div></div><span class="item-arrow">→</span></button>
-        <button class="item tag-cert" onclick="openArticle('azure-admin-linkedin')"><span class="item-tag-wrap"><span class="tag tag-cert">Cert</span></span><div class="item-content"><div class="item-date">Apr 2021</div><div class="item-title">Azure Administration Essential Training</div><div class="item-org">LinkedIn</div></div><span class="item-arrow">→</span></button>
-        <button class="item tag-project" onclick="openArticle('project-2021')"><span class="item-tag-wrap"><span class="tag tag-project">Project</span></span><div class="item-content"><div class="item-date">2021</div><div class="item-title">Your Project Here</div><div class="item-org">Add your 2021 project</div></div><span class="item-arrow">→</span></button>
-      </div>
-    </div>
-
-    <!-- 2020 -->
-    <div class="year-group yr-2020">
-      <div class="year-header"><span class="year-label">2020</span><span class="year-node"></span></div>
-      <div class="items">
-        <button class="item tag-volunteer" onclick="openArticle('digital-volunteer')"><span class="item-tag-wrap"><span class="tag tag-volunteer">Volunteer/Community</span></span><div class="item-content"><div class="item-date">Jul 2020 – Present</div><div class="item-title">Digital Volunteer – Bureau for Rights-Based Development &amp; United Nations Volunteer</div></div><span class="item-arrow">→</span></button>
-        <button class="item tag-work" onclick="openArticle('mpt-accountant')"><span class="item-tag-wrap"><span class="tag tag-work">Work</span></span><div class="item-content"><div class="item-date">Oct 2020 – Apr 2021</div><div class="item-title">Junior Accountant – ERP Operations</div><div class="item-org">Master Power Technologies</div></div><span class="item-arrow">→</span></button>
-        <button class="item tag-cert" onclick="openArticle('bsa-uct')"><span class="item-tag-wrap"><span class="tag tag-cert">Cert</span></span><div class="item-content"><div class="item-date">Jan 2020 – Oct 2020</div><div class="item-title">Business Systems Analysis</div><div class="item-org">University of Cape Town</div></div><span class="item-arrow">→</span></button>
-        <button class="item tag-project" onclick="openArticle('project-2020')"><span class="item-tag-wrap"><span class="tag tag-project">Project</span></span><div class="item-content"><div class="item-date">2020</div><div class="item-title">Your Project Here</div><div class="item-org">Add your 2020 project</div></div><span class="item-arrow">→</span></button>
-      </div>
-    </div>
-
-    <!-- 2017 -->
-    <div class="year-group yr-2017">
-      <div class="year-header"><span class="year-label">2017</span><span class="year-node"></span></div>
-      <div class="items">
-        <button class="item tag-work" onclick="openArticle('initec-civils')"><span class="item-tag-wrap"><span class="tag tag-work">Work</span></span><div class="item-content"><div class="item-date">Jan 2017 – Dec 2019</div><div class="item-title">Financial Project Coordinator</div><div class="item-org">Initec Civils</div></div><span class="item-arrow">→</span></button>
-        <button class="item tag-work" onclick="openArticle('rmi-web-design')"><span class="item-tag-wrap"><span class="tag tag-work">Work</span></span><div class="item-content"><div class="item-date">Mar 2017 – Sep 2020</div><div class="item-title">Founder & Digital Solutions Lead</div><div class="item-org">RMI Web Design</div></div><span class="item-arrow">→</span></button>
-        <button class="item tag-project" onclick="openArticle('project-2017')"><span class="item-tag-wrap"><span class="tag tag-project">Project</span></span><div class="item-content"><div class="item-date">2017</div><div class="item-title">Your Project Here</div><div class="item-org">Add your 2017 project</div></div><span class="item-arrow">→</span></button>
-      </div>
-    </div>
-
-    <!-- 2016 -->
-    <div class="year-group yr-2016">
-      <div class="year-header"><span class="year-label">2016</span><span class="year-node"></span></div>
-      <div class="items">
-        <button class="item tag-work" onclick="openArticle('office-space-online')"><span class="item-tag-wrap"><span class="tag tag-work">Work</span></span><div class="item-content"><div class="item-date">Oct 2016 – Dec 2016</div><div class="item-title">Serviced Office Manager</div><div class="item-org">Office Space Online</div></div><span class="item-arrow">→</span></button>
-        <button class="item tag-work" onclick="openArticle('ontime-accountant')"><span class="item-tag-wrap"><span class="tag tag-work">Work</span></span><div class="item-content"><div class="item-date">Sep 2015 – Oct 2016</div><div class="item-title">Junior Accountant</div><div class="item-org">Ontime Readymix Concrete</div></div><span class="item-arrow">→</span></button>
-      </div>
-    </div>
-
-    <!-- 2015 -->
-    <div class="year-group yr-2015">
-      <div class="year-header"><span class="year-label">2015</span><span class="year-node"></span></div>
-      <div class="items">
-        <button class="item tag-work" onclick="openArticle('tracetec')"><span class="item-tag-wrap"><span class="tag tag-work">Work</span></span><div class="item-content"><div class="item-date">Oct 2014 – Jun 2015</div><div class="item-title">Debtors Administrator & CRM Analyst</div><div class="item-org">Tracetec (Pty) Ltd</div></div><span class="item-arrow">→</span></button>
-      </div>
-    </div>
-
-    <!-- 2014 -->
-    <div class="year-group yr-2014">
-      <div class="year-header"><span class="year-label">2014</span><span class="year-node"></span></div>
-      <div class="items">
-        <button class="item tag-work" onclick="openArticle('profile-cut')"><span class="item-tag-wrap"><span class="tag tag-work">Work</span></span><div class="item-content"><div class="item-date">Sep 2013 – Mar 2014</div><div class="item-title">Junior Bookkeeper – Payroll & Compliance</div><div class="item-org">Profile Cut Dynamics</div></div><span class="item-arrow">→</span></button>
-      </div>
-    </div>
-
-    <!-- 2013 -->
-    <div class="year-group yr-2013">
-      <div class="year-header"><span class="year-label">2013</span><span class="year-node"></span></div>
-      <div class="items">
-        <button class="item tag-work" onclick="openArticle('ontime-bookkeeper')"><span class="item-tag-wrap"><span class="tag tag-work">Work</span></span><div class="item-content"><div class="item-date">2012 – 2013</div><div class="item-title">Junior Bookkeeper – Financial Systems</div><div class="item-org">Ontime Readymix Concrete</div></div><span class="item-arrow">→</span></button>
-      </div>
-    </div>
-
-  </div><!-- /timeline -->
-
-  <div class="stats-bar" id="stats-bar">
-    <div class="stats-icon" id="stats-icon">✦</div>
-    <div class="stats-content">
-      <div class="stats-value" id="stats-value">9 years</div>
-      <div class="stats-label" id="stats-label">Total career span · 2017–2026</div>
-    </div>
-  </div>
-
 </div>
-</div><!-- /view-roadmap -->
 
 <!-- ARTICLE VIEW -->
 <div id="view-article" class="view">
   <div style="max-width:720px;margin:0 auto;padding:0 0 80px;">
-    <nav class="back-nav">
-      <button class="back-btn" onclick="goBack()"><span>←</span> Roadmap</button>
-    </nav>
+    <nav class="back-nav"><button class="back-btn" onclick="goBack()"><span>←</span> Roadmap</button></nav>
     <div class="banner" id="art-banner">
-      <div class="banner-inner" id="art-banner-inner">
-        <div class="banner-icon" id="art-icon"></div>
-      </div>
+      <div class="banner-inner"><div class="banner-icon" id="art-icon"></div></div>
       <div class="banner-overlay"></div>
     </div>
     <div class="article-body">
@@ -768,8 +329,7 @@ body::before {
       </div>
       <h1 class="article-title" id="art-title"></h1>
       <div class="article-org" id="art-org"></div>
-      <div class="divider" id="art-divider"></div>
-      <div class="article-content" id="art-content"></div>
+      <div id="art-content"></div>
       <div class="article-footer">
         <div class="footer-top-row">
           <div class="footer-tag-row">
@@ -785,692 +345,324 @@ body::before {
       </div>
     </div>
   </div>
-</div><!-- /view-article -->
+</div>
 
-<!-- BOTTOM DOCK -->
+<!-- PROJECT GALLERY VIEW -->
+<div id="view-projects" class="view">
+  <div style="max-width:720px;margin:0 auto;padding:0 20px 120px;">
+    <nav class="back-nav"><button class="back-btn" onclick="goBack()"><span>←</span> Roadmap</button></nav>
+    <div id="proj-gallery-header" style="margin:24px 0 28px;"></div>
+    <div id="proj-cards-grid"></div>
+  </div>
+</div>
+
+<!-- DOCK -->
 <div class="dock">
   <div class="dock-inner">
     <button class="dock-btn" onclick="openPanel('tech')" id="dock-tech">
-      <span class="dock-btn-icon">⚡</span>
-      <span class="dock-btn-label">Tech Profile</span>
+      <span class="dock-btn-icon">⚡</span><span class="dock-btn-label">Tech Profile</span>
     </button>
     <button class="dock-btn" onclick="openPanel('story')" id="dock-story">
-      <span class="dock-btn-icon">📖</span>
-      <span class="dock-btn-label">My Story</span>
+      <span class="dock-btn-icon">📖</span><span class="dock-btn-label">My Story</span>
     </button>
-    <button class="dock-btn" disabled>
-      <span class="dock-btn-icon">○</span>
-      <span class="dock-btn-label">Coming Soon</span>
-    </button>
-    <button class="dock-btn" disabled>
-      <span class="dock-btn-icon">○</span>
-      <span class="dock-btn-label">Coming Soon</span>
-    </button>
+    <button class="dock-btn" disabled><span class="dock-btn-icon">○</span><span class="dock-btn-label">Coming Soon</span></button>
+    <button class="dock-btn" disabled><span class="dock-btn-icon">○</span><span class="dock-btn-label">Coming Soon</span></button>
   </div>
 </div>
 
 <!-- PANEL VIEW -->
 <div id="view-panel" class="view">
-  <nav class="panel-nav">
-    <button class="panel-back-btn" onclick="closePanel()"><span>←</span> Roadmap</button>
-  </nav>
+  <nav class="panel-nav"><button class="panel-back-btn" onclick="closePanel()"><span>←</span> Roadmap</button></nav>
   <div class="panel-body" id="panel-body"></div>
 </div>
 
 <script>
-// ── Star generator ──
-(function(){
-  const s=document.getElementById('stars');
-  for(let i=0;i<65;i++){
-    const el=document.createElement('div');el.className='star';
-    const sz=Math.random()*2+0.5;
-    el.style.cssText='left:'+Math.random()*100+'%;top:'+Math.random()*100+'%;width:'+sz+'px;height:'+sz+'px;--d:'+(2+Math.random()*4)+'s;--o:'+(0.1+Math.random()*0.38)+';animation-delay:'+Math.random()*5+'s;';
-    s.appendChild(el);
-  }
-})();
+// ── Stars ──
+(function(){ const s=document.getElementById('stars'); for(let i=0;i<65;i++){ const el=document.createElement('div'); el.className='star'; const sz=Math.random()*2+0.5; el.style.cssText='left:'+Math.random()*100+'%;top:'+Math.random()*100+'%;width:'+sz+'px;height:'+sz+'px;--d:'+(2+Math.random()*4)+'s;--o:'+(0.1+Math.random()*0.38)+';animation-delay:'+Math.random()*5+'s;'; s.appendChild(el); } })();
 
-const articleContent = {
-  'copilot-command-specialist': { intro: "Achieving the Command Specialist badge represented a significant step forward in my Copilot Studio journey. This credential sits at the top of the Global AI Community's agent pathway, focusing on advanced agent orchestration, multi-topic design, and governance patterns for enterprise deployments.", learned: "I deepened my understanding of how to architect agents that handle complex, branching conversation flows without losing context. The emphasis on fallback strategies and escalation paths gave me practical frameworks I now apply directly in client solutions.", highlights: "Completed the full Global AI Community agent pathway. Applied command-level concepts immediately in a live Cogent project. Reinforced my positioning as a Copilot Studio specialist in the South African market." },
-  'ai-fluency-anthropic': { intro: "This course from Anthropic provided a structured foundation in AI literacy — covering how large language models work, how to prompt effectively, and how to think critically about AI outputs. It sits at the intersection of technical understanding and responsible use.", learned: "Understanding the mechanics behind model behaviour changed how I approach prompt design. I came away with a much clearer mental model of why certain instructions produce reliable results and others don't, which directly improves my client advisory work.", highlights: "Completed Anthropic's official AI fluency framework. Strengthened prompt engineering instincts across Power Platform AI Builder and Copilot Studio. Added a vendor-recognised credential to my AI portfolio." },
-  'ethics-of-ai-helsinki': { intro: "The University of Helsinki's Ethics of AI course offered a rigorous, academic perspective on the societal implications of artificial intelligence. From bias and fairness to transparency and accountability, the curriculum pushed me to think beyond functionality and consider impact.", learned: "I gained frameworks for evaluating AI systems not just on performance but on equity and harm. This directly informs how I design automation solutions — particularly when working in data-sensitive sectors where decisions affect real people.", highlights: "Completed a university-level ethics curriculum recognised internationally. Developed a personal ethics checklist I apply to AI solution designs. Broadened my perspective beyond technical implementation to systemic responsibility." },
-  'copilot-operative': { intro: "The Operative credential from the Global AI Community marked my progression beyond the basics of Copilot Studio. At this level, the focus shifted to building production-ready agents — handling authentication, integrating with external systems, and managing conversation state effectively.", learned: "Working through the Operative pathway sharpened my ability to connect Copilot Studio agents to real data sources via Power Platform connectors. I also got hands-on with adaptive cards and variable management, which opened up much richer interaction patterns.", highlights: "Second tier of the Global AI Community's structured agent pathway. Practical application in client-facing automation projects. Foundation for advancing to Command Specialist level." },
-  'copilot-recruit': { intro: "The Recruit badge was my formal entry point into the Global AI Community's Copilot Studio certification pathway. It covered the fundamentals of conversational AI design — topics, entities, actions, and the basics of deploying an agent to Microsoft Teams and web surfaces.", learned: "Starting a structured pathway rather than learning ad hoc filled important gaps in my conceptual understanding. I built a cleaner mental model of how topics connect and how to design conversations that feel natural rather than mechanical.", highlights: "Entry point to a structured AI agent certification pathway. Immediate application to Power Platform projects at Cogent. Foundation for the Operative and Command Specialist credentials." },
-  'pp-functional-consultant': { intro: "Earning the Microsoft Certified Power Platform Functional Consultant Associate certification was a major professional milestone. This credential validates the ability to configure, customise, and extend the Power Platform across model-driven apps, automated workflows, and virtual agent deployments — all within real enterprise contexts.", learned: "The certification process consolidated years of hands-on experience into a formally recognised body of knowledge. Preparing for the exam surfaced gaps in my understanding of Dataverse table relationships and solution lifecycle management that I've since addressed.", highlights: "Microsoft-recognised professional certification. Directly strengthens client trust and proposal credibility. Supports positioning as a specialist consultant in the South African and broader African market." },
-  'cogent-special-projects': { intro: "Leading the end-to-end delivery of governed Microsoft Power Platform solutions in a senior technical capacity — spanning requirements analysis, solution design, development, deployment, documentation, and formal handover. The role extends the platform through custom .NET APIs and HTTP integrations, enabling secure system-to-system communication and advanced automation scenarios. Collaboration with a Solution Architect ensures that business requirements translate into scalable, maintainable solutions aligned with enterprise governance standards.", learned: "Operating within formal architectural governance has changed how I think about solution design. The discipline of documenting decisions, defining integration patterns upfront, and planning for long-term supportability is different from simply delivering what works. It has made my technical reasoning more rigorous and my client conversations more credible — particularly around trade-offs between speed and maintainability.", highlights: "Lead end-to-end Power Platform solution delivery under established architectural standards. Design and build business applications using Power Apps and Power Pages supporting internal and external user journeys. Develop and configure SharePoint sites, lists, and libraries integrated with Power Platform components. Extend platform capabilities through custom .NET APIs and HTTP integrations for secure system-to-system communication. Collaborate with Solution Architecture to translate business requirements into scalable solutions. Contribute to platform selection, integration pattern definition, data modeling, and long-term supportability planning. Produce comprehensive technical and user documentation to drive adoption, governance, and operational continuity." },
-  'upskilling-host': { intro: "Hosting community upskilling sessions grew out of a recognition that access to quality tech education in South Africa remains uneven. I began running sessions covering Power Platform basics, AI literacy, and practical automation skills — both online and in person — for people at various stages of their careers.", learned: "Teaching is one of the most effective ways to deepen your own understanding. Running these sessions forced me to articulate concepts clearly, anticipate confusion, and build explanations that work for different learning styles. It also connected me to a much wider professional network.", highlights: "Delivered sessions to diverse audiences across career levels. Built reusable learning materials covering Power Platform and AI fundamentals. Strengthened community ties and reinforced personal brand as a knowledgeable, generous practitioner." },
-  'esports-streaming': { intro: "Streaming Minecraft and Call of Duty Mobile was a personal creative outlet that also developed real skills in content production, audience engagement, and community building. It sat alongside my professional work as a space to explore digital culture and stay connected to the gaming community.", learned: "Running a stream teaches you to multitask under pressure — managing gameplay, chat interaction, and technical setup simultaneously. I developed a much stronger instinct for what keeps an audience engaged, which has fed back into how I think about user experience in professional contexts.", highlights: "Built a consistent content production habit. Developed real-time audience engagement skills. Stayed connected to gaming culture in a hands-on way." },
-  'sdg-johannesburg': { intro: "The University of Johannesburg's course on Sustainable Development Goals provided a valuable macro-level context for the work I do in digital transformation. Understanding the SDG framework — particularly goals relating to decent work, reduced inequalities, and innovation — shapes how I think about the broader purpose of technology solutions.", learned: "I came away with a stronger vocabulary for articulating impact beyond technical outputs. When I build automation that frees up a team's time, or design an accessible digital experience, I can now frame that work within a globally recognised framework for positive change.", highlights: "Completed a recognised course in sustainability and development. Integrated SDG thinking into how I frame the value of digital solutions. Added academic depth to my understanding of technology's social role." },
-  'esports-lead-eduvos': { intro: "Leading the esports community at Eduvos was one of the most creatively fulfilling roles I've held. I organised game jams, hackathons, and competitive events that brought students together and gave them a space to build technical and teamwork skills in a context they were genuinely passionate about.", learned: "Organising events at scale — handling logistics, communication, partnerships, and on-the-day execution — built a set of project management muscles that translate directly into professional delivery work. I also learned a great deal about motivating volunteers and building culture.", highlights: "Led a student esports community from the ground up. Organised multiple successful game jams and hackathons. Created a pipeline between gaming enthusiasm and technical skill development." },
-  'wigi-mentee': { intro: "Being selected as a mentee by Women in Gaming International, in partnership with Riot Games, was both an honour and a genuinely transformative experience. The programme paired me with industry professionals who offered honest, practical guidance on navigating a career at the intersection of technology and gaming.", learned: "The mentorship challenged me to think more intentionally about where I wanted to go, rather than just responding to opportunities as they arose. Conversations about visibility, positioning, and self-advocacy have had a lasting effect on how I approach my career.", highlights: "Selected for a globally recognised women in tech and gaming mentorship programme. Built connections with international industry professionals. Developed a more strategic approach to career development and personal branding." },
-  'eco-city-hackathon': { intro: "Placing in the top 10 of the Eco City Game Hackathon run by Ayoba was the result of rapid, high-pressure creative and technical collaboration. The challenge was to design a game concept that addressed urban sustainability — a brief that pushed me to think across design, narrative, and impact simultaneously.", learned: "Hackathons teach you to make decisive creative calls under time pressure and to ship something imperfect but real. Working within tight constraints forces a kind of clarity that more open-ended projects rarely demand. I also learned a great deal about what makes a game concept resonate with judges.", highlights: "Top 10 placement in a nationally recognised game hackathon. Demonstrated ability to execute under pressure and within constraints. Experience combining game design thinking with real-world sustainability challenges." },
-  'eduvos-developer': { intro: "Joined a national academic environment as a Microsoft Dynamics and Power Platform Developer, building and managing enterprise applications with deep integration into Microsoft Dynamics 365. The role required a dual focus on back-end data integration and front-end UI/UX design, delivering responsive and accessible applications for a diverse user base across the academic sector. Cross-team collaboration to gather business requirements, optimize existing solutions, and provide ongoing technical support reinforced the importance of maintainable architecture and user-centred design.", learned: "Over two years in a complex, regulated environment gave me depth that breadth alone cannot provide. I learned to manage solution lifecycle properly, to advocate for technical decisions with non-technical stakeholders, and to build things that actually get adopted rather than just delivered. Working within Dynamics 365 at scale shifted my thinking from feature delivery to system stewardship.", highlights: "Developed and managed enterprise applications using Power Apps and Power Pages integrated with Microsoft Dynamics 365. Applied UI/UX design principles to create responsive and accessible user interfaces for diverse stakeholder groups. Collaborated across functional teams to gather business requirements and translate them into technical solutions. Managed analytics integrations to enhance data visibility and decision-making capabilities. Provided ongoing solution optimization and technical support across the national team." },
-  'teens-in-ai': { intro: "Mentoring a team through the Teens in AI programme was one of the most rewarding experiences of my career. Supporting young people — particularly young women — as they designed and built an AI solution from scratch, and watching them place third internationally, was extraordinary.", learned: "Mentoring teenagers requires a completely different communication style to working with professional peers. I learned to explain abstract technical concepts in concrete, relatable terms, and to build confidence in people who were doubting their own abilities. That skill has made me a better communicator across the board.", highlights: "Supported a team to a 3rd place international finish. Contributed to increasing diversity in AI by supporting young women in tech. Developed coaching and communication skills that have transferred into professional contexts." },
-  'osint-judge': { intro: "Being invited to judge the Global OSINT Search Party CTF by Canvas Credentials was a recognition of my growing profile in the cyber and information security community. The competition tested participants' ability to gather, verify, and synthesise open-source intelligence under time pressure.", learned: "Sitting on the judging side of a CTF gave me a new appreciation for what separates good OSINT practice from great OSINT practice — specifically the quality of documentation, the clarity of reasoning chains, and the ability to distinguish signal from noise.", highlights: "Recognised as a subject matter expert in the OSINT and cybersecurity community. Gained insight into competitive CTF formats and evaluation criteria. Strengthened connections within the global security practitioner network." },
-  'ui-ux-codecademy': { intro: "Completing Codecademy's Introduction to UI and UX Design course gave me a formal grounding in design principles that I had largely been applying intuitively. The course covered user research methods, wireframing, prototyping, and the fundamentals of visual hierarchy and accessibility.", learned: "Formalising what I already knew in practice was clarifying in unexpected ways. The course gave me a shared vocabulary for design decisions — one I now use to communicate more precisely with designers and developers when collaborating on solutions.", highlights: "Formal credential in UX and UI fundamentals from a recognised platform. Strengthened design communication skills used in Power Apps and web projects. Added to a growing portfolio of design-focused qualifications." },
-  'hnd-ux-upskillist': { intro: "Completing the Higher National Diploma in UX Design through Upskillist was a year-long commitment to deepening my design expertise. The programme covered the full UX process — from research and personas through to interaction design and usability testing — at a level of rigour that short courses don't provide.", learned: "A diploma-length programme forces you to sit with complexity rather than moving quickly past it. I developed a genuine research-first mindset and a much stronger ability to design for users I'm not myself — a skill that matters enormously in both product and consulting work.", highlights: "Diploma-level qualification in UX Design. Comprehensive coverage of the end-to-end design process. Applied learning directly to projects delivered during the same period." },
-  'frontend-engineer-codecademy': { intro: "Codecademy's Front-End Engineer certification path took me from foundational HTML and CSS through to JavaScript, React, and the broader ecosystem of modern front-end development. It was a structured, rigorous curriculum that filled gaps and reinforced existing knowledge simultaneously.", learned: "Going back to basics with intent is humbling and useful in equal measure. I found myself unlearning shortcuts and understanding why best practices exist — particularly around accessibility, semantic HTML, and performance. That understanding shows up in everything I build.", highlights: "Comprehensive front-end certification covering HTML, CSS, JavaScript, and React. Directly applicable to Power Apps canvas app development and custom web builds. Strengthened ability to collaborate with dedicated front-end developers." },
-  'ux-austin-peay': { intro: "Austin Peay State University's UX Design programme offered an academically grounded approach to user experience, complementing the more applied learning I was doing elsewhere in 2022. The curriculum emphasised research methodology, cognitive psychology, and the theoretical underpinnings of human-computer interaction.", learned: "Understanding the cognitive science behind UX decisions — why certain layouts reduce cognitive load, how mental models form, why error prevention matters more than error recovery — gave me a richer foundation for every design decision I make.", highlights: "University-level academic grounding in UX theory and practice. Complementary to concurrent applied UX learning in 2022. Strengthened research and evaluation skills." },
-  'react-native-designcode': { intro: "Designcode.io's React Native for Designers certificate was a natural extension of my growing interest in the intersection of design and code. The course focused on building real, interactive mobile interfaces using React Native — bridging the gap between high-fidelity prototypes and production-ready components.", learned: "Learning to code in the medium you design for changes how you design. Understanding the constraints and capabilities of React Native made my interface designs more realistic and more buildable. It also gave me a useful shared language with mobile developers.", highlights: "Practical certificate in React Native mobile development. Applied directly to understanding and communicating mobile UI constraints. Supported growing expertise at the design-code boundary." },
-  'design-thinking-regent': { intro: "The Design Thinking certificate from Regent Business School introduced me to a structured problem-solving methodology that has since become central to how I approach every new project. The five-stage framework — empathise, define, ideate, prototype, test — provides a discipline that prevents jumping to solutions before problems are truly understood.", learned: "Design Thinking challenged my instinct to move quickly into solution mode. Learning to stay in the problem space longer, and to validate assumptions with real users before building, has saved significant rework time on multiple projects since.", highlights: "Recognised business school certification in Design Thinking methodology. Applied framework to Power Platform project discovery and scoping. Foundational to a human-centred approach to automation and solution design." },
-  'ai-intro-ibm': { intro: "IBM's Introduction to Artificial Intelligence course provided an accessible but substantive foundation in AI concepts — covering machine learning, neural networks, natural language processing, and the practical applications of AI across industries. It was an early touchpoint in what has become a central thread of my career.", learned: "This course sparked a genuine curiosity about AI that has only grown since. Understanding the basics of how models learn — the role of training data, the nature of predictions, the difference between supervised and unsupervised learning — gave me a foundation I've built on continuously.", highlights: "Early AI credential from a globally recognised technology company. Foundation for subsequent AI-focused learning and certifications. Planted the seed for a career direction increasingly centred on AI and automation." },
-  'digital-overdose-con': { intro: "Speaking at Digital Overdose Con as an international speaker was a defining moment in establishing my profile as a thought leader in the cybersecurity and technology community. The conference brings together practitioners, researchers, and enthusiasts from across the world, and being invited to present was a significant recognition of my expertise.", learned: "Preparing a conference talk forces a level of clarity and structure that everyday work rarely demands. I learned to distil complex technical content into a compelling narrative — a skill that has since made me a stronger communicator in client presentations, workshops, and mentoring.", highlights: "International speaking engagement at a globally recognised security conference. Established presence as a thought leader in the technology community. Developed public speaking skills that transfer across professional contexts." },
-  'hack-south-moderator': { intro: "Volunteering as a Discord server moderator for the Hack South community put me at the centre of one of South Africa's most active cybersecurity communities. The role involved managing conversations, supporting newcomers, enforcing community standards, and helping create an environment where knowledge sharing could thrive.", learned: "Community moderation taught me that healthy communities don't maintain themselves — they require consistent, thoughtful human effort. I developed a much stronger sense of how to set and uphold norms, how to de-escalate conflict, and how to make newcomers feel genuinely welcome.", highlights: "Active contributor to South Africa's leading cybersecurity community. Developed community management and digital facilitation skills. Built lasting connections within the local and global security practitioner network." },
-  'ethical-hacking-tcm': { intro: "TCM Security's Practical Ethical Hacking course is widely regarded as one of the most rigorous and hands-on entry points into offensive security. Over six months, the curriculum covered networking fundamentals, active directory attacks, web application hacking, and full penetration testing methodology.", learned: "Ethical hacking fundamentally changes how you think about the systems you build. Understanding how attackers move through networks and exploit misconfigurations made me a much more security-conscious developer and solution architect — particularly when designing Power Platform integrations with sensitive data flows.", highlights: "Completed one of the most respected practical hacking certifications available. Applied security thinking directly to enterprise Power Platform architecture decisions. Foundation for a security-informed approach to all technical work." },
-  'dot-development-africa': { intro: "Founded and led a technology consultancy focused on Microsoft Power Platform solutions for South African businesses. Operating as principal consultant and business owner, the role spanned end-to-end delivery — from requirements discovery through to deployment and user adoption — translating low-code capabilities into automation and data solutions for clients across multiple industries. This was the formal transition from executing digital projects to delivering business solutions.", learned: "Consulting from the start of a platform career teaches you that technical skill is only half the job. Understanding client needs, managing expectations, and translating between business language and technical language are the competencies that actually determine whether a project succeeds. Running a practice simultaneously reinforced that delivery quality and commercial sustainability have to be designed together.", highlights: "Conducted end-to-end business requirements gathering and documentation, converting operational needs into functional specifications for Power Platform implementations. Designed and deployed custom business applications using Power Apps, automated workflows with Power Automate, and interactive dashboards with Power BI — frequently integrating with Azure services and third-party data sources. Provided strategic guidance on digital transformation and SaaS platform adoption. Delivered user training and ongoing solution support to ensure sustainable adoption. Managed all aspects of the consulting practice including business development, proposal writing, project scoping, delivery oversight, and client relationship management." },
-  'govx-winner': { intro: "Winning the GovX Innovation Challenge, run by the Department of Telecommunications, was a formative experience in applying technology thinking to real public sector problems. The challenge called for innovative solutions that could meaningfully improve government service delivery — a brief that required both technical creativity and social awareness.", learned: "Competing in a government-focused innovation challenge pushed me to think about technology impact at a systemic level. It's one thing to build a clever tool; it's another to design something that could realistically be adopted and sustained within a complex institutional context.", highlights: "National-level innovation challenge winner. Recognition from a government department for applied technology thinking. Early validation of the ability to design solutions with real-world institutional fit." },
-  'ai900-azure-ai': { intro: "The AI-900 Azure AI Fundamentals certification from Microsoft provided formal grounding in the core concepts of artificial intelligence as implemented across the Azure ecosystem. The exam covered machine learning fundamentals, computer vision, natural language processing, conversational AI, and responsible AI principles — all within the Microsoft cloud context.", learned: "Earning AI-900 gave me a structured framework for understanding how AI capabilities map to Azure services. It reinforced my instinct for which AI tools are appropriate for which problems — a judgement call that matters enormously when advising clients on Power Platform AI Builder and Copilot Studio integrations.", highlights: "Microsoft-recognised AI fundamentals certification. Foundation for subsequent AI-focused work in Power Platform and Copilot Studio. Formal grounding in responsible AI principles applied to enterprise solutions." },
-  'bi-consultants-linkedin': { intro: "LinkedIn Learning's Business Intelligence for Consultants course provided a structured introduction to BI concepts specifically framed for consulting contexts — covering data storytelling, dashboard design principles, and how to communicate analytical findings to non-technical decision makers.", learned: "The consulting frame was what made this course valuable. Understanding how to present data to drive decisions, rather than just to display information, changed how I approach every reporting and analytics project. Clarity and narrative matter as much as accuracy.", highlights: "Applied BI communication skills directly to Power BI deliverables. Improved ability to frame data insights for executive audiences. Complementary to concurrent Azure and Power Platform development learning." },
-  'azure-devops-linkedin': { intro: "Azure for DevOps: Continuous Integration on LinkedIn Learning introduced me to the principles and practices of CI/CD pipelines within the Azure ecosystem. The course covered build pipelines, automated testing, and the fundamentals of deploying code reliably and repeatedly.", learned: "Understanding CI/CD changed how I think about solution delivery — particularly around the importance of automated testing and the risks of manual deployment processes. These principles now inform how I approach ALM in Power Platform projects, where governance and deployment pipelines matter enormously.", highlights: "Foundation in Azure DevOps practices applicable to Power Platform ALM. Improved understanding of automated deployment and testing. Directly applicable to enterprise-grade solution delivery." },
-  'azure-ad-linkedin': { intro: "Azure Active Directory: Basics on LinkedIn Learning provided a grounding in identity and access management within the Microsoft ecosystem. The course covered directory structure, user and group management, conditional access, and the fundamentals of securing cloud applications.", learned: "Understanding AAD is essential for anyone building on the Microsoft stack. It underpins every permission model in Power Platform, every SharePoint integration, and every Teams deployment. This course demystified concepts I had been working around rather than with.", highlights: "Foundation in Microsoft identity and access management. Directly applicable to Power Platform governance and security design. Supports more confident client conversations about data access and compliance." },
-  'azure-admin-linkedin': { intro: "LinkedIn Learning's Azure Administration Essential Training covered the core competencies needed to manage Azure resources — virtual machines, storage, networking, and the broader Azure portal experience. It provided important context for the cloud infrastructure underpinning the Microsoft solutions I work with daily.", learned: "Even as a primarily application-layer practitioner, understanding the infrastructure layer makes me a better solution designer. Knowing what happens under the hood — how resources scale, how costs are incurred, how security boundaries are drawn — informs better architectural decisions.", highlights: "Working knowledge of Azure administration and resource management. Improved ability to collaborate with infrastructure teams on enterprise projects. Supports end-to-end understanding of Microsoft cloud architecture." },
-  'digital-volunteer': { intro: "Volunteering with both the Bureau for Rights-Based Development and the United Nations Volunteer programme has been a long-running commitment to using my digital skills in service of meaningful social impact. The work spans digital strategy, tool implementation, and capacity building for organisations working in human rights and development.", learned: "Applying technology in under-resourced civil society contexts teaches you to do more with less and to prioritise ruthlessly. The constraints are different from commercial projects — budget, connectivity, and user digital literacy all require different design decisions — and working within them has made me a more adaptable practitioner.", highlights: "Ongoing volunteer commitment since 2020. Applied digital skills in support of human rights and development organisations. Developed cross-cultural communication and low-resource design capabilities." },
-  'bsa-uct': { intro: "The Business Systems Analysis programme at the University of Cape Town was a turning point in how I understood the relationship between organisational processes and technology systems. The curriculum covered requirements elicitation, process modelling, stakeholder management, and the formal methodologies that underpin professional systems analysis.", learned: "UCT's rigour pushed me to think systematically about problems before reaching for solutions. The programme gave me tools — use case diagrams, process maps, stakeholder matrices — that I still use regularly, and a professional discipline that distinguishes good analysis from guesswork.", highlights: "University of Cape Town credential in Business Systems Analysis. Foundation for all subsequent consulting and requirements work. Formal methodology training that continues to inform daily practice." },
-  'mpt-accountant': { intro: "Executed end-to-end financial transaction processing within the SAP ERP environment at Master Power Technologies, a leader in engineered power solutions. The contract role centred on data capture, validation, and electronic submission workflows for SARS compliance — supporting the financial data integrity of enterprise-level reporting systems.", learned: "Working inside an enterprise ERP at this scale made visible how much financial accuracy depends on disciplined data entry and well-governed workflows. The SAP environment demanded a level of precision and process adherence that strengthened my instinct for data integrity — a discipline that has carried directly into my approach to data modeling and system design in Power Platform work.", highlights: "Executed end-to-end financial transaction processing within SAP ERP. Managed data capture, validation, and SARS electronic submission workflows for compliance. Supported enterprise financial data integrity for a major engineered power solutions provider." },
-  'initec-civils': { intro: "Coordinated financial and operational data across 20 contracting teams comprising 300+ personnel at Initec Civils, utilizing Pastel Partner, Sage Online, Sage Payroll, and PSQL. The role combined financial data aggregation with project analytics, stakeholder reporting, and workflow optimization — and extended into digital infrastructure by engineering websites for three subsidiary companies using Divi and PHP.", learned: "This role was where financial systems work started intersecting with digital solutions design. Analyzing team workflows and designing process improvements that enabled contractors to transition to independent business structures gave me a systems-thinking perspective that I had not previously applied at this scale. The parallel work on web development for subsidiaries planted the seed for what became RMI Web Design.", highlights: "Coordinated financial and operational data across 20 teams and 300+ personnel using Pastel Partner, Sage Online, Sage Payroll, and PSQL. Analyzed and optimized contractor workflows, designing process improvements that enabled independent small business transitions. Engineered digital presence solutions for three subsidiary companies using Divi and PHP. Delivered monthly data analytics, budget forecasting, and system-generated stakeholder reporting. Developed domain expertise in fibre industry operations and ISP data coordination." },
-  'office-space-online': { intro: "Managed operational systems for a serviced office environment in Hyde Park, Sandton — overseeing digital client onboarding, service request workflows, and tenant relationship management through CRM-driven coordination. A short contract role that introduced SaaS-enabled service delivery in a high-end professional setting.", learned: "Even a short contract at the intersection of operations and digital client experience reinforces how much the quality of CRM usage and onboarding design shapes client perception. The discipline of managing multiple concurrent client needs through structured digital tooling was a useful data point for understanding service delivery operations.", highlights: "Managed digital client onboarding and service request workflows for a serviced office environment. Utilized CRM tools to coordinate tenant services and streamline communication channels. Operated SaaS-enabled service delivery systems in a professional Hyde Park, Sandton setting." },
-  'ontime-accountant': { intro: "Returned to Ontime Readymix Concrete in a Junior Accountant capacity, operating out of the Midrand offices with expanded responsibilities in financial data accuracy, reconciliation, and supplier data management. The role involved direct liaison with major industry suppliers including Lafarge, Sephaku, and Ash Resources.", learned: "Managing supplier data exchange with large industry counterparts taught me how much financial accuracy depends on clean, consistent data flow across organizational boundaries — and how quickly reconciliation problems compound when data standards diverge between systems.", highlights: "Maintained financial data accuracy and reporting workflows within the company accounting systems. Liaised with major industry suppliers including Lafarge, Sephaku, and Ash Resources to facilitate transactional data exchange and reconciliation. Supported accounting system workflows and process integrity across operational reporting." },
-  'tracetec': { intro: "Operated and integrated multiple financial and CRM platforms at Tracetec — including Linkserv, Palladium Accounting, Orangeworx Accounting, Pastel Partner, and Support Suite CRM. Managed debtor data lifecycle within ITC listing and regulatory frameworks, served as the accounts department representative on the company vetting committee, and completed technical training in negotiation and legal data handling with Ebersohn Attorneys.", learned: "Multi-platform financial systems work at this stage gave me a foundational understanding of how data moves across systems that are not natively integrated — and what breaks when data standards are inconsistent. The vetting committee role introduced cross-departmental governance in a way that has directly informed how I approach stakeholder engagement in technical delivery roles.", highlights: "Operated and integrated Linkserv, Palladium Accounting, Orangeworx, Pastel Partner, and Support Suite CRM across financial and debtor management workflows. Managed debtor data lifecycle within ITC listing and consumer law compliance frameworks. Served as accounts department representative on the company vetting committee for cross-departmental data governance. Completed technical training in negotiation skills and legal data handling with Ebersohn Attorneys." },
-  'profile-cut': { intro: "Administered and processed payroll systems at Profile Cut Dynamics, ensuring accurate data integration between timekeeping, HR records, and financial reporting modules. Managed electronic submissions to SARS and supported system readiness for MIBFA and BEE audits — with a focus on data traceability and compliance reporting structures.", learned: "Payroll and compliance work is unforgiving — errors cascade and audit failures have real consequences. This role built a rigorous attention to data traceability and compliance documentation that has stayed with me across every subsequent role, and translates directly into how I approach governance and audit readiness in Power Platform solutions.", highlights: "Administered and processed payroll systems ensuring accurate data integration across timekeeping, HR records, and financial reporting modules. Managed SARS electronic submissions maintaining regulatory data standards. Supported system readiness for MIBFA and BEE audits with focus on data traceability and compliance reporting structures." },
-  'ontime-bookkeeper': { intro: "Provided foundational support for financial data entry and integrity at Ontime Readymix Concrete, ensuring accurate data flow between operational transactions and general ledger systems. A first professional role in financial systems — establishing the discipline of data accuracy and systematic record-keeping that has informed every subsequent position.", learned: "Starting a career in financial data entry teaches you that the integrity of any system begins with the discipline of the people feeding it. The habits formed here — checking, reconciling, maintaining clean records — are not glamorous but they are foundational. They shaped a mindset around data quality that has remained consistent across very different technical contexts.", highlights: "Provided financial data entry and integrity support within the company accounting system. Ensured accurate data flow between operational transactions and general ledger systems. Established foundational professional discipline in financial data accuracy and systematic record-keeping." },
-  'rmi-web-design': { intro: "Founded and operated a digital solutions practice delivering end-to-end web design, development, and branding services to over 40 startups and small businesses across Johannesburg. This venture served as a hands-on environment for translating client requirements into functional, performant, and visually cohesive digital platforms — and established the operational discipline that has informed every subsequent role.", learned: "Running a client-facing practice teaches you things no course can. Managing scope, handling feedback that contradicts your instincts, delivering to real deadlines, and keeping clients confident through ambiguity are competencies that only come from doing it. The business operations side — proposals, financial administration, project scoping — gave me a systems view of how digital work gets resourced and delivered that I still draw on.", highlights: "Engineered and deployed 40+ websites using WordPress, Divi, Elementor, WooCommerce, and CPanel with responsive design and SEO fundamentals. Provided integrated branding services including logo design, visual identity systems, and marketing collateral using Adobe Creative Cloud, Canva, and Figma. Managed the full client lifecycle from discovery and proposal through development, launch, and ongoing support. Handled all business functions including development, project management, technical execution, and financial administration." },
-  'project-2026': { intro: "This is a placeholder for a 2026 project. Replace this text with a description of what you built, designed, or shipped — the context, the problem it solved, and the approach you took.", learned: "Describe what this project taught you. What skills did you develop? What would you do differently? What surprised you?", highlights: "Key outcome one. Key outcome two. Key outcome three." },
-  'project-2025': { intro: "This is a placeholder for a 2025 project. Replace this text with a description of what you built, designed, or shipped — the context, the problem it solved, and the approach you took.", learned: "Describe what this project taught you. What skills did you develop? What would you do differently? What surprised you?", highlights: "Key outcome one. Key outcome two. Key outcome three." },
-  'project-2024': { intro: "This is a placeholder for a 2024 project. Replace this text with a description of what you built, designed, or shipped — the context, the problem it solved, and the approach you took.", learned: "Describe what this project taught you. What skills did you develop? What would you do differently? What surprised you?", highlights: "Key outcome one. Key outcome two. Key outcome three." },
-  'project-2023': { intro: "This is a placeholder for a 2023 project. Replace this text with a description of what you built, designed, or shipped — the context, the problem it solved, and the approach you took.", learned: "Describe what this project taught you. What skills did you develop? What would you do differently? What surprised you?", highlights: "Key outcome one. Key outcome two. Key outcome three." },
-  'project-2022': { intro: "This is a placeholder for a 2022 project. Replace this text with a description of what you built, designed, or shipped — the context, the problem it solved, and the approach you took.", learned: "Describe what this project taught you. What skills did you develop? What would you do differently? What surprised you?", highlights: "Key outcome one. Key outcome two. Key outcome three." },
-  'project-2021': { intro: "This is a placeholder for a 2021 project. Replace this text with a description of what you built, designed, or shipped — the context, the problem it solved, and the approach you took.", learned: "Describe what this project taught you. What skills did you develop? What would you do differently? What surprised you?", highlights: "Key outcome one. Key outcome two. Key outcome three." },
-  'project-2020': { intro: "This is a placeholder for a 2020 project. Replace this text with a description of what you built, designed, or shipped — the context, the problem it solved, and the approach you took.", learned: "Describe what this project taught you. What skills did you develop? What would you do differently? What surprised you?", highlights: "Key outcome one. Key outcome two. Key outcome three." },
-  'project-2017': { intro: "This is a placeholder for a 2017 project. Replace this text with a description of what you built, designed, or shipped — the context, the problem it solved, and the approach you took.", learned: "Describe what this project taught you. What skills did you develop? What would you do differently? What surprised you?", highlights: "Key outcome one. Key outcome two. Key outcome three." },
-};
-
-const articles = {
-  'copilot-command-specialist': { tag:'cert', tagLabel:'Cert', color:'#c77dff', icon:'🎓', date:'Mar 2026', title:'Copilot Studio Agent Command Specialist', org:'Global AI Community', bg:'linear-gradient(135deg,#2d0a5e 0%,#6b21a8 45%,#1e1060 100%)' },
-  'ai-fluency-anthropic':       { tag:'cert', tagLabel:'Cert', color:'#c77dff', icon:'🎓', date:'Mar 2026', title:'AI Fluency Framework & Foundations', org:'Anthropic', bg:'linear-gradient(135deg,#1a0a4e 0%,#5b21b6 45%,#0f0a30 100%)' },
-  'ethics-of-ai-helsinki':      { tag:'cert', tagLabel:'Cert', color:'#c77dff', icon:'🎓', date:'Feb 2026', title:'Ethics of AI', org:'University of Helsinki', bg:'linear-gradient(135deg,#2e0a60 0%,#7c3aed 45%,#1a0840 100%)' },
-  'copilot-operative':          { tag:'cert', tagLabel:'Cert', color:'#c77dff', icon:'🎓', date:'Jan 2026', title:'Copilot Studio Agent Operative', org:'Global AI Community', bg:'linear-gradient(135deg,#2a0858 0%,#6d28d9 45%,#170830 100%)' },
-  'copilot-recruit':            { tag:'cert', tagLabel:'Cert', color:'#c77dff', icon:'🎓', date:'Jan 2026', title:'Copilot Studio Agent Recruit', org:'Global AI Community', bg:'linear-gradient(135deg,#200850 0%,#5b21b6 45%,#120630 100%)' },
-  'pp-functional-consultant':   { tag:'procert', tagLabel:'Pro Cert', color:'#00e5cc', icon:'🎓', date:'Jul 2025', title:'Microsoft Certified: Power Platform Functional Consultant Associate', org:'Microsoft', bg:'linear-gradient(135deg,#003d38 0%,#0d9488 45%,#042f2e 100%)' },
-  'cogent-special-projects':    { tag:'work', tagLabel:'Work', color:'#60b4ff', icon:'💼', date:'Feb 2025 – Present', title:'Power Platform Special Projects Lead', org:'Cogent', bg:'linear-gradient(135deg,#0a2040 0%,#1d4ed8 45%,#051020 100%)' },
-  'upskilling-host':            { tag:'volunteer', tagLabel:'Volunteer/Community', color:'#4ade80', icon:'🎮', date:'ca. 2024', title:'Community Upskilling Host', org:'Online & In-Person', bg:'linear-gradient(135deg,#052814 0%,#166534 45%,#031a0e 100%)' },
-  'esports-streaming':          { tag:'volunteer', tagLabel:'Volunteer/Community', color:'#4ade80', icon:'🎮', date:'ca. 2024', title:'Esports Streaming – Minecraft & Call of Duty Mobile', org:'', bg:'linear-gradient(135deg,#062010 0%,#15803d 45%,#04160a 100%)' },
-  'sdg-johannesburg':           { tag:'cert', tagLabel:'Cert', color:'#c77dff', icon:'🎓', date:'May 2024', title:'Introduction to Sustainability Development Goals', org:'University of Johannesburg', bg:'linear-gradient(135deg,#280a52 0%,#6d28d9 45%,#160640 100%)' },
-  'esports-lead-eduvos':        { tag:'volunteer', tagLabel:'Volunteer/Community', color:'#4ade80', icon:'🎮', date:'ca. 2023', title:'Esports Community Lead / Organizer – Eduvos', org:'Game Jams, Hackathons & Events', bg:'linear-gradient(135deg,#052818 0%,#15803d 45%,#031a0e 100%)' },
-  'wigi-mentee':                { tag:'volunteer', tagLabel:'Volunteer/Community', color:'#4ade80', icon:'🤝', date:'ca. 2023', title:'Mentee – Women in Gaming International (WIGI)', org:'with Riot Games', bg:'linear-gradient(135deg,#073020 0%,#166534 45%,#041810 100%)' },
-  'eco-city-hackathon':         { tag:'hackathon', tagLabel:'Hackathon', color:'#ff6eb4', icon:'🏆', date:'ca. 2023', title:'Top 10 – Eco City Game Hackathon', org:'Ayoba', bg:'linear-gradient(135deg,#42081e 0%,#9d174d 45%,#280510 100%)' },
-  'eduvos-developer':           { tag:'work', tagLabel:'Work', color:'#60b4ff', icon:'💼', date:'Sep 2022 – Jan 2025', title:'Microsoft Dynamics and Power Platform Developer', org:'Eduvos', bg:'linear-gradient(135deg,#0c1e40 0%,#1e40af 45%,#061028 100%)' },
-  'teens-in-ai':                { tag:'volunteer', tagLabel:'Volunteer/Community', color:'#4ade80', icon:'🤝', date:'ca. 2022', title:'Mentor – Teens in AI', org:'Team placed 3rd internationally for AI solution', bg:'linear-gradient(135deg,#052a14 0%,#166534 45%,#031a0e 100%)' },
-  'osint-judge':                { tag:'volunteer', tagLabel:'Volunteer/Community', color:'#4ade80', icon:'🤝', date:'Aug 2022', title:'Judge – Global OSINT Search Party CTF', org:'Canvas Credentials', bg:'linear-gradient(135deg,#052218 0%,#065f46 45%,#031510 100%)' },
-  'ui-ux-codecademy':           { tag:'cert', tagLabel:'Cert', color:'#c77dff', icon:'🎓', date:'Jul 2022', title:'Introduction to UI and UX Design', org:'Codecademy', bg:'linear-gradient(135deg,#200a50 0%,#6d28d9 45%,#110630 100%)' },
-  'hnd-ux-upskillist':          { tag:'cert', tagLabel:'Cert', color:'#c77dff', icon:'📜', date:'Jan – Dec 2022', title:'Higher National Diploma, UX Design', org:'Upskillist', bg:'linear-gradient(135deg,#260a52 0%,#7c3aed 45%,#140638 100%)' },
-  'frontend-engineer-codecademy':{ tag:'cert', tagLabel:'Cert', color:'#c77dff', icon:'📚', date:'Jan – Sep 2022', title:'Front-End Engineer Certification', org:'Codecademy', bg:'linear-gradient(135deg,#1e0a4e 0%,#5b21b6 45%,#100630 100%)' },
-  'ux-austin-peay':             { tag:'cert', tagLabel:'Cert', color:'#c77dff', icon:'📚', date:'Jan – Aug 2022', title:'UX Design', org:'Austin Peay State University', bg:'linear-gradient(135deg,#2a0a58 0%,#7c3aed 45%,#160838 100%)' },
-  'react-native-designcode':    { tag:'cert', tagLabel:'Cert', color:'#c77dff', icon:'📚', date:'Jan – Jul 2022', title:'React Native for Designers Certificate', org:'Designcode.io', bg:'linear-gradient(135deg,#220a50 0%,#6d28d9 45%,#120630 100%)' },
-  'design-thinking-regent':     { tag:'cert', tagLabel:'Cert', color:'#c77dff', icon:'📚', date:'Jan – May 2022', title:'Certificate, Design Thinking', org:'Regent Business School', bg:'linear-gradient(135deg,#2e0a5e 0%,#7c3aed 45%,#1a0840 100%)' },
-  'ai-intro-ibm':               { tag:'cert', tagLabel:'Cert', color:'#c77dff', icon:'🎓', date:'Feb 2022', title:'Artificial Intelligence Intro', org:'IBM', bg:'linear-gradient(135deg,#240a52 0%,#5b21b6 45%,#140638 100%)' },
-  'digital-overdose-con':       { tag:'speaker', tagLabel:'Speaker', color:'#38f0f0', icon:'🎤', date:'2021', title:'International Speaker – Digital Overdose Con', org:'', bg:'linear-gradient(135deg,#042830 0%,#0e7490 45%,#021820 100%)' },
-  'hack-south-moderator':       { tag:'volunteer', tagLabel:'Volunteer/Community', color:'#4ade80', icon:'🌱', date:'2021', title:'Discord Server Moderator', org:'Hack South Community', bg:'linear-gradient(135deg,#062018 0%,#15803d 45%,#041210 100%)' },
-  'ethical-hacking-tcm':        { tag:'cert', tagLabel:'Cert', color:'#c77dff', icon:'📚', date:'Nov 2021 – Apr 2022', title:'Practical Ethical Hacking Certificate', org:'TCM Security', bg:'linear-gradient(135deg,#280a50 0%,#6d28d9 45%,#160636 100%)' },
-  'dot-development-africa':     { tag:'work', tagLabel:'Work', color:'#60b4ff', icon:'💼', date:'May 2021 – Aug 2022', title:'Founder & Power Platform Consultant', org:'Dot Development Africa', bg:'linear-gradient(135deg,#0a1e40 0%,#1d4ed8 45%,#060e28 100%)' },
-  'govx-winner':                { tag:'hackathon', tagLabel:'Hackathon', color:'#ff6eb4', icon:'🏆', date:'May 2021', title:'GovX Innovation Challenge Winner', org:'Dept. of Telecommunications', bg:'linear-gradient(135deg,#3c0820 0%,#be185d 45%,#240510 100%)' },
-  'ai900-azure-ai':             { tag:'procert', tagLabel:'Pro Cert', color:'#00e5cc', icon:'🎓', date:'Jun 2021', title:'AI-900: Azure AI Fundamentals', org:'Microsoft', bg:'linear-gradient(135deg,#003830 0%,#0d9488 45%,#002820 100%)' },
-  'bi-consultants-linkedin':    { tag:'cert', tagLabel:'Cert', color:'#c77dff', icon:'📗', date:'Apr 2021', title:'Business Intelligence for Consultants', org:'LinkedIn', bg:'linear-gradient(135deg,#200a4c 0%,#6d28d9 45%,#110630 100%)' },
-  'azure-devops-linkedin':      { tag:'cert', tagLabel:'Cert', color:'#c77dff', icon:'📗', date:'Apr 2021', title:'Azure for DevOps: Continuous Integration', org:'LinkedIn', bg:'linear-gradient(135deg,#1e0a4e 0%,#5b21b6 45%,#100630 100%)' },
-  'azure-ad-linkedin':          { tag:'cert', tagLabel:'Cert', color:'#c77dff', icon:'📗', date:'Apr 2021', title:'Azure Active Directory: Basics', org:'LinkedIn', bg:'linear-gradient(135deg,#220a52 0%,#6d28d9 45%,#120630 100%)' },
-  'azure-admin-linkedin':       { tag:'cert', tagLabel:'Cert', color:'#c77dff', icon:'📗', date:'Apr 2021', title:'Azure Administration Essential Training', org:'LinkedIn', bg:'linear-gradient(135deg,#260a54 0%,#7c3aed 45%,#140638 100%)' },
-  'digital-volunteer':          { tag:'volunteer', tagLabel:'Volunteer/Community', color:'#4ade80', icon:'🌱', date:'Jul 2020 – Present', title:'Digital Volunteer – Bureau for Rights-Based Development & United Nations Volunteer', org:'', bg:'linear-gradient(135deg,#042c18 0%,#166534 45%,#031a0e 100%)' },
-  'bsa-uct':                    { tag:'cert', tagLabel:'Cert', color:'#c77dff', icon:'🎓', date:'Jan 2020 – Oct 2020', title:'Business Systems Analysis', org:'University of Cape Town', bg:'linear-gradient(135deg,#280a54 0%,#7c3aed 45%,#160838 100%)' },
-  'mpt-accountant':           { tag:'work', tagLabel:'Work', color:'#60b4ff', icon:'💼', date:'Oct 2020 – Apr 2021', title:'Junior Accountant – ERP Operations', org:'Master Power Technologies', bg:'linear-gradient(135deg,#0a1e40 0%,#1e3a8a 45%,#050e28 100%)' },
-  'initec-civils':            { tag:'work', tagLabel:'Work', color:'#60b4ff', icon:'💼', date:'Jan 2017 – Dec 2019', title:'Financial Project Coordinator', org:'Initec Civils', bg:'linear-gradient(135deg,#0c1a2e 0%,#1e40af 45%,#060e20 100%)' },
-  'office-space-online':      { tag:'work', tagLabel:'Work', color:'#60b4ff', icon:'💼', date:'Oct 2016 – Dec 2016', title:'Serviced Office Manager', org:'Office Space Online', bg:'linear-gradient(135deg,#0a1830 0%,#1d3461 45%,#05101e 100%)' },
-  'ontime-accountant':        { tag:'work', tagLabel:'Work', color:'#60b4ff', icon:'💼', date:'Sep 2015 – Oct 2016', title:'Junior Accountant', org:'Ontime Readymix Concrete', bg:'linear-gradient(135deg,#0a1428 0%,#1e3a5f 45%,#060c1c 100%)' },
-  'tracetec':                 { tag:'work', tagLabel:'Work', color:'#60b4ff', icon:'💼', date:'Oct 2014 – Jun 2015', title:'Debtors Administrator & CRM Analyst', org:'Tracetec (Pty) Ltd', bg:'linear-gradient(135deg,#0c1e38 0%,#1a3a6e 45%,#060e24 100%)' },
-  'profile-cut':              { tag:'work', tagLabel:'Work', color:'#60b4ff', icon:'💼', date:'Sep 2013 – Mar 2014', title:'Junior Bookkeeper – Payroll & Compliance', org:'Profile Cut Dynamics', bg:'linear-gradient(135deg,#0a1630 0%,#1e3560 45%,#050e20 100%)' },
-  'ontime-bookkeeper':        { tag:'work', tagLabel:'Work', color:'#60b4ff', icon:'💼', date:'2012 – 2013', title:'Junior Bookkeeper – Financial Systems', org:'Ontime Readymix Concrete', bg:'linear-gradient(135deg,#091428 0%,#1a2f58 45%,#040b1a 100%)' },
-  'rmi-web-design':             { tag:'work', tagLabel:'Work', color:'#60b4ff', icon:'💼', date:'Mar 2017 – Sep 2020', title:'Founder & Digital Solutions Lead', org:'RMI Web Design', bg:'linear-gradient(135deg,#081c3e 0%,#1e40af 45%,#050e26 100%)' },
-  'project-2026': { tag:'project', tagLabel:'Project', color:'#f472b6', icon:'✦', date:'2026', title:'Your Project Here', org:'Add your 2026 project', bg:'linear-gradient(135deg,#2e0848 0%,#86198f 45%,#1a0430 100%)' },
-  'project-2025': { tag:'project', tagLabel:'Project', color:'#f472b6', icon:'✦', date:'2025', title:'Your Project Here', org:'Add your 2025 project', bg:'linear-gradient(135deg,#2e0848 0%,#86198f 45%,#1a0430 100%)' },
-  'project-2024': { tag:'project', tagLabel:'Project', color:'#f472b6', icon:'✦', date:'2024', title:'Your Project Here', org:'Add your 2024 project', bg:'linear-gradient(135deg,#2e0848 0%,#86198f 45%,#1a0430 100%)' },
-  'project-2023': { tag:'project', tagLabel:'Project', color:'#f472b6', icon:'✦', date:'2023', title:'Your Project Here', org:'Add your 2023 project', bg:'linear-gradient(135deg,#2e0848 0%,#86198f 45%,#1a0430 100%)' },
-  'project-2022': { tag:'project', tagLabel:'Project', color:'#f472b6', icon:'✦', date:'2022', title:'Your Project Here', org:'Add your 2022 project', bg:'linear-gradient(135deg,#2e0848 0%,#86198f 45%,#1a0430 100%)' },
-  'project-2021': { tag:'project', tagLabel:'Project', color:'#f472b6', icon:'✦', date:'2021', title:'Your Project Here', org:'Add your 2021 project', bg:'linear-gradient(135deg,#2e0848 0%,#86198f 45%,#1a0430 100%)' },
-  'project-2020': { tag:'project', tagLabel:'Project', color:'#f472b6', icon:'✦', date:'2020', title:'Your Project Here', org:'Add your 2020 project', bg:'linear-gradient(135deg,#2e0848 0%,#86198f 45%,#1a0430 100%)' },
-  'project-2017': { tag:'project', tagLabel:'Project', color:'#f472b6', icon:'✦', date:'2017', title:'Your Project Here', org:'Add your 2017 project', bg:'linear-gradient(135deg,#2e0848 0%,#86198f 45%,#1a0430 100%)' },
-};
-
-// ── Content & image localStorage keys ──
-const LS_CONTENT_KEY = 'roadmap_content_edits';  // { id: { intro, learned, highlights } }
-const LS_IMAGES_KEY  = 'roadmap_images';          // { id: { banner: base64, inline: base64 } }
-
-function loadContentEdits() { try { return JSON.parse(localStorage.getItem(LS_CONTENT_KEY) || '{}'); } catch(e){ return {}; } }
-function loadImages()       { try { return JSON.parse(localStorage.getItem(LS_IMAGES_KEY)  || '{}'); } catch(e){ return {}; } }
-function saveContentEdits(d) { localStorage.setItem(LS_CONTENT_KEY, JSON.stringify(d)); }
-function saveImages(d)       { localStorage.setItem(LS_IMAGES_KEY,  JSON.stringify(d)); }
-
-let _currentArticleId   = null;
-let _currentAccentColor = null;
-let _editMode = false;
-
-// ── Skill tags per article ──
-const articleSkills = {
-  // ── Certs: only the discipline the cert actually covers ──
-  'copilot-command-specialist':  ['Copilot Studio','Power Platform'],
-  'ai-fluency-anthropic':        ['AI & Automation','Prompt Engineering'],
-  'ethics-of-ai-helsinki':       ['AI Ethics'],
-  'copilot-operative':           ['Copilot Studio','Power Automate','Power Platform'],
-  'copilot-recruit':             ['Copilot Studio','Power Platform'],
-  'pp-functional-consultant':    ['Dataverse','Power Apps','Power Automate','Power Platform','Solution Architecture'],
-  'sdg-johannesburg':            ['Sustainability'],
-  'ui-ux-codecademy':            ['UI Design','UX Design'],
-  'hnd-ux-upskillist':           ['UX Design'],
-  'frontend-engineer-codecademy':['CSS','Front-End','HTML','JavaScript','React'],
-  'ux-austin-peay':              ['Accessibility','UX Design'],
-  'react-native-designcode':     ['Mobile','React Native','UI Design'],
-  'design-thinking-regent':      ['Design Thinking'],
-  'ai-intro-ibm':                ['AI & Automation','Machine Learning'],
-  'ethical-hacking-tcm':         ['Cybersecurity','Ethical Hacking','Networking'],
-  'ai900-azure-ai':              ['AI & Automation','Azure'],
-  'bi-consultants-linkedin':     ['Business Intelligence','Power BI'],
-  'azure-devops-linkedin':       ['Azure DevOps','CI/CD'],
-  'azure-ad-linkedin':           ['Azure AD','Security'],
-  'azure-admin-linkedin':        ['Azure','Cloud'],
-  'bsa-uct':                     ['Business Analysis','Requirements Engineering'],
-
-  // ── Work: only the tools and disciplines actively used in that role ──
-  'cogent-special-projects':     ['Copilot Studio','Dataverse','Power Apps','Power Automate','Power Pages','Power Platform','SharePoint','Solution Architecture'],
-  'eduvos-developer':            ['Dataverse','Dynamics 365','Power Apps','Power Automate','Power Pages','Power Platform','SharePoint','Solution Architecture','UI Design'],
-  'dot-development-africa':      ['Business Analysis','Digital Transformation','Power Apps','Power Automate','Power BI','Power Platform','Requirements Engineering','Solution Architecture'],
-  'mpt-accountant':              ['ERP Systems','Financial Systems','SAP'],
-  'initec-civils':               ['Data Management','Financial Systems','Project Management','Reporting'],
-  'rmi-web-design':              ['Branding','CSS','HTML','JavaScript','UI Design','Web Design','WordPress'],
-  'office-space-online':         ['CRM Systems','Operations'],
-  'ontime-accountant':           ['Financial Systems','Reconciliation'],
-  'tracetec':                    ['CRM Systems','Financial Systems'],
-  'profile-cut':                 ['Compliance','Financial Systems','Payroll Systems'],
-  'ontime-bookkeeper':           ['Financial Systems'],
-
-  // ── Volunteer / Community: the actual activity ──
-  'upskilling-host':             ['Power Platform','Training'],
-  'esports-streaming':           ['Content Creation'],
-  'esports-lead-eduvos':         ['Leadership'],
-  'wigi-mentee':                 ['Leadership','Mentorship'],
-  'eco-city-hackathon':          ['UX Design'],
-  'teens-in-ai':                 ['AI & Automation','Mentorship'],
-  'osint-judge':                 ['Cybersecurity','OSINT'],
-  'digital-overdose-con':        ['Cybersecurity','Public Speaking'],
-  'hack-south-moderator':        ['Cybersecurity'],
-  'digital-volunteer':           ['Digital Transformation'],
-  'govx-winner':                 ['Power Platform','Solution Architecture'],
-
-  // ── Projects ──
-  'project-2026': [],
-  'project-2025': [],
-  'project-2024': [],
-  'project-2023': [],
-  'project-2022': [],
-  'project-2021': [],
-  'project-2020': [],
-  'project-2017': [],
-};
-
-// ── Skill categories ──
-const skillCategories = {
-  'Business':    ['AI Ethics','Business Analysis','Business Intelligence','CI/CD','Compliance','CRM Systems','Data Management','Design Thinking','Digital Transformation','ERP Systems','Financial Systems','Operations','Payroll Systems','Project Management','Reconciliation','Reporting','Requirements Engineering','Solution Architecture','Sustainability','Training'],
-  'Tech':        ['Accessibility','AI & Automation','AI Builder','Azure','Azure AD','Azure DevOps','Branding','Cloud','Copilot Studio','CSS','Cybersecurity','Dataverse','Dynamics 365','Ethical Hacking','Front-End','HTML','JavaScript','Machine Learning','Mobile','Networking','OSINT','Power Apps','Power Automate','Power BI','Power Pages','Power Platform','Prompt Engineering','React','React Native','SAP','Security','SharePoint','UI Design','UX Design','Web Design','WordPress'],
-  'Community':   ['Content Creation','Leadership','Mentorship','Public Speaking'],
-};
-
-// ── Work experience date ranges (start, end) ──
-const workRanges = {
-  'ontime-bookkeeper':        { start:[2012,1],  end:[2013,12] },
-  'profile-cut':              { start:[2013,9],  end:[2014,3]  },
-  'tracetec':                 { start:[2014,10], end:[2015,6]  },
-  'ontime-accountant':        { start:[2015,9],  end:[2016,10] },
-  'office-space-online':      { start:[2016,10], end:[2016,12] },
-  'initec-civils':            { start:[2017,1],  end:[2019,12] },
-  'rmi-web-design':           { start:[2017,3],  end:[2020,9]  },
-  'mpt-accountant':           { start:[2020,10], end:[2021,4]  },
-  'dot-development-africa':   { start:[2021,5],  end:[2022,8]  },
-  'eduvos-developer':         { start:[2022,9],  end:[2025,1]  },
-  'cogent-special-projects':  { start:[2025,2],  end:'present' },
-};
-
-// Skills-to-work mapping: which work entries involve each skill
-const skillWorkMap = {
-  'Financial Systems':       ['ontime-bookkeeper','profile-cut','tracetec','ontime-accountant','initec-civils','mpt-accountant'],
-  'Payroll Systems':         ['profile-cut'],
-  'Compliance':              ['profile-cut'],
-  'CRM Systems':             ['tracetec','office-space-online'],
-  'Reconciliation':          ['ontime-accountant'],
-  'Reporting':               ['initec-civils'],
-  'Data Management':         ['initec-civils','mpt-accountant'],
-  'Project Management':      ['initec-civils'],
-  'ERP Systems':             ['mpt-accountant'],
-  'SAP':                     ['mpt-accountant'],
-  'Operations':              ['office-space-online'],
-  'Digital Transformation':  ['office-space-online','dot-development-africa'],
-  'Business Analysis':       ['dot-development-africa'],
-  'Requirements Engineering':['dot-development-africa'],
-  'Power Platform':          ['dot-development-africa','eduvos-developer','cogent-special-projects'],
-  'Power Apps':              ['dot-development-africa','eduvos-developer','cogent-special-projects'],
-  'Power Automate':          ['dot-development-africa','eduvos-developer','cogent-special-projects'],
-  'Power BI':                ['dot-development-africa'],
-  'Power Pages':             ['eduvos-developer','cogent-special-projects'],
-  'Solution Architecture':   ['dot-development-africa','eduvos-developer','cogent-special-projects'],
-  'Dataverse':               ['eduvos-developer','cogent-special-projects'],
-  'Dynamics 365':            ['eduvos-developer'],
-  'SharePoint':              ['eduvos-developer','cogent-special-projects'],
-  'UI Design':               ['eduvos-developer','rmi-web-design'],
-  'Copilot Studio':          ['cogent-special-projects'],
-  'HTML':                    ['rmi-web-design'],
-  'CSS':                     ['rmi-web-design'],
-  'JavaScript':              ['rmi-web-design'],
-  'Web Design':              ['rmi-web-design'],
-  'WordPress':               ['rmi-web-design'],
-  'Branding':                ['rmi-web-design'],
-};
-
-// ── Build master skills list ──
-const allSkills = [...new Set(Object.values(articleSkills).flat())].sort((a,b) => a.localeCompare(b));
-
-// ── Tag filter map ──
-const tagFilterMap = {
-  'cert':      ['cert','edu','diploma','upskilling'],
-  'volunteer': ['volunteer','community'],
-};
+// ── Runtime data ──
+let ARTICLES={}, CONTENT={}, SKILLS={}, YEARS={}, IMAGES={}, PROJECTS={};
 
 // ── Filter state ──
-let activeTag = 'all';
-let activeSkill = null;
+let activeTag='all', activeSkill=null;
+const tagFilterMap={'cert':['cert','edu','diploma','upskilling'],'volunteer':['volunteer','community']};
 
-// ── Combined filter engine ──
+// ══════════════════════════════════════
+// DATA LOAD — public Firestore REST (no API key needed for public read rules)
+// Security: Firestore rules set to allow read:true, write:false
+// The project ID is not a secret — it's a public identifier
+// ══════════════════════════════════════
+async function loadFromFirebase() {
+  const loading=document.getElementById('loading-screen');
+  const loadingText=document.getElementById('loading-text');
+  try {
+    loadingText.textContent='Loading roadmap...';
+    const url=`https://firestore.googleapis.com/v1/projects/${FIRESTORE_PROJECT_ID}/databases/(default)/documents/roadmap/main`;
+    const res=await fetch(url);
+    if(!res.ok) {
+      if(res.status===404) throw new Error('No data published yet. Open roadmap-editor.html and click Publish to Firebase.');
+      if(res.status===403) throw new Error('Firestore rules are blocking public read. Set: allow read: if true in Firebase Console → Firestore → Rules.');
+      throw new Error('Server returned '+res.status);
+    }
+    loadingText.textContent='Building timeline...';
+    const doc=await res.json();
+    const f=doc.fields;
+    ARTICLES=JSON.parse(f.articles.stringValue);
+    CONTENT=JSON.parse(f.content.stringValue);
+    SKILLS=JSON.parse(f.skills.stringValue);
+    YEARS=JSON.parse(f.years.stringValue);
+    IMAGES=f.images?JSON.parse(f.images.stringValue):{};
+    PROJECTS=f.projects?JSON.parse(f.projects.stringValue):{};
+    buildTimeline(); buildSkillPills(); updateStats();
+    loading.style.opacity='0'; loading.style.transition='opacity 0.4s';
+    setTimeout(()=>{loading.style.display='none';},400);
+    document.getElementById('view-roadmap').classList.add('active');
+  } catch(e) {
+    loadingText.textContent='';
+    const d=document.createElement('div'); d.className='loading-error';
+    d.innerHTML='❌ Failed to load<br><br>'+e.message;
+    loading.appendChild(d); console.error('Load error:',e);
+  }
+}
+
+// ══════════════════════════════════════
+// TIMELINE BUILDER
+// ══════════════════════════════════════
+function buildTimeline() {
+  const root=document.getElementById('timeline-root');
+  const yearGroups={};
+  Object.keys(ARTICLES).forEach(id=>{const yr=YEARS[id]||9999;if(!yearGroups[yr])yearGroups[yr]=[];yearGroups[yr].push(id);});
+  const yearColors={2026:'#bf7bff',2025:'#d4b8ff',2024:'#00e5cc',2023:'#4ade80',2022:'#fbbf24',2021:'#fb923c',2020:'#f87171',2019:'#fca5a5',2018:'#fca5a5',2017:'#fca5a5',2016:'#fdba74',2015:'#fcd34d',2014:'#86efac',2013:'#67e8f9',2012:'#a5b4fc'};
+  const sortedYears=Object.keys(yearGroups).sort((a,b)=>b-a);
+  root.innerHTML=sortedYears.map(yr=>{
+    const ids=yearGroups[yr];
+    const items=ids.map(id=>{
+      const a=ARTICLES[id];
+      return `<button class="item tag-${a.tag}" onclick="openArticle('${id}')"><span class="item-tag-wrap"><span class="tag tag-${a.tag}">${a.tagLabel}</span></span><div class="item-content"><div class="item-date">${a.date||''}</div><div class="item-title">${a.title||''}</div>${a.org?`<div class="item-org">${a.org}</div>`:''}</div><span class="item-arrow">→</span></button>`;
+    }).join('');
+    return `<div class="year-group yr-${yr}"><div class="year-header"><span class="year-label">${yr}</span><span class="year-node"></span></div><div class="items">${items}</div></div>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════
+// FILTERS
+// ══════════════════════════════════════
 function applyFilters() {
-  const matchingTags = (tagFilterMap && tagFilterMap[activeTag]) ? tagFilterMap[activeTag] : [activeTag];
-  document.querySelectorAll('#view-roadmap .item').forEach(item => {
-    const id = item.getAttribute('onclick')?.match(/'([^']+)'/)?.[1];
-    const tagMatch = activeTag === 'all' || matchingTags.some(t => item.classList.contains('tag-' + t));
-    const skillMatch = !activeSkill || (id && (articleSkills[id] || []).includes(activeSkill));
-    item.classList.toggle('hidden', !(tagMatch && skillMatch));
+  const matchingTags=tagFilterMap[activeTag]?tagFilterMap[activeTag]:[activeTag];
+  document.querySelectorAll('#view-roadmap .item').forEach(item=>{
+    const id=item.getAttribute('onclick')?.match(/'([^']+)'/)?.[1];
+    const tagMatch=activeTag==='all'||matchingTags.some(t=>item.classList.contains('tag-'+t));
+    const skillMatch=!activeSkill||(id&&(SKILLS[id]||[]).includes(activeSkill));
+    item.classList.toggle('hidden',!(tagMatch&&skillMatch));
   });
-  document.querySelectorAll('.year-group').forEach(group => {
-    group.classList.toggle('all-hidden', group.querySelectorAll('.item:not(.hidden)').length === 0);
+  document.querySelectorAll('.year-group').forEach(group=>{
+    group.classList.toggle('all-hidden',group.querySelectorAll('.item:not(.hidden)').length===0);
   });
-  updateFilterSummary();
-  updateStats();
+  updateFilterSummary(); updateStats();
 }
-
 function updateFilterSummary() {
-  const summary = document.getElementById('filter-summary');
-  const text = document.getElementById('filter-summary-text');
-  const parts = [];
-  if (activeTag !== 'all') parts.push('Type: <strong>' + activeTag + '</strong>');
-  if (activeSkill) parts.push('Skill: <strong>' + activeSkill + '</strong>');
-  if (parts.length) { summary.style.display = 'flex'; text.innerHTML = 'Showing ' + parts.join(' + '); }
-  else summary.style.display = 'none';
+  const summary=document.getElementById('filter-summary'),text=document.getElementById('filter-summary-text');
+  const parts=[];
+  if(activeTag!=='all')parts.push('Type: <strong>'+activeTag+'</strong>');
+  if(activeSkill)parts.push('Skill: <strong>'+activeSkill+'</strong>');
+  if(parts.length){summary.style.display='flex';text.innerHTML='Showing '+parts.join(' + ');}
+  else summary.style.display='none';
 }
-
-function setTagFilter(tag, btn) {
-  activeTag = tag;
-  document.querySelectorAll('.filter-pill[data-tag]').forEach(b => { b.classList.remove('active'); b.style.background = 'rgba(255,255,255,0.04)'; b.style.color = 'rgba(237,233,255,0.6)'; b.style.borderColor = 'rgba(255,255,255,0.15)'; });
+function setTagFilter(tag,btn) {
+  activeTag=tag;
+  document.querySelectorAll('.filter-pill[data-tag]').forEach(b=>{b.classList.remove('active');b.style.background='rgba(255,255,255,0.04)';b.style.color='rgba(237,233,255,0.6)';b.style.borderColor='rgba(255,255,255,0.15)';});
   btn.classList.add('active');
-  const fc = getComputedStyle(btn).getPropertyValue('--fc').trim() || '#ede9ff';
-  btn.style.background = fc; btn.style.color = '#13102a'; btn.style.borderColor = 'transparent';
-  document.getElementById('tag-active-label').textContent = tag !== 'all' ? '· ' + btn.textContent.trim() : '';
-  document.getElementById('tag-toggle').classList.toggle('active-filter', tag !== 'all');
+  const fc=getComputedStyle(btn).getPropertyValue('--fc').trim()||'#ede9ff';
+  btn.style.background=fc;btn.style.color='#13102a';btn.style.borderColor='transparent';
+  document.getElementById('tag-active-label').textContent=tag!=='all'?'· '+btn.textContent.trim():'';
+  document.getElementById('tag-toggle').classList.toggle('active-filter',tag!=='all');
   document.getElementById('tag-toggle').classList.remove('open');
   document.getElementById('tag-dropdown').classList.remove('open');
   applyFilters();
 }
-
-function applySkillFilter(skill, btn) {
-  activeSkill = skill || null;
-  document.querySelectorAll('#skill-pills-grid .skill-filter-pill').forEach(p => p.classList.remove('active'));
+function applySkillFilter(skill,btn) {
+  activeSkill=skill||null;
+  document.querySelectorAll('#skill-pills-grid .skill-filter-pill').forEach(p=>p.classList.remove('active'));
   btn.classList.add('active');
-  document.getElementById('skill-active-label').textContent = skill ? '· ' + skill : '';
-  document.getElementById('skill-toggle').classList.toggle('active-filter', !!skill);
+  document.getElementById('skill-active-label').textContent=skill?'· '+skill:'';
+  document.getElementById('skill-toggle').classList.toggle('active-filter',!!skill);
   document.getElementById('skill-toggle').classList.remove('open');
   document.getElementById('skill-dropdown').classList.remove('open');
   applyFilters();
 }
-
 function clearAllFilters() {
-  activeTag = 'all'; activeSkill = null;
-  document.querySelectorAll('.filter-pill[data-tag]').forEach(b => { b.classList.remove('active'); b.style.background = 'rgba(255,255,255,0.04)'; b.style.color = 'rgba(237,233,255,0.6)'; b.style.borderColor = 'rgba(255,255,255,0.15)'; });
-  const ap = document.querySelector('.filter-pill[data-tag="all"]');
-  if (ap) { ap.classList.add('active'); ap.style.background='#ede9ff'; ap.style.color='#13102a'; ap.style.borderColor='transparent'; }
-  document.querySelectorAll('#skill-pills-grid .skill-filter-pill').forEach(p => p.classList.remove('active'));
-  const asp = document.querySelector('#skill-pills-grid [data-skill=""]');
-  if (asp) asp.classList.add('active');
-  document.getElementById('tag-active-label').textContent = '';
-  document.getElementById('skill-active-label').textContent = '';
-  document.getElementById('tag-toggle').classList.remove('active-filter');
-  document.getElementById('skill-toggle').classList.remove('active-filter');
+  activeTag='all';activeSkill=null;
+  document.querySelectorAll('.filter-pill[data-tag]').forEach(b=>{b.classList.remove('active');b.style.background='rgba(255,255,255,0.04)';b.style.color='rgba(237,233,255,0.6)';b.style.borderColor='rgba(255,255,255,0.15)';});
+  const ap=document.querySelector('.filter-pill[data-tag="all"]');
+  if(ap){ap.classList.add('active');ap.style.background='#ede9ff';ap.style.color='#13102a';ap.style.borderColor='transparent';}
+  document.querySelectorAll('#skill-pills-grid .skill-filter-pill').forEach(p=>p.classList.remove('active'));
+  const asp=document.querySelector('#skill-pills-grid [data-skill=""]');
+  if(asp)asp.classList.add('active');
+  ['tag-active-label','skill-active-label'].forEach(id=>document.getElementById(id).textContent='');
+  ['tag-toggle','skill-toggle'].forEach(id=>document.getElementById(id).classList.remove('active-filter'));
   applyFilters();
 }
-
 function togglePanel(panel) {
-  const tt=document.getElementById('tag-toggle'), td=document.getElementById('tag-dropdown');
-  const st=document.getElementById('skill-toggle'), sd=document.getElementById('skill-dropdown');
-  if (panel === 'tag') { st.classList.remove('open'); sd.classList.remove('open'); tt.classList.toggle('open'); td.classList.toggle('open'); }
-  else { tt.classList.remove('open'); td.classList.remove('open'); st.classList.toggle('open'); sd.classList.toggle('open'); }
+  const tt=document.getElementById('tag-toggle'),td=document.getElementById('tag-dropdown');
+  const st=document.getElementById('skill-toggle'),sd=document.getElementById('skill-dropdown');
+  if(panel==='tag'){st.classList.remove('open');sd.classList.remove('open');tt.classList.toggle('open');td.classList.toggle('open');}
+  else{tt.classList.remove('open');td.classList.remove('open');st.classList.toggle('open');sd.classList.toggle('open');}
 }
-document.addEventListener('click', e => {
-  if (!e.target.closest('.filter-panel')) {
-    document.querySelectorAll('.filter-toggle').forEach(t => t.classList.remove('open'));
-    document.querySelectorAll('.filter-dropdown').forEach(d => d.classList.remove('open'));
+document.addEventListener('click',e=>{
+  if(!e.target.closest('.filter-panel')){
+    document.querySelectorAll('.filter-toggle').forEach(t=>t.classList.remove('open'));
+    document.querySelectorAll('.filter-dropdown').forEach(d=>d.classList.remove('open'));
   }
 });
-
-// ── Helpers ──
-function calcMonths(range) {
-  const now = new Date();
-  const end = range.end === 'present' ? [now.getFullYear(), now.getMonth()+1] : range.end;
-  return (end[0] - range.start[0]) * 12 + (end[1] - range.start[1]);
-}
-function formatDuration(totalMonths) {
-  const yrs = Math.floor(totalMonths / 12), mos = totalMonths % 12;
-  if (yrs === 0) return mos + ' month' + (mos !== 1 ? 's' : '');
-  if (mos === 0) return yrs + ' year' + (yrs !== 1 ? 's' : '');
-  return yrs + ' yr' + (yrs !== 1 ? 's' : '') + ' ' + mos + ' mo' + (mos !== 1 ? 's' : '');
-}
-// Convert [year, month] to a single integer month index for easy comparison
-function toMonthIndex(ym) { return ym[0] * 12 + ym[1]; }
-// Merge overlapping ranges and sum the actual unique months worked
-function totalWorkMonths(ids) {
-  const now = new Date();
-  const nowYM = [now.getFullYear(), now.getMonth() + 1];
-  // Build list of [startIdx, endIdx] pairs
-  const spans = ids
-    .filter(id => workRanges[id])
-    .map(id => {
-      const r = workRanges[id];
-      return [toMonthIndex(r.start), toMonthIndex(r.end === 'present' ? nowYM : r.end)];
-    });
-  if (!spans.length) return 0;
-  // Sort by start
-  spans.sort((a, b) => a[0] - b[0]);
-  // Merge overlapping/adjacent spans
-  const merged = [spans[0]];
-  for (let i = 1; i < spans.length; i++) {
-    const last = merged[merged.length - 1];
-    if (spans[i][0] <= last[1]) {
-      last[1] = Math.max(last[1], spans[i][1]); // extend
-    } else {
-      merged.push(spans[i]);
-    }
-  }
-  // Sum the merged spans
-  return merged.reduce((sum, s) => sum + (s[1] - s[0]), 0);
-}
-
-// ── Tag stats ──
-const tagStats = {
-  'all':       { icon:'✦', color:'#b06ef3', fn: () => ({ value:'13 years', label:'2012 – 2026', sub:'' }) },
-  'work':      { icon:'💼', color:'#60b4ff', fn: () => { const t=totalWorkMonths(Object.keys(workRanges)); return { value:formatDuration(t), label:'work experience', sub:'' }; } },
-  'cert':      { icon:'🎓', color:'#c77dff', fn: (i) => ({ value:i.length+' cert'+(i.length!==1?'s':''), label:'', sub:'' }) },
-  'procert':   { icon:'🎓', color:'#00e5cc', fn: (i) => ({ value:i.length+' pro cert'+(i.length!==1?'s':''), label:'', sub:'' }) },
-  'hackathon': { icon:'🏆', color:'#ff6eb4', fn: (i) => ({ value:i.length+' hackathon'+(i.length!==1?'s':''), label:'', sub:'' }) },
-  'volunteer': { icon:'🤝', color:'#4ade80', fn: (i) => ({ value:i.length+' involvement'+(i.length!==1?'s':''), label:'', sub:'' }) },
-  'speaker':   { icon:'🎤', color:'#38f0f0', fn: (i) => ({ value:i.length+' talk'+(i.length!==1?'s':''), label:'', sub:'' }) },
-  'project':   { icon:'✦', color:'#f472b6', fn: (i) => ({ value:i.length+' project'+(i.length!==1?'s':''), label:'', sub:'' }) },
-};
-
-function updateStats() {
-  const bar=document.getElementById('stats-bar'), icon=document.getElementById('stats-icon'), value=document.getElementById('stats-value'), label=document.getElementById('stats-label');
-  let stat;
-
-  // Helper: get IDs of work items currently visible on the timeline
-  function visibleWorkIds() {
-    return [...document.querySelectorAll('#view-roadmap .item.tag-work:not(.hidden)')]
-      .map(el => el.getAttribute('onclick')?.match(/'([^']+)'/)?.[1])
-      .filter(id => id && workRanges[id]);
-  }
-
-  if (activeSkill) {
-    const rw = skillWorkMap[activeSkill] || [];
-    const vi = [...document.querySelectorAll('#view-roadmap .item:not(.hidden)')];
-    const isWork = activeTag === 'work';
-
-    if (isWork) {
-      // Intersect skill's work roles with what's actually visible
-      const visible = visibleWorkIds();
-      const matching = rw.filter(id => visible.includes(id));
-      stat = { icon:'💡', color:'#60b4ff', value: matching.length ? formatDuration(totalWorkMonths(matching)) : '0 months', label:'', sub:'' };
-    } else if (!activeTag || activeTag === 'all') {
-      if (rw.length) {
-        // All work roles for this skill (no tag filter restricting)
-        stat = { icon:'💡', color:'#60b4ff', value:formatDuration(totalWorkMonths(rw)), label:'', sub:'' };
-      } else {
-        stat = { icon:'📌', color:'#c084fc', value:vi.length+' item'+(vi.length!==1?'s':''), label:'', sub:'' };
-      }
-    } else {
-      // Skill + non-work tag — count visible items
-      const tc = tagStats[activeTag];
-      const s = tc ? tc.fn(vi) : { value:vi.length+' item'+(vi.length!==1?'s':''), label:'', sub:'' };
-      stat = { icon:tc?.icon||'📌', color:tc?.color||'#c084fc', value:s.value, label:'', sub:'' };
-    }
-  } else if (activeTag === 'work') {
-    // Work tag, no skill filter — sum only visible work items
-    const visible = visibleWorkIds();
-    const t = visible.length ? totalWorkMonths(visible) : 0;
-    stat = { icon:'💼', color:'#60b4ff', value: t ? formatDuration(t) : '0 months', label:'work experience', sub:'' };
-  } else if (activeTag !== 'all') {
-    const cfg = tagStats[activeTag];
-    const mt = (tagFilterMap && tagFilterMap[activeTag]) ? tagFilterMap[activeTag] : [activeTag];
-    const vi = [...document.querySelectorAll('#view-roadmap .item:not(.hidden)')].filter(i => mt.some(t => i.classList.contains('tag-'+t)));
-    const s = cfg ? cfg.fn(vi) : { value:'—', label:'', sub:'' };
-    stat = { icon:cfg?.icon||'✦', color:cfg?.color||'#c084fc', ...s };
-  } else {
-    const cfg = tagStats['all'];
-    stat = { icon:cfg.icon, color:cfg.color, ...cfg.fn() };
-  }
-
-  bar.style.borderColor = stat.color + '44'; bar.style.background = stat.color + '11';
-  icon.textContent = stat.icon; value.style.color = stat.color; value.textContent = stat.value; label.textContent = stat.label;
-  let sub = document.getElementById('stats-sub');
-  if (stat.sub) { if (!sub) { sub=document.createElement('div'); sub.id='stats-sub'; sub.className='stats-sub'; label.after(sub); } sub.textContent=stat.sub; } else if (sub) sub.textContent='';
-}
-
-// ── Build skill pills ──
 function buildSkillPills() {
-  const grid = document.getElementById('skill-pills-grid');
-  grid.innerHTML = '';
-  const allPill = document.createElement('button');
-  allPill.className = 'skill-filter-pill active'; allPill.textContent = 'All'; allPill.dataset.skill = '';
-  allPill.onclick = () => applySkillFilter('', allPill); grid.appendChild(allPill);
-  const usedSkills = new Set(allSkills);
-  const catColors = { 'Business':'#00e5cc', 'Tech':'#c77dff', 'Community':'#4ade80', 'Custom':'#fbbf24' };
-  Object.entries(skillCategories).forEach(([cat, catSkills]) => {
-    const matching = catSkills.filter(s => usedSkills.has(s)).sort((a,b) => a.localeCompare(b));
-    if (!matching.length) return;
-    const label = document.createElement('div');
-    label.style.cssText = 'width:100%;font-size:8px;letter-spacing:0.18em;text-transform:uppercase;color:'+(catColors[cat]||'#a5b4fc')+';opacity:0.7;margin:10px 0 4px;font-family:\'DM Mono\',monospace;';
-    label.textContent = cat; grid.appendChild(label);
-    matching.forEach(skill => {
-      const btn = document.createElement('button');
-      btn.className = 'skill-filter-pill'; btn.textContent = skill; btn.dataset.skill = skill;
-      btn.onclick = () => applySkillFilter(skill, btn); grid.appendChild(btn);
-    });
+  const allSkills=[...new Set(Object.values(SKILLS).flat())].sort((a,b)=>a.localeCompare(b));
+  const grid=document.getElementById('skill-pills-grid');grid.innerHTML='';
+  const allPill=document.createElement('button');
+  allPill.className='skill-filter-pill active';allPill.textContent='All';allPill.dataset.skill='';
+  allPill.onclick=()=>applySkillFilter('',allPill);grid.appendChild(allPill);
+  allSkills.forEach(skill=>{
+    const btn=document.createElement('button');
+    btn.className='skill-filter-pill';btn.textContent=skill;btn.dataset.skill=skill;
+    btn.onclick=()=>applySkillFilter(skill,btn);grid.appendChild(btn);
   });
 }
-
 function searchSkills(val) {
-  const q = val.toLowerCase();
-  const grid = document.getElementById('skill-pills-grid');
-  let lastLabel = null, visibleInGroup = 0;
-  Array.from(grid.children).forEach(el => {
-    if (!el.dataset && el.tagName !== 'BUTTON') { if (lastLabel) lastLabel.style.display = visibleInGroup ? '' : 'none'; lastLabel = el; visibleInGroup = 0; }
-    else if (el.dataset.skill === '') el.classList.remove('hidden-pill');
-    else if (el.dataset.skill) { const match = el.dataset.skill.toLowerCase().includes(q); el.classList.toggle('hidden-pill', !match); if (match) visibleInGroup++; }
+  const q=val.toLowerCase();
+  document.querySelectorAll('#skill-pills-grid .skill-filter-pill').forEach(el=>{
+    if(el.dataset.skill==='')return;
+    el.classList.toggle('hidden-pill',!el.dataset.skill.toLowerCase().includes(q));
   });
-  if (lastLabel) lastLabel.style.display = visibleInGroup ? '' : 'none';
 }
 
-// ── Article open ──
-function openArticle(id) {
-  const a = articles[id]; if (!a) return;
-  document.getElementById('art-banner').style.background = a.bg;
-  document.getElementById('art-icon').textContent = a.icon;
-  const tagEl = document.getElementById('art-tag-el'); tagEl.textContent = a.tagLabel; tagEl.className = 'tag tag-' + a.tag;
-  document.getElementById('art-date').textContent = a.date;
-  document.getElementById('art-title').textContent = a.title;
-  const orgEl = document.getElementById('art-org'); orgEl.textContent = a.org; orgEl.style.display = a.org ? 'block' : 'none';
-  document.getElementById('art-divider').style.background = a.color;
-  const content = articleContent[id];
-  const contentEl = document.getElementById('art-content');
-  if (content) {
-    const hl = content.highlights.split('. ').filter(h => h.trim()).map(h => '<li>' + h.replace(/\.$/, '') + '</li>').join('');
-    contentEl.innerHTML =
-      '<p>' + content.intro + '</p>' +
-      '<h3 style="font-family:\'Syne\',sans-serif;font-size:13px;font-weight:700;color:' + a.color + ';letter-spacing:0.08em;text-transform:uppercase;margin:24px 0 10px;opacity:0.85;">What I Learned</h3>' +
-      '<p>' + content.learned + '</p>' +
-      '<h3 style="font-family:\'Syne\',sans-serif;font-size:13px;font-weight:700;color:' + a.color + ';letter-spacing:0.08em;text-transform:uppercase;margin:24px 0 10px;opacity:0.85;">Key Highlights</h3>' +
-      '<ul style="padding-left:18px;display:flex;flex-direction:column;gap:7px;">' + hl + '</ul>';
+// ══════════════════════════════════════
+// STATS
+// ══════════════════════════════════════
+const workRanges={'ontime-bookkeeper':{start:[2012,1],end:[2013,12]},'profile-cut':{start:[2013,9],end:[2014,3]},'tracetec':{start:[2014,10],end:[2015,6]},'ontime-accountant':{start:[2015,9],end:[2016,10]},'office-space-online':{start:[2016,10],end:[2016,12]},'initec-civils':{start:[2017,1],end:[2019,12]},'rmi-web-design':{start:[2017,3],end:[2020,9]},'mpt-accountant':{start:[2020,10],end:[2021,4]},'dot-development-africa':{start:[2021,5],end:[2022,8]},'eduvos-developer':{start:[2022,9],end:[2025,1]},'cogent-special-projects':{start:[2025,2],end:'present'}};
+function toMI(ym){return ym[0]*12+ym[1];}
+function totalWorkMonths(ids){const now=new Date(),nowYM=[now.getFullYear(),now.getMonth()+1];const spans=ids.filter(id=>workRanges[id]).map(id=>{const r=workRanges[id];return[toMI(r.start),toMI(r.end==='present'?nowYM:r.end)];});if(!spans.length)return 0;spans.sort((a,b)=>a[0]-b[0]);const merged=[spans[0]];for(let i=1;i<spans.length;i++){const last=merged[merged.length-1];if(spans[i][0]<=last[1])last[1]=Math.max(last[1],spans[i][1]);else merged.push(spans[i]);}return merged.reduce((s,r)=>s+(r[1]-r[0]),0);}
+function formatDuration(m){const y=Math.floor(m/12),mo=m%12;if(y===0)return mo+' mo';if(mo===0)return y+' yr'+(y!==1?'s':'');return y+' yr'+(y!==1?'s':'')+' '+mo+' mo';}
+function updateStats(){
+  const bar=document.getElementById('stats-bar'),icon=document.getElementById('stats-icon'),val=document.getElementById('stats-value'),lbl=document.getElementById('stats-label');
+  if(activeTag==='work'&&!activeSkill){
+    const ids=[...document.querySelectorAll('#view-roadmap .item.tag-work:not(.hidden)')].map(el=>el.getAttribute('onclick')?.match(/'([^']+)'/)?.[1]).filter(id=>id&&workRanges[id]);
+    const t=totalWorkMonths(ids);
+    bar.style.borderColor='rgba(96,180,255,0.44)';bar.style.background='rgba(96,180,255,0.11)';icon.textContent='💼';val.style.color='#60b4ff';val.textContent=t?formatDuration(t):'0 months';lbl.textContent='work experience';
+  } else if(activeTag==='all'&&!activeSkill){
+    bar.style.borderColor='rgba(176,110,243,0.2)';bar.style.background='rgba(168,85,247,0.08)';icon.textContent='✦';val.style.color='var(--white)';val.textContent='13 years';lbl.textContent='Career span · 2012 – 2026';
   } else {
-    contentEl.innerHTML = '<p style="opacity:0.4">No content yet.</p>';
+    const vi=[...document.querySelectorAll('#view-roadmap .item:not(.hidden)')];
+    bar.style.borderColor='rgba(176,110,243,0.2)';bar.style.background='rgba(168,85,247,0.08)';icon.textContent='📌';val.style.color='var(--violet-glow)';val.textContent=vi.length+' item'+(vi.length!==1?'s':'');lbl.textContent='matching your filters';
   }
-  const ft = document.getElementById('art-footer-tag'); ft.textContent = a.tagLabel; ft.className = 'tag tag-' + a.tag;
-  const fo = document.getElementById('art-footer-org-tag');
-  if (a.org) { fo.textContent = a.org; fo.className = 'tag tag-' + a.tag; fo.style.display = 'inline-block'; } else fo.style.display = 'none';
-  const skills = articleSkills[id] || [];
-  const ss = document.getElementById('art-skill-tags-section'), sr = document.getElementById('art-skill-tags');
-  if (skills.length) {
-    ss.style.display = 'flex';
-    sr.innerHTML = skills.map(s => '<button class="skill-pill" onclick="filterAndGoBack(\'' + s + '\')" style="border-color:' + a.color + '55;color:' + a.color + '">' + s + '</button>').join('');
-  } else ss.style.display = 'none';
-  document.getElementById('view-roadmap').classList.remove('active');
-  const artView = document.getElementById('view-article'); artView.classList.add('active', 'slide-in');
-  window.scrollTo(0, 0); setTimeout(() => artView.classList.remove('slide-in'), 350);
 }
 
-// ── Panel content ──
-const panelContent = {
-  'tech': {
-    eyebrow: 'Professional Summary',
-    title: 'Tech Profile',
-    render: () => `
-      <div class="panel-section">
-        <div class="panel-section-title">Core Technical Competencies</div>
+// ══════════════════════════════════════
+// ARTICLE
+// ══════════════════════════════════════
+function openArticle(id) {
+  const a=ARTICLES[id];if(!a)return;
+  // Project items → show gallery instead of article
+  if (a.tag === 'project') { openProjectGallery(id); return; }
 
-        <div class="panel-competency">
-          <div class="panel-competency-cat">Microsoft Power Platform</div>
-          <div class="panel-tags">
-            ${['Power Apps (Canvas & Model-Driven)','Power Pages','Power Automate (Cloud & Desktop Flows)','Power BI','Microsoft Dataverse'].map(t=>`<span class="panel-tag">${t}</span>`).join('')}
-          </div>
+  const bannerImg=IMAGES[id];
+  const bannerEl=document.getElementById('art-banner');
+  if(bannerImg){bannerEl.style.background=`url('${bannerImg}') center/cover no-repeat`;document.getElementById('art-icon').style.display='none';}
+  else{bannerEl.style.background=a.bg;document.getElementById('art-icon').style.display='';}
+  document.getElementById('art-icon').textContent=a.icon;
+  const tagEl=document.getElementById('art-tag-el');tagEl.textContent=a.tagLabel;tagEl.className='tag tag-'+a.tag;
+  document.getElementById('art-date').textContent=a.date;
+  document.getElementById('art-title').textContent=a.title;
+  const orgEl=document.getElementById('art-org');orgEl.textContent=a.org;orgEl.style.display=a.org?'block':'none';
+  const content=CONTENT[id],contentEl=document.getElementById('art-content');
+  if(content){
+    const hl=(content.highlights||'').split('. ').filter(h=>h.trim()).map(h=>'<li>'+h.replace(/\.$/,'')+'</li>').join('');
+    contentEl.innerHTML='<p>'+content.intro+'</p><h3 style="font-family:\'Syne\',sans-serif;font-size:13px;font-weight:700;color:'+a.color+';letter-spacing:0.08em;text-transform:uppercase;margin:24px 0 10px;opacity:0.85;">What I Learned</h3><p>'+content.learned+'</p><h3 style="font-family:\'Syne\',sans-serif;font-size:13px;font-weight:700;color:'+a.color+';letter-spacing:0.08em;text-transform:uppercase;margin:24px 0 10px;opacity:0.85;">Key Highlights</h3><ul style="padding-left:18px;display:flex;flex-direction:column;gap:7px;">'+hl+'</ul>';
+  } else contentEl.innerHTML='<p style="opacity:0.4">No content yet.</p>';
+  const ft=document.getElementById('art-footer-tag');ft.textContent=a.tagLabel;ft.className='tag tag-'+a.tag;
+  const fo=document.getElementById('art-footer-org-tag');
+  if(a.org){fo.textContent=a.org;fo.className='tag tag-'+a.tag;fo.style.display='inline-block';}else fo.style.display='none';
+  const skills=SKILLS[id]||[];
+  const ss=document.getElementById('art-skill-tags-section'),sr=document.getElementById('art-skill-tags');
+  if(skills.length){ss.style.display='flex';sr.innerHTML=skills.map(s=>'<button class="skill-pill" onclick="filterAndGoBack(\''+s+'\')" style="border-color:'+a.color+'55;color:'+a.color+'">'+s+'</button>').join('');}
+  else ss.style.display='none';
+  document.getElementById('view-roadmap').classList.remove('active');
+  const artView=document.getElementById('view-article');artView.classList.add('active','slide-in');
+  window.scrollTo(0,0);setTimeout(()=>artView.classList.remove('slide-in'),350);
+}
+
+function openProjectGallery(id) {
+  const a = ARTICLES[id] || {};
+  const yr = YEARS[id] || '';
+  const projects = (PROJECTS[yr] || []);
+
+  const STATUS_LABELS = { shipped:'✅ Shipped', wip:'🚧 In Progress', concept:'💡 Concept' };
+
+  document.getElementById('proj-gallery-header').innerHTML = `
+    <div class="proj-year-eyebrow">Projects</div>
+    <div class="proj-year-title">${yr}</div>
+    <div class="proj-year-count">${projects.length} project${projects.length!==1?'s':''}</div>`;
+
+  if (!projects.length) {
+    document.getElementById('proj-cards-grid').innerHTML = '<div class="proj-empty">No projects added for this year yet</div>';
+  } else {
+    document.getElementById('proj-cards-grid').innerHTML = '<div class="proj-grid">' + projects.map((p,i) => {
+      const techPills = (p.tech||[]).map(t=>`<span class="proj-tech-pill">${t}</span>`).join('');
+      const statusLabel = STATUS_LABELS[p.status] || '';
+      const color = p.color || '#f472b6';
+      return `<div class="proj-card" style="border-color:${color}22;animation-delay:${i*0.06}s">
+        <div class="proj-card-top">
+          <div class="proj-card-status" style="color:${color}">${statusLabel}</div>
+          <div class="proj-card-name">${p.title||'Untitled Project'}</div>
+          ${p.org?`<div class="proj-card-org">${p.org}</div>`:''}
+          ${p.desc?`<div class="proj-card-desc">${p.desc}</div>`:''}
         </div>
-
-        <div class="panel-competency">
-          <div class="panel-competency-cat">Microsoft Ecosystem & Integration</div>
-          <div class="panel-tags">
-            ${['Microsoft Dynamics 365','SharePoint Online','Azure Services','Custom .NET APIs','HTTP Integrations'].map(t=>`<span class="panel-tag">${t}</span>`).join('')}
-          </div>
-        </div>
-
-        <div class="panel-competency">
-          <div class="panel-competency-cat">Development & Design</div>
-          <div class="panel-tags">
-            ${['Solution Architecture Governance','UI/UX Design','Responsive & Accessible Design','Functional Specifications','Technical Documentation'].map(t=>`<span class="panel-tag">${t}</span>`).join('')}
-          </div>
-        </div>
-
-        <div class="panel-competency">
-          <div class="panel-competency-cat">Methodologies & Domains</div>
-          <div class="panel-tags">
-            ${['Digital Transformation','SaaS Platform Development','Business Process Automation','Data Modeling','Stakeholder Engagement','Agile Delivery'].map(t=>`<span class="panel-tag">${t}</span>`).join('')}
-          </div>
-        </div>
-      </div>
-
-      <div class="panel-divider"></div>
-
-      <div class="panel-section">
-        <div class="panel-section-title">Career Narrative · Digital Transformation & Platform Engineering</div>
-
-        <div class="panel-narrative">
-          <div class="panel-narrative-period">Transition to Enterprise Low-Code Solutions</div>
-          <div class="panel-narrative-date">2021 – 2022</div>
-          <p>The shift into the Power Platform ecosystem began at Dot Development Africa, where the role of Power Platform Consultant / Business Systems Analyst established the methodology for bridging business requirements with technical execution. This position focused on the discovery and design phase of the software development lifecycle — documenting requirements, analyzing existing processes for automation potential, and defining the functional architecture for Power Platform implementations.</p>
-        </div>
-
-        <div class="panel-narrative">
-          <div class="panel-narrative-period">Enterprise Integration & Academic Systems</div>
-          <div class="panel-narrative-date">2022 – 2025</div>
-          <p>At Eduvos, the role expanded into full-stack Power Platform development within a national team environment. Responsibilities centred on building and managing Power Apps and Power Pages solutions integrated directly with Microsoft Dynamics 365. This required a dual focus on back-end data integration and front-end UI/UX design, ensuring responsive and accessible applications for a diverse user base across the academic sector.</p>
-        </div>
-
-        <div class="panel-narrative">
-          <div class="panel-narrative-period">Special Projects & Solution Architecture Governance</div>
-          <div class="panel-narrative-date">2025 – Present</div>
-          <p>The current capacity at Cogent represents a senior technical delivery role focused on governed solution architecture. Leading end-to-end delivery under established architectural standards involves a comprehensive lifecycle: requirements analysis, solution design, development, deployment, documentation, and formal handover. The role extends the Power Platform through custom .NET APIs and HTTP integrations, enabling secure system-to-system communication and advanced automation scenarios.</p>
-        </div>
-      </div>
-
-      <div class="panel-divider"></div>
-
-      <div class="panel-section">
-        <div class="panel-section-title">Synthesis · The Platform Solutions Perspective</div>
-        <div class="panel-synthesis-item"><div class="panel-synthesis-dot"></div><div class="panel-synthesis-text"><strong>Low-Code / Pro-Code Balance:</strong> Leveraging Power Platform for rapid application development while extending functionality through custom .NET and HTTP integrations.</div></div>
-        <div class="panel-synthesis-item"><div class="panel-synthesis-dot"></div><div class="panel-synthesis-text"><strong>Governance & Scalability:</strong> Operating within formal solution architecture frameworks to ensure long-term maintainability and compliance.</div></div>
-        <div class="panel-synthesis-item"><div class="panel-synthesis-dot"></div><div class="panel-synthesis-text"><strong>User-Centered Delivery:</strong> Combining technical build with documentation, training, and adoption support to drive successful digital outcomes.</div></div>
-        <div class="panel-synthesis-item"><div class="panel-synthesis-dot"></div><div class="panel-synthesis-text"><strong>Cross-System Integration:</strong> Unifying Dynamics 365, SharePoint, Azure, and custom APIs into cohesive business solutions.</div></div>
-      </div>
-    `
-  },
-  'story': {
-    eyebrow: 'Background',
-    title: 'My Story',
-    render: () => `<div class="panel-narrative"><p style="opacity:0.4;font-size:13px;line-height:1.9">This section is coming soon.</p></div>`
+        ${(p.tech?.length||p.url)?`<div class="proj-card-bottom">
+          <div class="proj-tech-row">${techPills}</div>
+          ${p.url?`<a href="${p.url}" target="_blank" rel="noopener" class="proj-link">View →</a>`:''}
+        </div>`:''}
+      </div>`;
+    }).join('') + '</div>';
   }
+
+  document.getElementById('view-roadmap').classList.remove('active');
+  const pv = document.getElementById('view-projects');
+  pv.classList.add('active','slide-in');
+  window.scrollTo(0,0);
+  setTimeout(()=>pv.classList.remove('slide-in'),350);
+}
+
+function goBack(){
+  document.getElementById('view-article').classList.remove('active');
+  document.getElementById('view-projects').classList.remove('active');
+  document.getElementById('view-roadmap').classList.add('active');
+  window.scrollTo(0,0);
+}
+function filterAndGoBack(skill){goBack();setTimeout(()=>{const p=document.querySelector('#skill-pills-grid [data-skill="'+skill+'"]');if(p)applySkillFilter(skill,p);},50);}
+
+// ══════════════════════════════════════
+// PANELS
+// ══════════════════════════════════════
+const panelContent={
+  'tech':{eyebrow:'Professional Summary',title:'Tech Profile',render:()=>`<div class="panel-section"><div class="panel-section-title">Core Technical Competencies</div><div class="panel-competency"><div class="panel-competency-cat">Microsoft Power Platform</div><div class="panel-tags">${['Power Apps (Canvas & Model-Driven)','Power Pages','Power Automate (Cloud & Desktop Flows)','Power BI','Microsoft Dataverse'].map(t=>`<span class="panel-tag">${t}</span>`).join('')}</div></div><div class="panel-competency"><div class="panel-competency-cat">Microsoft Ecosystem & Integration</div><div class="panel-tags">${['Microsoft Dynamics 365','SharePoint Online','Azure Services','Custom .NET APIs','HTTP Integrations'].map(t=>`<span class="panel-tag">${t}</span>`).join('')}</div></div><div class="panel-competency"><div class="panel-competency-cat">Development & Design</div><div class="panel-tags">${['Solution Architecture Governance','UI/UX Design','Responsive & Accessible Design','Functional Specifications','Technical Documentation'].map(t=>`<span class="panel-tag">${t}</span>`).join('')}</div></div></div><div class="panel-divider"></div><div class="panel-section"><div class="panel-section-title">Career Narrative</div><div class="panel-narrative"><div class="panel-narrative-period">Transition to Enterprise Low-Code Solutions</div><div class="panel-narrative-date">2021 – 2022</div><p>The shift into the Power Platform ecosystem began at Dot Development Africa, establishing the methodology for bridging business requirements with technical execution.</p></div><div class="panel-narrative"><div class="panel-narrative-period">Enterprise Integration & Academic Systems</div><div class="panel-narrative-date">2022 – 2025</div><p>At Eduvos, full-stack Power Platform development within a national team environment — building Power Apps and Power Pages solutions integrated with Microsoft Dynamics 365.</p></div><div class="panel-narrative"><div class="panel-narrative-period">Special Projects & Solution Architecture Governance</div><div class="panel-narrative-date">2025 – Present</div><p>Senior technical delivery at Cogent under governed solution architecture standards, extending the Power Platform through custom .NET APIs and HTTP integrations.</p></div></div>`},
+  'story':{eyebrow:'Background',title:'My Story',render:()=>`<div class="panel-narrative"><p style="opacity:0.4;font-size:13px;line-height:1.9">This section is coming soon.</p></div>`}
 };
-
-let _activePanel = null;
-
-function openPanel(id) {
-  const content = panelContent[id];
-  if (!content) return;
-  _activePanel = id;
-
-  document.getElementById('panel-body').innerHTML = `
-    <div class="panel-eyebrow">${content.eyebrow}</div>
-    <div class="panel-title">${content.title}</div>
-    ${content.render()}
-  `;
-
-  // Update dock active state
-  document.querySelectorAll('.dock-btn').forEach(b => b.classList.remove('active'));
-  const dockBtn = document.getElementById('dock-' + id);
-  if (dockBtn) dockBtn.classList.add('active');
-
-  // Switch to panel view
+function openPanel(id){
+  const content=panelContent[id];if(!content)return;
+  document.getElementById('panel-body').innerHTML=`<div class="panel-eyebrow">${content.eyebrow}</div><div class="panel-title">${content.title}</div>${content.render()}`;
+  document.querySelectorAll('.dock-btn').forEach(b=>b.classList.remove('active'));
+  const db=document.getElementById('dock-'+id);if(db)db.classList.add('active');
   document.getElementById('view-roadmap').classList.remove('active');
   document.getElementById('view-article').classList.remove('active');
-  const pv = document.getElementById('view-panel');
-  pv.classList.add('active');
-  pv.scrollTop = 0;
+  const pv=document.getElementById('view-panel');pv.classList.add('active');pv.scrollTop=0;
 }
-
-function closePanel() {
-  _activePanel = null;
+function closePanel(){
   document.getElementById('view-panel').classList.remove('active');
   document.getElementById('view-roadmap').classList.add('active');
-  document.querySelectorAll('.dock-btn').forEach(b => b.classList.remove('active'));
-  window.scrollTo(0, 0);
+  document.querySelectorAll('.dock-btn').forEach(b=>b.classList.remove('active'));
+  window.scrollTo(0,0);
 }
 
-function goBack() {
-  document.getElementById('view-article').classList.remove('active');
-  document.getElementById('view-roadmap').classList.add('active');
-  window.scrollTo(0, 0);
-}
-
-function filterAndGoBack(skill) {
-  goBack();
-  setTimeout(() => { const p = document.querySelector('#skill-pills-grid [data-skill="' + skill + '"]'); if (p) applySkillFilter(skill, p); }, 50);
-}
-
-// ── Init ──
-buildSkillPills();
-(function(){ const ap = document.querySelector('.filter-pill[data-tag="all"]'); if (ap) { ap.style.background='#ede9ff'; ap.style.color='#13102a'; ap.style.borderColor='transparent'; } })();
-updateStats();
+// ── BOOT ──
+loadFromFirebase();
 </script>
 </body>
 </html>

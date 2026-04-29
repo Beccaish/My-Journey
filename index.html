@@ -906,7 +906,7 @@ function openProjectGallery(id) {
           </div>
           <div style="padding:12px 20px;border-top:1px solid ${color}15;display:flex;align-items:center;justify-content:space-between;pointer-events:all;">
             <span style="font-size:10px;font-family:'DM Mono',monospace;color:${color};letter-spacing:0.1em;text-transform:uppercase;">${hasStory?'Read write-up →':'View project'}</span>
-            ${p.url?`<a href="${p.url}" target="_blank" rel="noopener" class="proj-link proj-external-link" style="border-color:${color}44;color:${color};font-size:9px;" onclick="event.stopPropagation()">Live →</a>`:''}
+            ${p.url ? `<a href="${p.url.startsWith('http')?p.url:'https://'+p.url}" target="_blank" rel="noopener" class="proj-link proj-external-link" style="border-color:${color}44;color:${color};font-size:9px;" onclick="event.stopPropagation()">Live →</a>` : ''}
           </div>
         </div>`;
       }).join('') + '</div>';
@@ -939,17 +939,29 @@ function openProjectDetail(projIndex, articleId) {
   const techPills = (p.tech||[]).map(t=>`<span class="proj-tech-pill">${t}</span>`).join('');
   const blocksHTML = renderBlocksHTML(p.blocks);
 
+  // Safe URL — ensure it has a protocol
+  const safeUrl  = p.url  ? (p.url.startsWith('http')?p.url:'https://'+p.url)  : '';
+  const safeDemo = p.demo ? (p.demo.startsWith('http')?p.demo:'https://'+p.demo) : '';
+
   document.getElementById('proj-detail-body').innerHTML = `
     <div class="proj-detail-status" style="color:${color}">${STATUS_LABELS[p.status]||''}</div>
     <div class="proj-detail-title">${p.title||'Untitled Project'}</div>
     <div class="proj-detail-meta">
       ${techPills}
-      ${p.url?`<a href="${p.url}" target="_blank" rel="noopener" class="proj-link" style="border-color:${color}44;color:${color}">View project →</a>`:''}
+      ${safeUrl ? `<a href="${safeUrl}" target="_blank" rel="noopener" class="proj-link" style="border-color:${color}44;color:${color}">View project →</a>` : ''}
     </div>
-    ${p.demo ? `<button class="demo-open-btn" onclick="openDemo('${p.demo.replace(/'/g,"\\'")}','${(p.title||'').replace(/'/g,"\\'")}')">⚡ View Live Demo</button>` : ''}
-    <div class="proj-detail-story" style="margin-top:${p.demo?'8px':'0'}">
+    ${safeDemo ? `<button class="demo-open-btn" id="proj-demo-btn" data-url="${safeDemo}" data-title="${(p.title||'').replace(/"/g,'&quot;')}">⚡ View Live Demo</button>` : ''}
+    <div class="proj-detail-story" style="margin-top:${safeDemo?'16px':'0'}">
       ${blocksHTML||'<div style="opacity:0.35;font-family:sans-serif;font-size:12px;letter-spacing:0.1em;text-transform:uppercase;">No story content yet</div>'}
     </div>`;
+
+  // Attach demo button via JS — not inline onclick
+  const demoBtn = document.getElementById('proj-demo-btn');
+  if (demoBtn) {
+    demoBtn.addEventListener('click', function() {
+      openDemo(this.dataset.url, this.dataset.title);
+    });
+  }
 
   document.getElementById('view-projects').classList.remove('active');
   const dv = document.getElementById('view-project-detail');
@@ -1073,11 +1085,17 @@ setTagFilter = function(tag, btn) {
 // ══════════════════════════════════════
 function openDemo(url, title) {
   if (!url) return;
+  // Ensure protocol
+  const safeUrl = url.startsWith('http') ? url : 'https://' + url;
   document.getElementById('demo-title').textContent = title || 'Live Demo';
-  document.getElementById('demo-external-link').href = url;
-  document.getElementById('demo-frame').src = url;
+  document.getElementById('demo-external-link').href = safeUrl;
+  // Show loading state
+  const frame = document.getElementById('demo-frame');
+  frame.src = '';
   document.getElementById('demo-overlay').classList.add('open');
   document.body.style.overflow = 'hidden';
+  // Small delay so overlay renders before iframe starts loading
+  setTimeout(() => { frame.src = safeUrl; }, 80);
 }
 
 function closeDemo() {

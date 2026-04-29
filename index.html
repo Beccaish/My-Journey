@@ -515,11 +515,11 @@ body::before { content:''; position:fixed; inset:0; z-index:0; pointer-events:no
 
 <!-- PROJECT DETAIL VIEW -->
 <div id="view-project-detail" class="view">
-  <div style="max-width:var(--content-width);margin:0 auto;padding:0 20px 120px;">
+  <div style="max-width:var(--content-width);margin:0 auto;padding:0 0 80px;">
     <nav class="back-nav">
       <button class="back-btn" id="proj-detail-back-btn" onclick="closeProjectDetail()"><span>←</span> Projects</button>
     </nav>
-    <div id="proj-detail-body" style="margin-top:16px;"></div>
+    <div id="proj-detail-body"></div>
   </div>
 </div>
 
@@ -940,23 +940,76 @@ function openProjectDetail(projIndex, articleId) {
   const p = projects[projIndex]; if (!p) return;
   const color = p.color || '#f472b6';
   const STATUS_LABELS = { shipped:'✅ Shipped', wip:'🚧 In Progress', concept:'💡 Concept' };
-  const techPills = (p.tech||[]).map(t=>`<span class="proj-tech-pill">${t}</span>`).join('');
-  const blocksHTML = renderBlocksHTML(p.blocks);
   const safeUrl = p.url ? (p.url.startsWith('http')?p.url:'https://'+p.url) : '';
 
+  // Pull first image block for banner — if none use colour gradient
+  const firstImg = (p.blocks||[]).find(b => b.type==='image' && b.src);
+  const bannerStyle = firstImg
+    ? `background:url('${firstImg.src}') center/cover no-repeat;`
+    : `background:linear-gradient(135deg,${color}22 0%,${color}55 100%);`;
+
+  // Content blocks — skip the first image if used as banner
+  const blocks = p.blocks || [];
+  const contentBlocks = firstImg
+    ? blocks.filter((b,i) => !(b.type==='image' && b.src === firstImg.src && i === blocks.indexOf(firstImg)))
+    : blocks;
+
+  const blocksHTML = contentBlocks.map(b => {
+    if (b.type==='text' && b.content)
+      return `<p style="font-size:14px;line-height:1.85;color:rgba(237,233,255,0.88);margin-bottom:16px;">${b.content.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')}</p>`;
+    if (b.type==='image' && b.src)
+      return `<figure style="margin:24px 0;">
+        <img src="${b.src}" style="width:100%;border-radius:12px;display:block;box-shadow:0 4px 24px rgba(0,0,0,0.3);">
+        ${b.caption?`<figcaption style="font-size:11px;color:var(--muted);font-style:italic;text-align:center;margin-top:10px;letter-spacing:0.03em;">${b.caption}</figcaption>`:''}
+      </figure>`;
+    if (b.type==='video' && b.src)
+      return `<figure style="margin:24px 0;">
+        <video src="${b.src}" controls playsinline style="width:100%;border-radius:12px;background:#000;display:block;" preload="metadata"></video>
+        ${b.caption?`<figcaption style="font-size:11px;color:var(--muted);font-style:italic;text-align:center;margin-top:10px;">${b.caption}</figcaption>`:''}
+      </figure>`;
+    if (b.type==='youtube' && (b.ytId||b.src)) {
+      const ytId = b.ytId || b.src?.split('/embed/')?.[1];
+      return `<figure style="margin:24px 0;">
+        <div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:12px;box-shadow:0 4px 24px rgba(0,0,0,0.3);">
+          <iframe src="https://www.youtube.com/embed/${ytId}" style="position:absolute;inset:0;width:100%;height:100%;border:0;" allowfullscreen loading="lazy"></iframe>
+        </div>
+        ${b.caption?`<figcaption style="font-size:11px;color:var(--muted);font-style:italic;text-align:center;margin-top:10px;">${b.caption}</figcaption>`:''}
+      </figure>`;
+    }
+    return '';
+  }).filter(Boolean).join('');
+
+  // Tech pills for footer
+  const techPills = (p.tech||[]).map(t=>`<span class="skill-pill" style="border-color:${color}55;color:${color};">${t}</span>`).join('');
+
   document.getElementById('proj-detail-body').innerHTML = `
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap;">
-      <span class="tag tag-project" style="color:${color};border-color:${color};">${a.tagLabel||'Project'}</span>
-      ${a.date ? `<span style="font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;letter-spacing:0.06em;">${a.date}</span>` : ''}
+    <div class="banner" style="${bannerStyle}">
+      ${!firstImg ? `<div class="banner-inner"><div class="banner-icon">${a.icon||'✦'}</div></div>` : ''}
+      <div class="banner-overlay"></div>
     </div>
-    <div class="proj-detail-status" style="color:${color}">${STATUS_LABELS[p.status]||''}</div>
-    <div class="proj-detail-title">${p.title||'Untitled Project'}</div>
-    <div class="proj-detail-meta">
-      ${techPills}
-      ${safeUrl ? `<a href="${safeUrl}" target="_blank" rel="noopener" class="proj-link" style="border-color:${color}44;color:${color}">View project →</a>` : ''}
-    </div>
-    <div class="proj-detail-story">
-      ${blocksHTML||'<div style="opacity:0.35;font-family:sans-serif;font-size:12px;letter-spacing:0.1em;text-transform:uppercase;">No story content yet</div>'}
+    <div class="article-body">
+      <div class="article-meta">
+        <span class="tag tag-project" style="color:${color};border-color:${color};">${a.tagLabel||'Project'}</span>
+        <span class="article-date">${a.date||yr||''}</span>
+        ${p.status ? `<span class="article-date" style="color:${color};">${STATUS_LABELS[p.status]||''}</span>` : ''}
+      </div>
+      <h1 class="article-title">${p.title||'Untitled Project'}</h1>
+      ${safeUrl ? `<div class="article-org"><a href="${safeUrl}" target="_blank" rel="noopener" style="color:var(--teal);text-decoration:none;font-style:normal;font-size:12px;letter-spacing:0.04em;">${safeUrl.replace('https://','').replace('http://','')}</a></div>` : '<div style="margin-bottom:24px;"></div>'}
+      <div style="font-family:'Inter',sans-serif;">
+        ${blocksHTML || '<p style="opacity:0.35;font-size:13px;">No story content yet.</p>'}
+      </div>
+      <div class="article-footer">
+        <div class="footer-top-row">
+          <div class="footer-tag-row">
+            <span class="tag tag-project" style="color:${color};border-color:${color};">${a.tagLabel||'Project'}</span>
+          </div>
+          <button class="footer-back-btn" onclick="closeProjectDetail()">← Back to Projects</button>
+        </div>
+        ${techPills ? `<div class="skill-tags-section" style="display:flex;">
+          <div class="skill-tags-label">Tech</div>
+          <div class="skill-tags-row">${techPills}</div>
+        </div>` : ''}
+      </div>
     </div>`;
 
   document.getElementById('view-projects').classList.remove('active');

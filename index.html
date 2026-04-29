@@ -289,6 +289,7 @@ body::before { content:''; position:fixed; inset:0; z-index:0; pointer-events:no
   .article-body{padding:18px 14px 0}
   .back-nav{padding:16px 14px 0}
   .banner{margin:12px 14px 0;height:160px;border-radius:12px}
+  #proj-grid-inner{grid-template-columns:1fr !important;}
 }
 
 /* ── TAB BAR ── */
@@ -894,7 +895,7 @@ function openProjectGallery(id) {
   } else {
     // Use a 2-column grid on wider screens for the project cards
     document.getElementById('proj-cards-grid').innerHTML =
-      `<div id="proj-grid-inner" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;">` +
+      `<div id="proj-grid-inner" style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px;">` +
       projects.map((p, i) => {
         const color = p.color || '#f472b6';
         const techPills = (p.tech||[]).slice(0,4).map(t=>`<span class="proj-tech-pill">${t}</span>`).join('');

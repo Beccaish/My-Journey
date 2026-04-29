@@ -876,9 +876,13 @@ function openProjectGallery(id) {
   const STATUS_LABELS = { shipped:'✅ Shipped', wip:'🚧 In Progress', concept:'💡 Concept' };
 
   document.getElementById('proj-gallery-header').innerHTML = `
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap;">
+      <span class="tag tag-project">${a.tagLabel||'Project'}</span>
+      ${a.date ? `<span style="font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;letter-spacing:0.06em;">${a.date}</span>` : ''}
+    </div>
     <div class="proj-year-eyebrow">Career Projects</div>
     <div class="proj-year-title">${yr} Projects</div>
-    <div class="proj-year-count">${projects.length} project${projects.length!==1?'s':''}</div>`;
+    <div class="proj-year-count" style="margin-top:6px;">${projects.length} project${projects.length!==1?'s':''}</div>`;
 
   if (!projects.length) {
     document.getElementById('proj-cards-grid').innerHTML = `
@@ -932,36 +936,28 @@ function openProjectGallery(id) {
 
 function openProjectDetail(projIndex, articleId) {
   const id = articleId || _currentGalleryArticleId;
-  const { projects, yr } = resolveProjects(id);
+  const { projects, yr, a } = resolveProjects(id);
   const p = projects[projIndex]; if (!p) return;
   const color = p.color || '#f472b6';
   const STATUS_LABELS = { shipped:'✅ Shipped', wip:'🚧 In Progress', concept:'💡 Concept' };
   const techPills = (p.tech||[]).map(t=>`<span class="proj-tech-pill">${t}</span>`).join('');
   const blocksHTML = renderBlocksHTML(p.blocks);
-
-  // Safe URL — ensure it has a protocol
-  const safeUrl  = p.url  ? (p.url.startsWith('http')?p.url:'https://'+p.url)  : '';
-  const safeDemo = p.demo ? (p.demo.startsWith('http')?p.demo:'https://'+p.demo) : '';
+  const safeUrl = p.url ? (p.url.startsWith('http')?p.url:'https://'+p.url) : '';
 
   document.getElementById('proj-detail-body').innerHTML = `
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap;">
+      <span class="tag tag-project" style="color:${color};border-color:${color};">${a.tagLabel||'Project'}</span>
+      ${a.date ? `<span style="font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;letter-spacing:0.06em;">${a.date}</span>` : ''}
+    </div>
     <div class="proj-detail-status" style="color:${color}">${STATUS_LABELS[p.status]||''}</div>
     <div class="proj-detail-title">${p.title||'Untitled Project'}</div>
     <div class="proj-detail-meta">
       ${techPills}
       ${safeUrl ? `<a href="${safeUrl}" target="_blank" rel="noopener" class="proj-link" style="border-color:${color}44;color:${color}">View project →</a>` : ''}
     </div>
-    ${safeDemo ? `<button class="demo-open-btn" id="proj-demo-btn" data-url="${safeDemo}" data-title="${(p.title||'').replace(/"/g,'&quot;')}">⚡ View Live Demo</button>` : ''}
-    <div class="proj-detail-story" style="margin-top:${safeDemo?'16px':'0'}">
+    <div class="proj-detail-story">
       ${blocksHTML||'<div style="opacity:0.35;font-family:sans-serif;font-size:12px;letter-spacing:0.1em;text-transform:uppercase;">No story content yet</div>'}
     </div>`;
-
-  // Attach demo button via JS — not inline onclick
-  const demoBtn = document.getElementById('proj-demo-btn');
-  if (demoBtn) {
-    demoBtn.addEventListener('click', function() {
-      openDemo(this.dataset.url, this.dataset.title);
-    });
-  }
 
   document.getElementById('view-projects').classList.remove('active');
   const dv = document.getElementById('view-project-detail');

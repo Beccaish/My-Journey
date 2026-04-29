@@ -291,7 +291,64 @@ body::before { content:''; position:fixed; inset:0; z-index:0; pointer-events:no
   .banner{margin:12px 14px 0;height:160px;border-radius:12px}
 }
 
-/* ── PROJECT GALLERY VIEW ── */
+/* ── TAB BAR ── */
+.tab-bar {
+  display:flex; gap:4px; margin-bottom:20px;
+  overflow-x:auto; padding-bottom:2px;
+  scrollbar-width:none;
+}
+.tab-bar::-webkit-scrollbar { display:none; }
+.tab-btn {
+  display:flex; align-items:center; gap:6px; flex-shrink:0;
+  padding:8px 16px; border-radius:10px;
+  border:1px solid rgba(255,255,255,0.08);
+  background:rgba(255,255,255,0.04);
+  color:var(--muted); font-family:'DM Mono',monospace;
+  font-size:10px; letter-spacing:0.1em; text-transform:uppercase;
+  cursor:pointer; transition:all 0.18s;
+}
+.tab-btn:hover { border-color:rgba(176,110,243,0.35); color:var(--white); background:rgba(176,110,243,0.08); }
+.tab-btn.active { color:var(--white); border-color:transparent; }
+.tab-btn .tab-dot { width:6px; height:6px; border-radius:50%; flex-shrink:0; }
+.tab-btn[data-tab=all].active    { background:rgba(237,233,255,0.12); }
+.tab-btn[data-tab=work].active   { background:rgba(96,180,255,0.15); border-color:rgba(96,180,255,0.3); }
+.tab-btn[data-tab=project].active{ background:rgba(244,114,182,0.15); border-color:rgba(244,114,182,0.3); }
+.tab-btn[data-tab=cert].active   { background:rgba(199,125,255,0.15); border-color:rgba(199,125,255,0.3); }
+.tab-btn[data-tab=community].active { background:rgba(74,222,128,0.15); border-color:rgba(74,222,128,0.3); }
+.tab-btn[data-tab=speaker].active{ background:rgba(56,240,240,0.15); border-color:rgba(56,240,240,0.3); }
+.tab-btn[data-tab=hackathon].active { background:rgba(255,110,180,0.15); border-color:rgba(255,110,180,0.3); }
+
+/* ── DEMO OVERLAY ── */
+.demo-overlay {
+  display:none; position:fixed; inset:0; z-index:500;
+  background:rgba(10,8,24,0.97); flex-direction:column;
+}
+.demo-overlay.open { display:flex; }
+.demo-topbar {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:12px 20px; border-bottom:1px solid rgba(176,110,243,0.15);
+  background:rgba(10,8,24,0.98); flex-shrink:0; gap:12px;
+}
+.demo-title { font-family:'Syne',sans-serif; font-size:14px; font-weight:700; color:var(--white); flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.demo-close {
+  display:flex; align-items:center; gap:6px; padding:7px 16px;
+  border-radius:8px; border:1px solid rgba(176,110,243,0.25);
+  background:rgba(176,110,243,0.08); color:var(--muted2);
+  font-family:'DM Mono',monospace; font-size:10px; letter-spacing:0.1em;
+  text-transform:uppercase; cursor:pointer; flex-shrink:0; transition:all 0.18s;
+}
+.demo-close:hover { border-color:rgba(176,110,243,0.5); color:var(--white); }
+.demo-frame { flex:1; border:none; width:100%; background:#fff; }
+.demo-open-btn {
+  display:inline-flex; align-items:center; gap:8px;
+  padding:10px 20px; border-radius:10px;
+  border:1px solid rgba(244,114,182,0.35);
+  background:rgba(244,114,182,0.08);
+  color:var(--c-project); font-family:'DM Mono',monospace;
+  font-size:10px; letter-spacing:0.1em; text-transform:uppercase;
+  cursor:pointer; transition:all 0.18s; margin-top:16px;
+}
+.demo-open-btn:hover { background:rgba(244,114,182,0.18); border-color:rgba(244,114,182,0.6); color:var(--white); }
 .proj-year-eyebrow { font-size:9px; letter-spacing:0.3em; text-transform:uppercase; color:var(--c-project); font-family:'DM Mono',monospace; margin-bottom:10px; opacity:0.8; }
 .proj-year-title { font-family:'Syne',sans-serif; font-size:clamp(28px,7vw,44px); font-weight:800; line-height:1; letter-spacing:-0.02em; background:linear-gradient(135deg,var(--white) 0%,#f472b6 60%,var(--violet-glow) 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; margin-bottom:6px; }
 .proj-year-count { font-size:11px; color:var(--muted); font-family:'DM Mono',monospace; margin-bottom:32px; }
@@ -343,6 +400,29 @@ body::before { content:''; position:fixed; inset:0; z-index:0; pointer-events:no
       <div class="header-eyebrow">Career &amp; Learning Journey</div>
       <div class="header-title">Roadmap</div>
       <div class="header-sub">2012 → 2026 · Becca Isherwood</div>
+    </div>
+    <div class="tab-bar" id="tab-bar">
+      <button class="tab-btn active" data-tab="all" onclick="setTab('all',this)">
+        <span class="tab-dot" style="background:#ede9ff;"></span> All
+      </button>
+      <button class="tab-btn" data-tab="work" onclick="setTab('work',this)">
+        <span class="tab-dot" style="background:#60b4ff;"></span> Work
+      </button>
+      <button class="tab-btn" data-tab="project" onclick="setTab('project',this)">
+        <span class="tab-dot" style="background:#f472b6;"></span> Projects
+      </button>
+      <button class="tab-btn" data-tab="cert" onclick="setTab('cert',this)">
+        <span class="tab-dot" style="background:#c77dff;"></span> Certs
+      </button>
+      <button class="tab-btn" data-tab="community" onclick="setTab('community',this)">
+        <span class="tab-dot" style="background:#4ade80;"></span> Community
+      </button>
+      <button class="tab-btn" data-tab="speaker" onclick="setTab('speaker',this)">
+        <span class="tab-dot" style="background:#38f0f0;"></span> Speaking
+      </button>
+      <button class="tab-btn" data-tab="hackathon" onclick="setTab('hackathon',this)">
+        <span class="tab-dot" style="background:#ff6eb4;"></span> Hackathons
+      </button>
     </div>
     <div class="dual-filters">
       <div class="filter-panel">
@@ -461,6 +541,19 @@ body::before { content:''; position:fixed; inset:0; z-index:0; pointer-events:no
 <div id="view-panel" class="view">
   <nav class="panel-nav"><button class="panel-back-btn" onclick="closePanel()"><span>←</span> Roadmap</button></nav>
   <div class="panel-body" id="panel-body"></div>
+</div>
+
+<!-- DEMO IFRAME OVERLAY -->
+<div class="demo-overlay" id="demo-overlay">
+  <div class="demo-topbar">
+    <div class="demo-title" id="demo-title">Live Demo</div>
+    <a id="demo-external-link" href="#" target="_blank" rel="noopener"
+      style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--teal);text-decoration:none;opacity:0.8;flex-shrink:0;">
+      Open in new tab ↗
+    </a>
+    <button class="demo-close" onclick="closeDemo()">✕ Close</button>
+  </div>
+  <iframe class="demo-frame" id="demo-frame" src="" allow="fullscreen"></iframe>
 </div>
 
 <script>
@@ -853,7 +946,8 @@ function openProjectDetail(projIndex, articleId) {
       ${techPills}
       ${p.url?`<a href="${p.url}" target="_blank" rel="noopener" class="proj-link" style="border-color:${color}44;color:${color}">View project →</a>`:''}
     </div>
-    <div class="proj-detail-story">
+    ${p.demo ? `<button class="demo-open-btn" onclick="openDemo('${p.demo.replace(/'/g,"\\'")}','${(p.title||'').replace(/'/g,"\\'")}')">⚡ View Live Demo</button>` : ''}
+    <div class="proj-detail-story" style="margin-top:${p.demo?'8px':'0'}">
       ${blocksHTML||'<div style="opacity:0.35;font-family:sans-serif;font-size:12px;letter-spacing:0.1em;text-transform:uppercase;">No story content yet</div>'}
     </div>`;
 
@@ -901,6 +995,99 @@ function closePanel(){
   document.querySelectorAll('.dock-btn').forEach(b=>b.classList.remove('active'));
   window.scrollTo(0,0);
 }
+
+// ══════════════════════════════════════
+// TAB BAR — quick type filter above the dropdowns
+// ══════════════════════════════════════
+const TAB_MAP = {
+  'all':       'all',
+  'work':      'work',
+  'project':   'project',
+  'cert':      'cert',       // covers cert + procert
+  'community': 'volunteer',  // maps to volunteer tag
+  'speaker':   'speaker',
+  'hackathon': 'hackathon',
+};
+
+function setTab(tab, btn) {
+  // Update tab button styles
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+
+  // Map tab to the internal tag filter
+  const tagTarget = TAB_MAP[tab] || 'all';
+
+  // For 'cert' tab we want both cert AND procert
+  if (tab === 'cert') {
+    activeTag = 'cert';
+    // Also show procerts — override matchingTags logic
+    document.querySelectorAll('#view-roadmap .item').forEach(item => {
+      const tagMatch = item.classList.contains('tag-cert') || item.classList.contains('tag-procert');
+      const id = item.getAttribute('onclick')?.match(/'([^']+)'/)?.[1];
+      const skillMatch = !activeSkill || (id && (SKILLS[id]||[]).includes(activeSkill));
+      item.classList.toggle('hidden', !(tagMatch && skillMatch));
+    });
+    document.querySelectorAll('.year-group').forEach(g => {
+      g.classList.toggle('all-hidden', g.querySelectorAll('.item:not(.hidden)').length === 0);
+    });
+    // Sync the type dropdown pill
+    document.querySelectorAll('.filter-pill[data-tag]').forEach(p => {
+      p.classList.remove('active'); p.style.background='rgba(255,255,255,0.04)'; p.style.color='rgba(237,233,255,0.6)'; p.style.borderColor='rgba(255,255,255,0.15)';
+    });
+    document.getElementById('tag-active-label').textContent = '· Certs & Pro Certs';
+    document.getElementById('tag-toggle').classList.add('active-filter');
+    updateFilterSummary(); updateStats();
+    return;
+  }
+
+  // For community tab map to volunteer
+  if (tab === 'community') {
+    const pill = document.querySelector('.filter-pill[data-tag="volunteer"]');
+    if (pill) setTagFilter('volunteer', pill);
+    return;
+  }
+
+  // Everything else — use existing setTagFilter
+  if (tab === 'all') {
+    clearAllFilters();
+    return;
+  }
+  const pill = document.querySelector(`.filter-pill[data-tag="${tagTarget}"]`);
+  if (pill) setTagFilter(tagTarget, pill);
+}
+
+// Keep tab bar in sync when type dropdown is used directly
+const _origSetTagFilter = setTagFilter;
+setTagFilter = function(tag, btn) {
+  _origSetTagFilter(tag, btn);
+  // Sync tab bar
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  const tabMap = { all:'all', work:'work', project:'project', cert:'cert', procert:'cert', volunteer:'community', speaker:'speaker', hackathon:'hackathon' };
+  const tabKey = tabMap[tag] || 'all';
+  const tb = document.querySelector(`.tab-btn[data-tab="${tabKey}"]`);
+  if (tb) tb.classList.add('active');
+};
+
+// ══════════════════════════════════════
+// DEMO IFRAME OVERLAY
+// ══════════════════════════════════════
+function openDemo(url, title) {
+  if (!url) return;
+  document.getElementById('demo-title').textContent = title || 'Live Demo';
+  document.getElementById('demo-external-link').href = url;
+  document.getElementById('demo-frame').src = url;
+  document.getElementById('demo-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeDemo() {
+  document.getElementById('demo-overlay').classList.remove('open');
+  document.getElementById('demo-frame').src = '';
+  document.body.style.overflow = '';
+}
+
+// Close on Escape key
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDemo(); });
 
 // ── BOOT ──
 loadFromFirebase();

@@ -565,7 +565,7 @@ body::before { content:''; position:fixed; inset:0; z-index:0; pointer-events:no
 let ARTICLES={}, CONTENT={}, SKILLS={}, YEARS={}, IMAGES={}, PROJECTS={};
 
 // ── Filter state ──
-let activeTag='all', activeSkill=null;
+let activeTag='all', activeSkills=new Set();
 const tagFilterMap={'cert':['cert','edu','diploma','upskilling'],'volunteer':['volunteer','community']};
 
 // ══════════════════════════════════════
@@ -635,7 +635,7 @@ function applyFilters() {
   document.querySelectorAll('#view-roadmap .item').forEach(item=>{
     const id=item.getAttribute('onclick')?.match(/'([^']+)'/)?.[1];
     const tagMatch=activeTag==='all'||matchingTags.some(t=>item.classList.contains('tag-'+t));
-    const skillMatch=!activeSkill||(id&&(SKILLS[id]||[]).includes(activeSkill));
+    const skillMatch=activeSkills.size===0||(id&&[...activeSkills].some(s=>(SKILLS[id]||[]).includes(s)));
     item.classList.toggle('hidden',!(tagMatch&&skillMatch));
   });
   document.querySelectorAll('.year-group').forEach(group=>{
@@ -647,7 +647,7 @@ function updateFilterSummary() {
   const summary=document.getElementById('filter-summary'),text=document.getElementById('filter-summary-text');
   const parts=[];
   if(activeTag!=='all')parts.push('Type: <strong>'+activeTag+'</strong>');
-  if(activeSkill)parts.push('Skill: <strong>'+activeSkill+'</strong>');
+  if(activeSkills.size)parts.push('Skills: <strong>'+[...activeSkills].join(', ')+'</strong>');
   if(parts.length){summary.style.display='flex';text.innerHTML='Showing '+parts.join(' + ');}
   else summary.style.display='none';
 }
@@ -663,18 +663,33 @@ function setTagFilter(tag,btn) {
   document.getElementById('tag-dropdown').classList.remove('open');
   applyFilters();
 }
-function applySkillFilter(skill,btn) {
-  activeSkill=skill||null;
-  document.querySelectorAll('#skill-pills-grid .skill-filter-pill').forEach(p=>p.classList.remove('active'));
-  btn.classList.add('active');
-  document.getElementById('skill-active-label').textContent=skill?'· '+skill:'';
-  document.getElementById('skill-toggle').classList.toggle('active-filter',!!skill);
-  document.getElementById('skill-toggle').classList.remove('open');
-  document.getElementById('skill-dropdown').classList.remove('open');
+function applySkillFilter(skill, btn) {
+  if (!skill) {
+    // "All" pill — clear all skills and close dropdown
+    activeSkills.clear();
+    document.querySelectorAll('#skill-pills-grid .skill-filter-pill').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('skill-toggle').classList.remove('open');
+    document.getElementById('skill-dropdown').classList.remove('open');
+  } else {
+    // Toggle this skill — keep dropdown OPEN for multi-select
+    if (activeSkills.has(skill)) {
+      activeSkills.delete(skill);
+      btn.classList.remove('active');
+    } else {
+      activeSkills.add(skill);
+      btn.classList.add('active');
+    }
+    // Deactivate "All" pill when any skill is selected
+    const allPill = document.querySelector('#skill-pills-grid [data-skill=""]');
+    if (allPill) allPill.classList.toggle('active', activeSkills.size === 0);
+  }
+  document.getElementById('skill-active-label').textContent = activeSkills.size ? '· '+activeSkills.size+' selected' : '';
+  document.getElementById('skill-toggle').classList.toggle('active-filter', activeSkills.size > 0);
   applyFilters();
 }
 function clearAllFilters() {
-  activeTag='all';activeSkill=null;
+  activeTag='all';activeSkills.clear();
   document.querySelectorAll('.filter-pill[data-tag]').forEach(b=>{b.classList.remove('active');b.style.background='rgba(255,255,255,0.04)';b.style.color='rgba(237,233,255,0.6)';b.style.borderColor='rgba(255,255,255,0.15)';});
   const ap=document.querySelector('.filter-pill[data-tag="all"]');
   if(ap){ap.classList.add('active');ap.style.background='#ede9ff';ap.style.color='#13102a';ap.style.borderColor='transparent';}
@@ -692,6 +707,11 @@ function togglePanel(panel) {
   else{tt.classList.remove('open');td.classList.remove('open');st.classList.toggle('open');sd.classList.toggle('open');}
 }
 document.addEventListener('click',e=>{
+  // Clicking inside skill dropdown — keep it open for multi-select
+  if(e.target.closest('#skill-dropdown')) return;
+  // Clicking skill toggle button — togglePanel handles open/close
+  if(e.target.closest('#skill-toggle')) return;
+  // Clicking anywhere outside filter panels — close everything
   if(!e.target.closest('.filter-panel')){
     document.querySelectorAll('.filter-toggle').forEach(t=>t.classList.remove('open'));
     document.querySelectorAll('.filter-dropdown').forEach(d=>d.classList.remove('open'));
@@ -720,7 +740,7 @@ function updateSkillPillVisibility() {
       .filter(Boolean)
   );
   // If all items visible, show all skill pills
-  const allVisible = activeTag === 'all' && !activeSkill;
+  const allVisible = activeTag === 'all' && activeSkills.size === 0;
   document.querySelectorAll('#skill-pills-grid .skill-filter-pill').forEach(btn => {
     if (!btn.dataset.skill) return; // keep "All" pill always visible
     if (allVisible) { btn.classList.remove('hidden-pill'); return; }
@@ -796,6 +816,17 @@ const skillWorkMap={
   'SharePoint':              ['eduvos-developer','cogent-special-projects'],
   'UI Design':               ['eduvos-developer','rmi-web-design'],
   'Copilot Studio':          ['cogent-special-projects'],
+  'AI Builder':              ['cogent-special-projects'],
+  'Agentic AI':              ['cogent-special-projects'],
+  'Artificial Intelligence': ['cogent-special-projects'],
+  'AI':                      ['cogent-special-projects'],
+  'Machine Learning':        ['cogent-special-projects'],
+  'RAG':                     ['cogent-special-projects'],
+  'Python':                  ['cogent-special-projects'],
+  'Azure':                   ['cogent-special-projects','eduvos-developer'],
+  'Azure AI':                ['cogent-special-projects'],
+  'Microsoft 365':           ['eduvos-developer','cogent-special-projects'],
+  'Cybersecurity':           ['cogent-special-projects'],
   'HTML':                    ['rmi-web-design'],
   'CSS':                     ['rmi-web-design'],
   'JavaScript':              ['rmi-web-design'],
@@ -807,30 +838,45 @@ const skillWorkMap={
 function updateStats(){
   const bar=document.getElementById('stats-bar'),icon=document.getElementById('stats-icon'),val=document.getElementById('stats-value'),lbl=document.getElementById('stats-label');
   const visibleCount=[...document.querySelectorAll('#view-roadmap .item:not(.hidden)')].length;
+  const hasSkill = activeSkills.size > 0;
 
-  // ── Work filter active (alone or with skill) → always show time ──
+  // ── Work filter active → always show time ──
   if(activeTag==='work'){
-    const workIds=[...document.querySelectorAll('#view-roadmap .item.tag-work:not(.hidden)')]
+    // Get all work IDs — use all work items not just visible ones, then intersect with skill if active
+    const allWorkItemIds=[...document.querySelectorAll('#view-roadmap .item.tag-work')]
       .map(el=>el.getAttribute('onclick')?.match(/'([^']+)'/)?.[1])
       .filter(id=>id&&workRanges[id]);
-    const t=totalWorkMonths(workIds);
+    // If skill filter active, only count work roles that match the selected skills
+    const filteredWorkIds = hasSkill
+      ? allWorkItemIds.filter(id=>[...activeSkills].some(s=>(SKILLS[id]||[]).includes(s)))
+      : allWorkItemIds;
+    // Fallback: if skill has no matching work items, use skillWorkMap time directly
+    const skillWorkIds = hasSkill
+      ? [...new Set([...activeSkills].flatMap(s=>skillWorkMap[s]||[]))]
+      : [];
+    const idsForTime = filteredWorkIds.length ? filteredWorkIds
+      : (skillWorkIds.length ? skillWorkIds : allWorkItemIds);
+    const t=totalWorkMonths(idsForTime);
     bar.style.borderColor='rgba(96,180,255,0.44)';bar.style.background='rgba(96,180,255,0.11)';
     icon.textContent='💼';val.style.color='#60b4ff';
-    val.textContent=t?formatDuration(t):'—';
-    lbl.textContent='work experience'+(activeSkill?' · '+activeSkill:'');
+    val.textContent=t?formatDuration(t):'0 mo';
+    lbl.textContent='work experience'+(hasSkill?' · '+[...activeSkills].join(', '):'');
 
-  // ── Skill filter only (no specific tag filter) → show time if skill maps to work, else count ──
-  } else if(activeSkill){
-    const workIds=skillWorkMap[activeSkill]||[];
-    const t=workIds.length?totalWorkMonths(workIds):0;
+  // ── Skill(s) selected only ──
+  } else if(hasSkill){
+    // Collect work roles for ALL selected skills (union)
+    const allWorkIds=[...new Set([...activeSkills].flatMap(s=>skillWorkMap[s]||[]))];
+    const t=allWorkIds.length?totalWorkMonths(allWorkIds):0;
+    // Count non-work visible items
+    const nonWorkCount=[...document.querySelectorAll('#view-roadmap .item:not(.hidden):not(.tag-work)')].length;
     bar.style.borderColor='rgba(168,85,247,0.4)';bar.style.background='rgba(168,85,247,0.1)';
     icon.textContent='💡';val.style.color='var(--violet-glow)';
     if(t){
       val.textContent=formatDuration(t);
-      lbl.textContent=activeSkill+' · professional experience · '+visibleCount+' item'+(visibleCount!==1?'s':'');
+      lbl.textContent=[...activeSkills].join(', ')+' · work experience'+(nonWorkCount?' · '+nonWorkCount+' other item'+(nonWorkCount!==1?'s':''):'');
     } else {
       val.textContent=visibleCount+' item'+(visibleCount!==1?'s':'');
-      lbl.textContent=activeSkill+' · across your timeline';
+      lbl.textContent=[...activeSkills].join(', ')+' · across your timeline';
     }
 
   // ── All items, no filters ──
@@ -839,7 +885,7 @@ function updateStats(){
     icon.textContent='✦';val.style.color='var(--white)';
     val.textContent='13 years';lbl.textContent='Career span · 2012 – 2026';
 
-  // ── Any other tag filter (cert, hackathon, etc.) → item count ──
+  // ── Any other tag filter ──
   } else {
     bar.style.borderColor='rgba(176,110,243,0.2)';bar.style.background='rgba(168,85,247,0.08)';
     icon.textContent='📌';val.style.color='var(--violet-glow)';
@@ -1148,7 +1194,7 @@ function setTab(tab, btn) {
     document.querySelectorAll('#view-roadmap .item').forEach(item => {
       const tagMatch = item.classList.contains('tag-cert') || item.classList.contains('tag-procert');
       const id = item.getAttribute('onclick')?.match(/'([^']+)'/)?.[1];
-      const skillMatch = !activeSkill || (id && (SKILLS[id]||[]).includes(activeSkill));
+      const skillMatch = activeSkills.size===0 || (id && [...activeSkills].some(s=>(SKILLS[id]||[]).includes(s)));
       item.classList.toggle('hidden', !(tagMatch && skillMatch));
     });
     document.querySelectorAll('.year-group').forEach(g => {

@@ -487,6 +487,12 @@ body::before { content:''; position:fixed; inset:0; z-index:0; pointer-events:no
       </div>
       <h1 class="article-title" id="art-title"></h1>
       <div class="article-org" id="art-org"></div>
+      <div id="art-link-row" style="display:none;margin-bottom:20px;">
+        <a id="art-link-btn" href="#" target="_blank" rel="noopener"
+          style="display:inline-flex;align-items:center;gap:6px;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;padding:8px 18px;border-radius:8px;border:1px solid;text-decoration:none;transition:all 0.18s;opacity:0.85;">
+          View Link ↗
+        </a>
+      </div>
       <div id="art-content"></div>
       <div class="article-footer">
         <div class="footer-top-row">
@@ -911,6 +917,18 @@ function openArticle(id) {
   document.getElementById('art-date').textContent=a.date;
   document.getElementById('art-title').textContent=a.title;
   const orgEl=document.getElementById('art-org');orgEl.textContent=a.org;orgEl.style.display=a.org?'block':'none';
+  // View Link button
+  const linkRow=document.getElementById('art-link-row');
+  const linkBtn=document.getElementById('art-link-btn');
+  if(a.link){
+    const safeLink=a.link.startsWith('http')?a.link:'https://'+a.link;
+    linkBtn.href=safeLink;
+    linkBtn.style.color=a.color||'var(--teal)';
+    linkBtn.style.borderColor=a.color||'var(--teal)';
+    linkRow.style.display='block';
+  } else {
+    linkRow.style.display='none';
+  }
   const content=CONTENT[id],contentEl=document.getElementById('art-content');
   if(content){
     const hl=(content.highlights||'').split('. ').filter(h=>h.trim()).map(h=>'<li>'+h.replace(/\.$/,'')+'</li>').join('');

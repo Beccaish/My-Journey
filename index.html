@@ -923,6 +923,7 @@ function openArticle(id) {
   if(a.link){
     const safeLink=a.link.startsWith('http')?a.link:'https://'+a.link;
     linkBtn.href=safeLink;
+    linkBtn.textContent=(a.linkLabel||'View Link')+' ↗';
     linkBtn.style.color=a.color||'var(--teal)';
     linkBtn.style.borderColor=a.color||'var(--teal)';
     linkRow.style.display='block';

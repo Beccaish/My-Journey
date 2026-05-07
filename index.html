@@ -594,7 +594,7 @@ async function loadFromFirebase() {
     YEARS=JSON.parse(f.years.stringValue);
     IMAGES=f.images?JSON.parse(f.images.stringValue):{};
     PROJECTS=f.projects?JSON.parse(f.projects.stringValue):{};
-    buildTimeline(); buildSkillPills(); updateStats();
+    buildTimeline(); buildSkillPills(); updateStats(); updateTagPillVisibility();
     loading.style.opacity='0'; loading.style.transition='opacity 0.4s';
     setTimeout(()=>{loading.style.display='none';},400);
     document.getElementById('view-roadmap').classList.add('active');
@@ -614,9 +614,11 @@ function buildTimeline() {
   const yearGroups={};
   Object.keys(ARTICLES).forEach(id=>{const yr=YEARS[id]||9999;if(!yearGroups[yr])yearGroups[yr]=[];yearGroups[yr].push(id);});
   const yearColors={2026:'#bf7bff',2025:'#d4b8ff',2024:'#00e5cc',2023:'#4ade80',2022:'#fbbf24',2021:'#fb923c',2020:'#f87171',2019:'#fca5a5',2018:'#fca5a5',2017:'#fca5a5',2016:'#fdba74',2015:'#fcd34d',2014:'#86efac',2013:'#67e8f9',2012:'#a5b4fc'};
+  // Sort order within each year: work → certs → everything else → projects
+  const tagOrder = t => t==='work'?0:t==='procert'?1:['cert','edu','diploma','upskilling'].includes(t)?2:t==='project'?4:3;
   const sortedYears=Object.keys(yearGroups).sort((a,b)=>b-a);
   root.innerHTML=sortedYears.map(yr=>{
-    const ids=yearGroups[yr];
+    const ids=yearGroups[yr].slice().sort((a,b)=>tagOrder(ARTICLES[a]?.tag||'')-tagOrder(ARTICLES[b]?.tag||''));
     const items=ids.map(id=>{
       const a=ARTICLES[id];
       return `<button class="item tag-${a.tag}" onclick="openArticle('${id}')"><span class="item-tag-wrap"><span class="tag tag-${a.tag}">${a.tagLabel}</span></span><div class="item-content"><div class="item-date">${a.date||''}</div><div class="item-title">${a.title||''}</div>${a.org?`<div class="item-org">${a.org}</div>`:''}</div><span class="item-arrow">→</span></button>`;
@@ -639,7 +641,7 @@ function applyFilters() {
   document.querySelectorAll('.year-group').forEach(group=>{
     group.classList.toggle('all-hidden',group.querySelectorAll('.item:not(.hidden)').length===0);
   });
-  updateFilterSummary(); updateStats();
+  updateFilterSummary(); updateStats(); updateSkillPillVisibility();
 }
 function updateFilterSummary() {
   const summary=document.getElementById('filter-summary'),text=document.getElementById('filter-summary-text');
@@ -706,6 +708,51 @@ function buildSkillPills() {
     btn.className='skill-filter-pill';btn.textContent=skill;btn.dataset.skill=skill;
     btn.onclick=()=>applySkillFilter(skill,btn);grid.appendChild(btn);
   });
+  updateSkillPillVisibility();
+}
+
+// Hide skill pills that have no visible items under the current tag filter
+function updateSkillPillVisibility() {
+  // Build set of IDs currently visible (or all if no tag filter)
+  const visibleIds = new Set(
+    [...document.querySelectorAll('#view-roadmap .item:not(.hidden)')]
+      .map(el => el.getAttribute('onclick')?.match(/'([^']+)'/)?.[1])
+      .filter(Boolean)
+  );
+  // If all items visible, show all skill pills
+  const allVisible = activeTag === 'all' && !activeSkill;
+  document.querySelectorAll('#skill-pills-grid .skill-filter-pill').forEach(btn => {
+    if (!btn.dataset.skill) return; // keep "All" pill always visible
+    if (allVisible) { btn.classList.remove('hidden-pill'); return; }
+    // Check if any visible item has this skill
+    const skill = btn.dataset.skill;
+    const hasMatch = [...visibleIds].some(id => (SKILLS[id]||[]).includes(skill));
+    btn.classList.toggle('hidden-pill', !hasMatch);
+  });
+}
+
+// Hide tag filter pills that have no items in the timeline at all
+function updateTagPillVisibility() {
+  const tagCounts = {};
+  document.querySelectorAll('#view-roadmap .item').forEach(item => {
+    const classes = [...item.classList];
+    classes.forEach(c => {
+      if (c.startsWith('tag-') && c !== 'tag-') {
+        const tag = c.replace('tag-','');
+        tagCounts[tag] = (tagCounts[tag]||0) + 1;
+      }
+    });
+  });
+  document.querySelectorAll('.filter-pill[data-tag]').forEach(pill => {
+    const tag = pill.dataset.tag;
+    if (tag === 'all') return; // always show All
+    // Map compound tags
+    const tags = tag === 'cert' ? ['cert','edu','diploma','upskilling']
+               : tag === 'volunteer' ? ['volunteer','community']
+               : [tag];
+    const hasItems = tags.some(t => (tagCounts[t]||0) > 0);
+    pill.style.display = hasItems ? '' : 'none';
+  });
 }
 function searchSkills(val) {
   const q=val.toLowerCase();
@@ -759,30 +806,45 @@ const skillWorkMap={
 
 function updateStats(){
   const bar=document.getElementById('stats-bar'),icon=document.getElementById('stats-icon'),val=document.getElementById('stats-value'),lbl=document.getElementById('stats-label');
+  const visibleCount=[...document.querySelectorAll('#view-roadmap .item:not(.hidden)')].length;
 
-  if (activeSkill) {
-    // Work time for this skill
-    const workIds = skillWorkMap[activeSkill] || [];
-    const t = workIds.length ? totalWorkMonths(workIds) : 0;
-    const visibleCount = [...document.querySelectorAll('#view-roadmap .item:not(.hidden)')].length;
-    bar.style.borderColor='rgba(168,85,247,0.4)'; bar.style.background='rgba(168,85,247,0.1)';
-    icon.textContent='💡'; val.style.color='var(--violet-glow)';
-    if (t) {
-      val.textContent = formatDuration(t);
-      lbl.textContent = activeSkill + ' · professional experience · ' + visibleCount + ' item' + (visibleCount!==1?'s':'');
+  // ── Work filter active (alone or with skill) → always show time ──
+  if(activeTag==='work'){
+    const workIds=[...document.querySelectorAll('#view-roadmap .item.tag-work:not(.hidden)')]
+      .map(el=>el.getAttribute('onclick')?.match(/'([^']+)'/)?.[1])
+      .filter(id=>id&&workRanges[id]);
+    const t=totalWorkMonths(workIds);
+    bar.style.borderColor='rgba(96,180,255,0.44)';bar.style.background='rgba(96,180,255,0.11)';
+    icon.textContent='💼';val.style.color='#60b4ff';
+    val.textContent=t?formatDuration(t):'—';
+    lbl.textContent='work experience'+(activeSkill?' · '+activeSkill:'');
+
+  // ── Skill filter only (no specific tag filter) → show time if skill maps to work, else count ──
+  } else if(activeSkill){
+    const workIds=skillWorkMap[activeSkill]||[];
+    const t=workIds.length?totalWorkMonths(workIds):0;
+    bar.style.borderColor='rgba(168,85,247,0.4)';bar.style.background='rgba(168,85,247,0.1)';
+    icon.textContent='💡';val.style.color='var(--violet-glow)';
+    if(t){
+      val.textContent=formatDuration(t);
+      lbl.textContent=activeSkill+' · professional experience · '+visibleCount+' item'+(visibleCount!==1?'s':'');
     } else {
-      val.textContent = visibleCount + ' item' + (visibleCount!==1?'s':'');
-      lbl.textContent = activeSkill + ' · across your timeline';
+      val.textContent=visibleCount+' item'+(visibleCount!==1?'s':'');
+      lbl.textContent=activeSkill+' · across your timeline';
     }
-  } else if(activeTag==='work'){
-    const ids=[...document.querySelectorAll('#view-roadmap .item.tag-work:not(.hidden)')].map(el=>el.getAttribute('onclick')?.match(/'([^']+)'/)?.[1]).filter(id=>id&&workRanges[id]);
-    const t=totalWorkMonths(ids);
-    bar.style.borderColor='rgba(96,180,255,0.44)';bar.style.background='rgba(96,180,255,0.11)';icon.textContent='💼';val.style.color='#60b4ff';val.textContent=t?formatDuration(t):'0 months';lbl.textContent='work experience';
+
+  // ── All items, no filters ──
   } else if(activeTag==='all'){
-    bar.style.borderColor='rgba(176,110,243,0.2)';bar.style.background='rgba(168,85,247,0.08)';icon.textContent='✦';val.style.color='var(--white)';val.textContent='13 years';lbl.textContent='Career span · 2012 – 2026';
+    bar.style.borderColor='rgba(176,110,243,0.2)';bar.style.background='rgba(168,85,247,0.08)';
+    icon.textContent='✦';val.style.color='var(--white)';
+    val.textContent='13 years';lbl.textContent='Career span · 2012 – 2026';
+
+  // ── Any other tag filter (cert, hackathon, etc.) → item count ──
   } else {
-    const vi=[...document.querySelectorAll('#view-roadmap .item:not(.hidden)')];
-    bar.style.borderColor='rgba(176,110,243,0.2)';bar.style.background='rgba(168,85,247,0.08)';icon.textContent='📌';val.style.color='var(--violet-glow)';val.textContent=vi.length+' item'+(vi.length!==1?'s':'');lbl.textContent='matching your filters';
+    bar.style.borderColor='rgba(176,110,243,0.2)';bar.style.background='rgba(168,85,247,0.08)';
+    icon.textContent='📌';val.style.color='var(--violet-glow)';
+    val.textContent=visibleCount+' item'+(visibleCount!==1?'s':'');
+    lbl.textContent='matching your filters';
   }
 }
 

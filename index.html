@@ -179,7 +179,28 @@ body::before { content:''; position:fixed; inset:0; z-index:0; pointer-events:no
 #art-content p { margin-bottom:16px; }
 #art-content li { font-size:14px; line-height:1.7; margin-bottom:4px; }
 
-/* ── DOCK ── */
+/* ── ARTICLE NAV ARROWS ── */
+.art-nav {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:16px 20px 0; max-width:var(--content-width); margin:0 auto;
+  gap:12px;
+}
+.art-nav-btn {
+  display:flex; align-items:center; gap:8px;
+  padding:9px 16px; border-radius:10px;
+  border:1px solid rgba(255,255,255,0.1);
+  background:rgba(255,255,255,0.04);
+  color:var(--muted); font-family:'DM Mono',monospace;
+  font-size:10px; letter-spacing:0.08em; text-transform:uppercase;
+  cursor:pointer; transition:all 0.18s; flex-shrink:0;
+}
+.art-nav-btn:hover:not(:disabled) { border-color:rgba(176,110,243,0.4); color:var(--white); background:rgba(176,110,243,0.08); }
+.art-nav-btn:disabled { opacity:0.2; cursor:default; }
+.art-nav-counter {
+  font-family:'DM Mono',monospace; font-size:10px; letter-spacing:0.12em;
+  color:var(--muted); text-align:center; flex:1;
+}
+.art-nav-counter span { color:var(--white); font-weight:600; }
 .dock { position:fixed; bottom:0; left:0; right:0; z-index:200; display:flex; justify-content:center; padding:12px 20px 20px; background:linear-gradient(to top,rgba(14,12,30,0.98) 60%,transparent 100%); pointer-events:none; }
 .dock-inner { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; width:100%; max-width:var(--content-width); pointer-events:all; }
 .dock-btn { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; padding:10px 8px; border-radius:12px; border:1px solid rgba(176,110,243,0.2); background:rgba(14,12,30,0.88); cursor:pointer; transition:all 0.18s; backdrop-filter:blur(12px); font-family:'DM Mono',monospace; }
@@ -477,6 +498,11 @@ body::before { content:''; position:fixed; inset:0; z-index:0; pointer-events:no
 <div id="view-article" class="view">
   <div style="max-width:var(--content-width);margin:0 auto;padding:0 0 80px;">
     <nav class="back-nav"><button class="back-btn" onclick="goBack()"><span>←</span> Roadmap</button></nav>
+    <div class="art-nav" id="art-nav">
+      <button class="art-nav-btn" id="art-prev-btn" onclick="artNavStep(-1)">← Prev</button>
+      <div class="art-nav-counter" id="art-nav-counter"></div>
+      <button class="art-nav-btn" id="art-next-btn" onclick="artNavStep(1)">Next →</button>
+    </div>
     <div class="banner" id="art-banner">
       <div class="banner-inner"><div class="banner-icon" id="art-icon"></div></div>
       <div class="banner-overlay"></div>
@@ -969,6 +995,8 @@ function openArticle(id) {
   else ss.style.display='none';
   document.getElementById('view-roadmap').classList.remove('active');
   const artView=document.getElementById('view-article');artView.classList.add('active','slide-in');
+  buildNavList(id);
+  updateNavUI();
   window.scrollTo(0,0);setTimeout(()=>artView.classList.remove('slide-in'),350);
 }
 
@@ -1288,6 +1316,49 @@ function closeDemo() {
 
 // Close on Escape key
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDemo(); });
+
+// ══════════════════════════════════════
+// ARTICLE NAV — prev/next through filtered timeline
+// ══════════════════════════════════════
+let _navList = [];   // ordered list of article IDs currently visible
+let _navIndex = -1;  // current position in that list
+
+function buildNavList(currentId) {
+  // Collect all visible non-project items in timeline order
+  _navList = [...document.querySelectorAll('#view-roadmap .item:not(.hidden)')]
+    .map(el => el.getAttribute('onclick')?.match(/'([^']+)'/)?.[1])
+    .filter(id => id && ARTICLES[id] && ARTICLES[id].tag !== 'project');
+  _navIndex = _navList.indexOf(currentId);
+}
+
+function updateNavUI() {
+  const prev = document.getElementById('art-prev-btn');
+  const next = document.getElementById('art-next-btn');
+  const counter = document.getElementById('art-nav-counter');
+  const nav = document.getElementById('art-nav');
+  if (_navList.length <= 1) {
+    nav.style.display = 'none';
+    return;
+  }
+  nav.style.display = 'flex';
+  prev.disabled = _navIndex <= 0;
+  next.disabled = _navIndex >= _navList.length - 1;
+  counter.innerHTML = `<span>${_navIndex + 1}</span> of <span>${_navList.length}</span>`;
+}
+
+function artNavStep(dir) {
+  const newIndex = _navIndex + dir;
+  if (newIndex < 0 || newIndex >= _navList.length) return;
+  openArticle(_navList[newIndex]);
+  window.scrollTo(0, 0);
+}
+
+// Keyboard left/right when article is open
+document.addEventListener('keydown', e => {
+  if (!document.getElementById('view-article').classList.contains('active')) return;
+  if (e.key === 'ArrowLeft')  artNavStep(-1);
+  if (e.key === 'ArrowRight') artNavStep(1);
+});
 
 // ── BOOT ──
 loadFromFirebase();

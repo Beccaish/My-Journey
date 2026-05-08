@@ -147,10 +147,12 @@ body::before { content:''; position:fixed; inset:0; z-index:0; pointer-events:no
 
 /* ── ARTICLE VIEW ── */
 #view-article { max-width:var(--content-width); margin:0 auto; padding:0 0 80px; }
+#view-project-detail { max-width:var(--content-width); margin:0 auto; padding:0 0 80px; }
+#proj-detail-body { width:100%; }
 .back-nav { padding:20px 20px 0; }
 .back-btn { display:inline-flex; align-items:center; gap:6px; font-size:11px; letter-spacing:0.1em; color:var(--muted); text-transform:uppercase; border:none; background:none; cursor:pointer; font-family:'DM Mono',monospace; transition:color 0.2s; padding:0; }
 .back-btn:hover { color:var(--white); }
-.banner { margin:16px 20px 0; border-radius:16px; overflow:hidden; position:relative; min-height:120px; max-height:260px; background:#0a0818; display:flex; align-items:center; justify-content:center; }
+.banner { margin:16px 0 0; border-radius:0; overflow:hidden; position:relative; min-height:120px; max-height:260px; background:#0a0818; display:flex; align-items:center; justify-content:center; }
 .banner img.banner-photo { max-width:100%; max-height:240px; width:auto; height:auto; display:block; object-fit:contain; border-radius:12px; }
 .banner-inner { width:100%; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; }
 .banner-icon { font-size:40px; opacity:0.75; }
@@ -253,7 +255,8 @@ body::before { content:''; position:fixed; inset:0; z-index:0; pointer-events:no
 
 /* Desktop — centred card with subtle border */
 @media(min-width:1024px){
-  body { display:flex; justify-content:center; }
+  body { min-height:100vh; }
+  .view { width:100%; }
   body::after {
     content:''; position:fixed; top:0; bottom:0;
     left:50%; transform:translateX(-50%);
@@ -268,7 +271,6 @@ body::before { content:''; position:fixed; inset:0; z-index:0; pointer-events:no
   #view-roadmap  > div { max-width:var(--content-width); padding:60px var(--content-pad) 140px; }
   #view-article  > div { max-width:var(--content-width); }
   #view-projects > div { max-width:var(--content-width); padding:0 var(--content-pad) 120px; }
-  #view-project-detail > div { max-width:var(--content-width); padding:0 var(--content-pad) 120px; }
   #view-panel .panel-nav  { max-width:var(--content-width); }
   #view-panel .panel-body { max-width:var(--content-width); padding:8px var(--content-pad) 120px; }
   .dock { justify-content:center; }
@@ -280,7 +282,7 @@ body::before { content:''; position:fixed; inset:0; z-index:0; pointer-events:no
   .stats-bar { padding:24px 28px; }
   .item { padding:12px 16px; }
   .item-title { font-size:14px; }
-  .banner { max-height:320px; margin:20px var(--content-pad) 0; border-radius:20px; }
+  .banner { max-height:320px; margin:20px 0 0; border-radius:0; }
   .article-body { padding:28px var(--content-pad) 0; }
   .back-nav { padding:24px var(--content-pad) 0; }
   .dual-filters { gap:16px; }
@@ -290,8 +292,7 @@ body::before { content:''; position:fixed; inset:0; z-index:0; pointer-events:no
 @media(min-width:600px) and (max-width:1023px){
   #view-roadmap > div  { padding:48px 32px 120px; }
   #view-projects > div { padding:0 32px 120px; }
-  #view-project-detail > div { padding:0 32px 120px; }
-  .banner { max-height:260px; }
+  .banner { max-height:260px; margin:16px 0 0; }
   .article-title { font-size:26px; }
 }
 
@@ -310,7 +311,7 @@ body::before { content:''; position:fixed; inset:0; z-index:0; pointer-events:no
   .dual-filters{gap:8px}
   .article-body{padding:18px 14px 0}
   .back-nav{padding:16px 14px 0}
-  .banner{margin:12px 14px 0;height:160px;border-radius:12px}
+  .banner{margin:12px 0 0;height:160px;border-radius:0}
   #proj-grid-inner{grid-template-columns:1fr !important;}
 }
 
@@ -549,12 +550,10 @@ body::before { content:''; position:fixed; inset:0; z-index:0; pointer-events:no
 
 <!-- PROJECT DETAIL VIEW -->
 <div id="view-project-detail" class="view">
-  <div style="max-width:var(--content-width);margin:0 auto;padding:0 0 80px;">
-    <nav class="back-nav">
-      <button class="back-btn" id="proj-detail-back-btn" onclick="closeProjectDetail()"><span>←</span> Projects</button>
-    </nav>
-    <div id="proj-detail-body"></div>
-  </div>
+  <nav class="back-nav">
+    <button class="back-btn" id="proj-detail-back-btn" onclick="closeProjectDetail()"><span>←</span> Projects</button>
+  </nav>
+  <div id="proj-detail-body"></div>
 </div>
 
 <!-- DOCK -->
@@ -1119,25 +1118,28 @@ function openProjectDetail(projIndex, articleId) {
 
   const blocksHTML = contentBlocks.map(b => {
     if (b.type==='text' && b.content)
-      return `<p style="font-size:14px;line-height:1.85;color:rgba(237,233,255,0.88);margin-bottom:16px;">${b.content.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')}</p>`;
+      return `<p style="font-size:14px;line-height:1.85;color:rgba(237,233,255,0.88);margin-bottom:16px;padding:0 20px;">${b.content.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')}</p>`;
     if (b.type==='image' && b.src)
-      return `<figure style="margin:24px 0;">
-        <img src="${b.src}" style="width:100%;border-radius:12px;display:block;box-shadow:0 4px 24px rgba(0,0,0,0.3);">
-        ${b.caption?`<figcaption style="font-size:11px;color:var(--muted);font-style:italic;text-align:center;margin-top:10px;letter-spacing:0.03em;">${b.caption}</figcaption>`:''}
+      return `<figure style="margin:16px 0;">
+        <img src="${b.src}" style="width:100%;display:block;">
+        ${b.caption?`<figcaption style="font-size:11px;color:var(--muted);font-style:italic;text-align:center;margin-top:8px;padding:0 20px;">${b.caption}</figcaption>`:''}
       </figure>`;
     if (b.type==='video' && b.src)
-      return `<figure style="margin:24px 0;">
-        <video src="${b.src}" controls playsinline style="width:100%;border-radius:12px;background:#000;display:block;" preload="metadata"></video>
-        ${b.caption?`<figcaption style="font-size:11px;color:var(--muted);font-style:italic;text-align:center;margin-top:10px;">${b.caption}</figcaption>`:''}
+      return `<figure style="margin:16px 0;">
+        <video src="${b.src}" controls playsinline style="width:100%;background:#000;display:block;" preload="metadata"></video>
+        ${b.caption?`<figcaption style="font-size:11px;color:var(--muted);font-style:italic;text-align:center;margin-top:8px;padding:0 20px;">${b.caption}</figcaption>`:''}
       </figure>`;
-if (b.type==='html' && b.src) { const safe=b.src.startsWith('http')?b.src:'https://'+b.src; return '<figure style="margin:24px 0;"><div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:12px;"><iframe src="'+safe+'" style="position:absolute;inset:0;width:100%;height:100%;border:0;" allowfullscreen loading="lazy"></iframe></div>'+(b.caption?'<figcaption style="font-size:11px;color:var(--muted);font-style:italic;text-align:center;margin-top:10px;">'+b.caption+'</figcaption>':'')+'</figure>'; }
-        if (b.type==='youtube' && (b.ytId||b.src)) {
+    if (b.type==='html' && b.src) {
+      const safe=b.src.startsWith('http')?b.src:'https://'+b.src;
+      return `<figure style="margin:16px 0;"><div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;"><iframe src="${safe}" style="position:absolute;inset:0;width:100%;height:100%;border:0;" allowfullscreen loading="lazy"></iframe></div>${b.caption?`<figcaption style="font-size:11px;color:var(--muted);font-style:italic;text-align:center;margin-top:8px;padding:0 20px;">${b.caption}</figcaption>`:''}</figure>`;
+    }
+    if (b.type==='youtube' && (b.ytId||b.src)) {
       const ytId = b.ytId || b.src?.split('/embed/')?.[1];
-      return `<figure style="margin:24px 0;">
-        <div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:12px;box-shadow:0 4px 24px rgba(0,0,0,0.3);">
+      return `<figure style="margin:16px 0;">
+        <div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;">
           <iframe src="https://www.youtube.com/embed/${ytId}" style="position:absolute;inset:0;width:100%;height:100%;border:0;" allowfullscreen loading="lazy"></iframe>
         </div>
-        ${b.caption?`<figcaption style="font-size:11px;color:var(--muted);font-style:italic;text-align:center;margin-top:10px;">${b.caption}</figcaption>`:''}
+        ${b.caption?`<figcaption style="font-size:11px;color:var(--muted);font-style:italic;text-align:center;margin-top:8px;padding:0 20px;">${b.caption}</figcaption>`:''}
       </figure>`;
     }
     return '';
@@ -1151,7 +1153,7 @@ if (b.type==='html' && b.src) { const safe=b.src.startsWith('http')?b.src:'https
       ${firstImg ? `<img src="${firstImg.src}" class="banner-photo" alt="">` : `<div class="banner-inner"><div class="banner-icon">${a.icon||'✦'}</div></div>`}
       <div class="banner-overlay"></div>
     </div>
-    <div class="article-body">
+    <div style="padding:24px 20px 0;">
       <div class="article-meta">
         <span class="tag tag-project" style="color:${color};border-color:${color};">${a.tagLabel||'Project'}</span>
         <span class="article-date">${a.date||yr||''}</span>
@@ -1159,21 +1161,19 @@ if (b.type==='html' && b.src) { const safe=b.src.startsWith('http')?b.src:'https
       </div>
       <h1 class="article-title">${p.title||'Untitled Project'}</h1>
       ${safeUrl ? `<div class="article-org"><a href="${safeUrl}" target="_blank" rel="noopener" style="color:var(--teal);text-decoration:none;font-style:normal;font-size:12px;letter-spacing:0.04em;">${safeUrl.replace('https://','').replace('http://','')}</a></div>` : '<div style="margin-bottom:24px;"></div>'}
-      <div style="font-family:'Inter',sans-serif;">
-        ${blocksHTML || '<p style="opacity:0.35;font-size:13px;">No story content yet.</p>'}
+    </div>
+    <div style="font-family:'Inter',sans-serif;">
+      ${blocksHTML || '<p style="opacity:0.35;font-size:13px;padding:0 20px;">No story content yet.</p>'}
+    </div>
+    <div style="padding:40px 20px 0;border-top:1px solid rgba(255,255,255,0.08);margin-top:40px;display:flex;flex-direction:column;gap:20px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+        <span class="tag tag-project" style="color:${color};border-color:${color};">${a.tagLabel||'Project'}</span>
+        <button class="footer-back-btn" onclick="closeProjectDetail()">← Back to Projects</button>
       </div>
-      <div class="article-footer">
-        <div class="footer-top-row">
-          <div class="footer-tag-row">
-            <span class="tag tag-project" style="color:${color};border-color:${color};">${a.tagLabel||'Project'}</span>
-          </div>
-          <button class="footer-back-btn" onclick="closeProjectDetail()">← Back to Projects</button>
-        </div>
-        ${techPills ? `<div class="skill-tags-section" style="display:flex;">
-          <div class="skill-tags-label">Tech</div>
-          <div class="skill-tags-row">${techPills}</div>
-        </div>` : ''}
-      </div>
+      ${techPills ? `<div class="skill-tags-section" style="display:flex;">
+        <div class="skill-tags-label">Tech</div>
+        <div class="skill-tags-row">${techPills}</div>
+      </div>` : ''}
     </div>`;
 
   document.getElementById('view-projects').classList.remove('active');
